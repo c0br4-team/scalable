@@ -1,0 +1,219 @@
+<div class="h-screen overflow-hidden flex bg-gray-100">
+
+  <!-- Backdrop móvil -->
+  @if (mobileOpen()) {
+  <div class="fixed inset-0 z-20 bg-black/50 lg:hidden" (click)="closeMobileSidebar()"></div>
+  }
+
+  <!-- Sidebar -->
+  <aside class="fixed lg:static inset-y-0 left-0 z-30 flex flex-col bg-[#1e3a5f] text-white
+    transition-all duration-300 shrink-0" [class.w-64]="isExpanded" [class.w-16]="!isExpanded"
+    [class.-translate-x-full]="!mobileOpen()" [class.translate-x-0]="mobileOpen()" [class.lg:translate-x-0]="true">
+    <!-- Logo -->
+    <div class="h-16 flex items-center border-b border-white/10 px-4 gap-3 overflow-hidden shrink-0">
+      <img src="icons/manifest-icon-192.maskable.png" alt="Logo" class="w-8 h-8 shrink-0 rounded-lg object-contain" />
+      @if (isExpanded) {
+      <span class="font-bold text-lg tracking-wide whitespace-nowrap">Scalable</span>
+      }
+    </div>
+
+    <!-- Nav -->
+    <nav class="flex-1 py-3 overflow-y-auto overflow-x-hidden">
+      @for (item of navItems; track $index) {
+
+      <!-- DIVIDER -->
+      @if (item.type === 'divider') {
+      <div class="mx-3 my-2 border-t border-white/10"></div>
+      }
+
+      <!-- BASIC -->
+      @if (item.type === 'basic') {
+      <div class="px-2">
+        <a [routerLink]="asBasic(item).path" routerLinkActive="bg-white/20 text-white"
+          [routerLinkActiveOptions]="{ exact: asBasic(item).exactPath ?? false }" (click)="closeMobileSidebar()" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium
+                text-white/80 hover:bg-white/10 hover:text-white transition-colors"
+          [class.justify-center]="!isExpanded">
+          @if (asBasic(item).icon) {
+          <ng-icon [name]="asBasic(item).icon!" class="shrink-0 text-lg" />
+          }
+          @if (isExpanded) {
+          <span class="flex-1 whitespace-nowrap">{{ asBasic(item).label }}</span>
+          @if (asBasic(item).badge !== undefined) {
+          <span class="text-xs text-white font-semibold px-1.5 py-0.5 rounded-full"
+            [class]="badgeClasses(asBasic(item).badgeType)">
+            {{ asBasic(item).badge }}
+          </span>
+          }
+          }
+        </a>
+      </div>
+      }
+
+      <!-- COLLAPSIBLE -->
+      @if (item.type === 'collapsible') {
+      <div class="px-2">
+        <button (click)="toggleCollapsible(asCollapsible(item).label)" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium
+                text-white/80 hover:bg-white/10 hover:text-white transition-colors"
+          [class.justify-center]="!isExpanded">
+          @if (asCollapsible(item).icon) {
+          <ng-icon [name]="asCollapsible(item).icon!" class="shrink-0 text-lg" />
+          }
+          @if (isExpanded) {
+          <span class="flex-1 text-left whitespace-nowrap">{{ asCollapsible(item).label }}</span>
+          <ng-icon name="heroChevronRight" class="text-sm text-white/50 transition-transform duration-200"
+            [class.rotate-90]="isCollapsibleOpen(asCollapsible(item).label)" />
+          }
+        </button>
+
+        <!-- Children -->
+        @if (isExpanded && isCollapsibleOpen(asCollapsible(item).label)) {
+        <div @collapse class="overflow-hidden">
+          @for (child of asCollapsible(item).children; track child.path) {
+          <a [routerLink]="child.path" routerLinkActive="bg-white/20 text-white" (click)="closeMobileSidebar()" class="flex items-center gap-3 pl-9 pr-3 py-2 rounded-lg text-sm
+                      text-white/70 hover:bg-white/10 hover:text-white transition-colors">
+            @if (child.icon) {
+            <ng-icon [name]="child.icon" class="shrink-0 text-base" />
+            }
+            <span class="whitespace-nowrap">{{ child.label }}</span>
+            @if (child.badge !== undefined) {
+            <span class="ml-auto text-xs text-white font-semibold px-1.5 py-0.5 rounded-full"
+              [class]="badgeClasses(child.badgeType)">
+              {{ child.badge }}
+            </span>
+            }
+          </a>
+          }
+        </div>
+        }
+      </div>
+      }
+
+      <!-- GROUP -->
+      @if (item.type === 'group') {
+      <div class="px-2 mt-2">
+        @if (isExpanded) {
+        <p class="px-3 mb-1 text-xs font-semibold text-white/40 uppercase tracking-wider whitespace-nowrap">
+          {{ asGroup(item).label }}
+        </p>
+        } @else {
+        <div class="mx-3 my-2 border-t border-white/10"></div>
+        }
+        @for (child of asGroup(item).children; track $index) {
+
+        <!-- Child Basic -->
+        @if (child.type === 'basic') {
+        <a [routerLink]="asBasic(child).path" routerLinkActive="bg-white/20 text-white" (click)="closeMobileSidebar()"
+          class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium
+                    text-white/80 hover:bg-white/10 hover:text-white transition-colors"
+          [class.justify-center]="!isExpanded">
+          @if (asBasic(child).icon) {
+          <ng-icon [name]="asBasic(child).icon!" class="shrink-0 text-lg" />
+          }
+          @if (isExpanded) {
+          <span class="flex-1 whitespace-nowrap">{{ asBasic(child).label }}</span>
+          @if (asBasic(child).badge !== undefined) {
+          <span class="text-xs text-white font-semibold px-1.5 py-0.5 rounded-full"
+            [class]="badgeClasses(asBasic(child).badgeType)">
+            {{ asBasic(child).badge }}
+          </span>
+          }
+          }
+        </a>
+        }
+
+        <!-- Child Collapsible -->
+        @if (child.type === 'collapsible') {
+        <button (click)="toggleCollapsible(asCollapsible(child).label)" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium
+                    text-white/80 hover:bg-white/10 hover:text-white transition-colors"
+          [class.justify-center]="!isExpanded">
+          @if (asCollapsible(child).icon) {
+          <ng-icon [name]="asCollapsible(child).icon!" class="shrink-0 text-lg" />
+          }
+          @if (isExpanded) {
+          <span class="flex-1 text-left whitespace-nowrap">{{ asCollapsible(child).label }}</span>
+          <ng-icon name="heroChevronRight" class="text-sm text-white/50 transition-transform duration-200"
+            [class.rotate-90]="isCollapsibleOpen(asCollapsible(child).label)" />
+          }
+        </button>
+        @if (isExpanded && isCollapsibleOpen(asCollapsible(child).label)) {
+        <div @collapse class="overflow-hidden">
+          @for (grandchild of asCollapsible(child).children; track grandchild.path) {
+          <a [routerLink]="grandchild.path" routerLinkActive="bg-white/20 text-white" (click)="closeMobileSidebar()"
+            class="flex items-center gap-3 pl-9 pr-3 py-2 rounded-lg text-sm
+                          text-white/70 hover:bg-white/10 hover:text-white transition-colors">
+            @if (grandchild.icon) {
+            <ng-icon [name]="grandchild.icon" class="shrink-0 text-base" />
+            }
+            <span class="whitespace-nowrap">{{ grandchild.label }}</span>
+          </a>
+          }
+        </div>
+        }
+        }
+
+        <!-- Child Divider -->
+        @if (child.type === 'divider') {
+        <div class="mx-1 my-1 border-t border-white/10"></div>
+        }
+        }
+      </div>
+      }
+      }
+    </nav>
+
+    <!-- Footer sidebar -->
+    @if (isExpanded) {
+    <div class="p-4 border-t border-white/10 text-xs text-white/40 text-center shrink-0">
+      v1.0.0
+    </div>
+    }
+  </aside>
+
+  <!-- Main -->
+  <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
+    <!-- Header -->
+    <header class="h-16 bg-white shadow-sm flex items-center justify-between px-4 shrink-0 sticky top-0 z-10">
+      <div class="flex items-center gap-4">
+        <button (click)="toggleSidebar()"
+          class="p-2 rounded-lg text-gray-500 hover:bg-gray-100 hover:text-gray-700 transition-colors"
+          aria-label="Toggle sidebar">
+          <ng-icon name="heroBars3" class="text-xl" />
+        </button>
+        <app-breadcrumb />
+      </div>
+
+      <div class="relative" (clickOutside)="closeUserMenu()">
+        <button (click)="toggleUserMenu()"
+          class="flex items-center gap-2 px-3 py-1.5 rounded-lg hover:bg-gray-100 transition-colors">
+          <div
+            class="w-8 h-8 rounded-full bg-[#1e3a5f] text-white flex items-center justify-center text-sm font-bold shrink-0">
+            {{ auth.user()?.name?.charAt(0) ?? 'U' }}
+          </div>
+          <div class="text-left hidden sm:block">
+            <p class="text-sm font-medium text-gray-800 leading-tight">{{ auth.user()?.name ?? 'Usuario' }}</p>
+            <p class="text-xs text-gray-500 leading-tight">{{ auth.user()?.email }}</p>
+          </div>
+          <ng-icon name="heroChevronDown" class="text-base text-gray-400 ml-1 hidden sm:block" />
+        </button>
+        @if (userMenuOpen()) {
+        <div class="absolute right-0 mt-1 w-48 bg-white rounded-xl shadow-lg border border-gray-100 py-1 z-50">
+          <div class="px-4 py-2 border-b border-gray-100">
+            <p class="text-xs text-gray-500">Sesión activa</p>
+            <p class="text-sm font-medium text-gray-800 truncate">{{ auth.user()?.email }}</p>
+          </div>
+          <button (click)="logout()"
+            class="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors">
+            <ng-icon name="heroArrowRightOnRectangle" class="text-base" />
+            Cerrar sesión
+          </button>
+        </div>
+        }
+      </div>
+    </header>
+
+    <main class="flex-1 p-4 lg:p-6 overflow-auto">
+      <router-outlet />
+    </main>
+  </div>
+
+</div>
