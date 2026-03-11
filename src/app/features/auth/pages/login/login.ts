@@ -7,6 +7,7 @@ import { NgIcon } from '@ng-icons/core';
   selector: 'app-login',
   imports: [ReactiveFormsModule, NgIcon],
   templateUrl: './login.html',
+   host: { class: 'flex w-full min-h-screen' },
 })
 export class LoginPage {
   private fb = inject(FormBuilder);
@@ -47,4 +48,10 @@ export class LoginPage {
     const control = this.form.get(field);
     return !!(control?.hasError(error) && control?.touched);
   }
+
+  protected features = [
+    { icon: 'heroDocumentText', text: 'Seguimiento completo de casos' },
+    { icon: 'heroUsers', text: 'Gestión de equipos y asignaciones' },
+    { icon: 'heroChartBar', text: 'Reportes y métricas en tiempo real' },
+  ];
 }
