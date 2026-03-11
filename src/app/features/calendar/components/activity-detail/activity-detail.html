@@ -1,0 +1,232 @@
+<div class="h-full flex flex-col bg-white border-l border-gray-200">
+
+  <!-- Header -->
+  <div class="shrink-0 px-5 py-4 border-b border-gray-100">
+    <div class="flex items-start justify-between gap-3">
+      <div class="flex-1 min-w-0">
+        <div class="flex items-center gap-2 mb-1 flex-wrap">
+          <span class="text-xs font-semibold px-2 py-0.5 rounded-full" [class]="typeBadgeClass(activity().type)">
+            {{ typeLabel(activity().type) }}
+          </span>
+          <span class="text-xs px-2 py-0.5 rounded-full font-medium" [class]="statusClass(activity().status)">
+            {{ statusLabel(activity().status) }}
+          </span>
+          <span class="text-xs px-2 py-0.5 rounded-full font-medium" [class]="priorityClass(activity().priority)">
+            {{ priorityLabel(activity().priority) }}
+          </span>
+          @if (isOverdue(activity())) {
+          <span class="text-xs px-2 py-0.5 rounded-full font-semibold bg-red-100 text-red-700">
+            Vencida
+          </span>
+          }
+        </div>
+        <h3 class="text-base font-semibold text-gray-900 leading-snug">{{ activity().title }}</h3>
+      </div>
+
+      <!-- Acciones -->
+      <div class="flex items-center gap-1 shrink-0">
+        <button (click)="editRequested.emit(activity())"
+          class="p-1.5 rounded-lg text-gray-400 hover:text-[#1e3a5f] hover:bg-gray-100 transition-colors"
+          title="Editar">
+          <ng-icon name="heroPencil" class="text-base" />
+        </button>
+        <button (click)="deleteRequested.emit(activity())"
+          class="p-1.5 rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors" title="Eliminar">
+          <ng-icon name="heroTrash" class="text-base" />
+        </button>
+        <button (click)="closed.emit()"
+          class="p-1.5 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors" title="Cerrar">
+          <ng-icon name="heroXMark" class="text-lg" />
+        </button>
+      </div>
+    </div>
+
+    <!-- Fechas -->
+    <div class="flex items-center gap-3 mt-2 text-xs text-gray-500">
+      <span class="flex items-center gap-1">
+        <ng-icon name="heroCalendar" class="text-sm" />
+        Inicio: {{ formatDate(activity().startDate) }}
+      </span>
+      <span class="text-gray-200">·</span>
+      <span class="flex items-center gap-1 font-medium" [class.text-red-500]="isOverdue(activity())">
+        <ng-icon name="heroClock" class="text-sm" />
+        Vence: {{ formatDate(activity().dueDate) }}
+      </span>
+    </div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="shrink-0 flex border-b border-gray-100 bg-gray-50 px-1">
+    @for (tab of tabs; track tab.id) {
+    <button (click)="activeTab.set(tab.id)"
+      class="flex items-center gap-1.5 px-3 py-3 text-xs font-medium transition-colors border-b-2"
+      [class.border-[#1e3a5f]]="activeTab() === tab.id" [class.text-[#1e3a5f]]="activeTab() === tab.id"
+      [class.border-transparent]="activeTab() !== tab.id" [class.text-gray-500]="activeTab() !== tab.id"
+      [class.hover:text-gray-700]="activeTab() !== tab.id">
+      <ng-icon [name]="tab.icon" class="text-sm" />
+      {{ tab.label }}
+      @if (tab.id === 'checklist' && activity().checklist.length > 0) {
+      <span class="ml-0.5 text-[10px] bg-gray-200 text-gray-600 rounded-full px-1.5 py-0.5 font-semibold">
+        {{ progress().done }}/{{ progress().total }}
+      </span>
+      }
+      @if (tab.id === 'attachments' && activity().attachments.length > 0) {
+      <span class="ml-0.5 text-[10px] bg-gray-200 text-gray-600 rounded-full px-1.5 py-0.5 font-semibold">
+        {{ activity().attachments.length }}
+      </span>
+      }
+    </button>
+    }
+  </div>
+
+  <!-- Contenido del tab -->
+  <div class="flex-1 overflow-y-auto">
+
+    <!-- ── Tab: Info ── -->
+    @if (activeTab() === 'info') {
+    <div class="p-5 space-y-5">
+
+      @if (activity().notes) {
+      <div class="space-y-1.5">
+        <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide">Notas</p>
+        <p
+          class="text-sm text-gray-700 whitespace-pre-wrap leading-relaxed bg-gray-50 rounded-xl p-3 border border-gray-100">
+          {{ activity().notes }}
+        </p>
+      </div>
+      }
+
+      <div class="space-y-1.5">
+        <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide">Responsables</p>
+        @if (activity().assignees.length > 0) {
+        <div class="space-y-2">
+          @for (assignee of activity().assignees; track assignee.id) {
+          <div class="flex items-center gap-2.5">
+            <div
+              class="w-7 h-7 rounded-full bg-[#1e3a5f] text-white flex items-center justify-center text-xs font-semibold shrink-0">
+              {{ assignee.name.charAt(0).toUpperCase() }}
+            </div>
+            <div class="min-w-0">
+              <p class="text-sm font-medium text-gray-800 truncate">{{ assignee.name }}</p>
+              <p class="text-xs text-gray-400 truncate">{{ assignee.email }}</p>
+            </div>
+          </div>
+          }
+        </div>
+        } @else {
+        <p class="text-xs text-gray-400 italic">Sin responsables asignados.</p>
+        }
+      </div>
+
+      <div class="space-y-1.5">
+        <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide">Creación</p>
+        <p class="text-sm text-gray-500">{{ formatDateTime(activity().createdAt) }}</p>
+      </div>
+
+      <div class="space-y-1.5">
+        <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide">Última actualización</p>
+        <p class="text-sm text-gray-500">{{ formatDateTime(activity().updatedAt) }}</p>
+      </div>
+
+    </div>
+    }
+
+    <!-- ── Tab: Checklist ── -->
+    @if (activeTab() === 'checklist') {
+    <div class="p-5 space-y-4">
+
+      <!-- Barra de progreso -->
+      @if (activity().checklist.length > 0) {
+      <div class="space-y-1">
+        <div class="flex items-center justify-between text-xs text-gray-500">
+          <span>Progreso</span>
+          <span class="font-semibold">{{ progress().done }}/{{ progress().total }} ({{ progress().percent }}%)</span>
+        </div>
+        <div class="h-2 bg-gray-100 rounded-full overflow-hidden">
+          <div class="h-full bg-[#1e3a5f] rounded-full transition-all duration-500"
+            [style.width.%]="progress().percent"></div>
+        </div>
+      </div>
+      }
+
+      <!-- Lista de ítems -->
+      <div class="space-y-1.5">
+        @for (item of activity().checklist; track item.id) {
+        <div class="flex items-center gap-2 group rounded-xl px-2 py-1.5 hover:bg-gray-50 transition-colors">
+
+          <!-- Checkbox -->
+          <button type="button" (click)="toggleItem(item.id)"
+            class="w-5 h-5 rounded border-2 shrink-0 flex items-center justify-center transition-all"
+            [class.border-[#1e3a5f]]="item.completed" [class.bg-[#1e3a5f]]="item.completed"
+            [class.border-gray-300]="!item.completed" [class.hover:border-[#1e3a5f]]="!item.completed">
+            @if (item.completed) {
+            <ng-icon name="heroCheck" class="!text-white text-xs" />
+            }
+          </button>
+
+          <!-- Texto / edición inline -->
+          @if (editingChecklistId() === item.id) {
+          <input type="text" [value]="editingChecklistText()"
+            (input)="editingChecklistText.set($any($event.target).value)"
+            (keydown)="onChecklistKeydown($event, item.id)" (blur)="confirmEdit(item.id)"
+            class="flex-1 text-sm border-b border-[#1e3a5f] outline-none bg-transparent py-0.5" autofocus />
+          } @else {
+          <span class="flex-1 text-sm transition-colors" [class.line-through]="item.completed"
+            [class.text-gray-400]="item.completed" [class.text-gray-800]="!item.completed">
+            {{ item.text }}
+          </span>
+          }
+
+          <!-- Acciones inline -->
+          @if (editingChecklistId() !== item.id) {
+          <div class="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
+            <button type="button" (click)="startEdit(item.id, item.text)"
+              class="p-1 rounded text-gray-400 hover:text-[#1e3a5f] transition-colors">
+              <ng-icon name="heroPencil" class="text-xs" />
+            </button>
+            <button type="button" (click)="removeChecklistItem(item.id)"
+              class="p-1 rounded text-gray-400 hover:text-red-500 transition-colors">
+              <ng-icon name="heroTrash" class="text-xs" />
+            </button>
+          </div>
+          }
+        </div>
+        }
+
+        @if (activity().checklist.length === 0) {
+        <p class="text-xs text-gray-400 italic text-center py-4">Sin ítems en el checklist.</p>
+        }
+      </div>
+
+      <!-- Agregar nuevo ítem -->
+      <div class="flex items-center gap-2 border-t border-gray-100 pt-3">
+        <div class="w-5 h-5 rounded border-2 border-dashed border-gray-300 shrink-0"></div>
+        <input type="text" [value]="newChecklistText()" (input)="newChecklistText.set($any($event.target).value)"
+          (keydown)="onNewItemKeydown($event)" placeholder="Agregar ítem... (Enter para guardar)"
+          class="flex-1 text-sm outline-none bg-transparent placeholder-gray-400 py-1" />
+        @if (newChecklistText().trim()) {
+        <button type="button" (click)="addChecklistItem()" class="p-1 rounded-lg bg-[#1e3a5f] text-white">
+          <ng-icon name="heroPlus" class="text-sm" />
+        </button>
+        }
+      </div>
+
+    </div>
+    }
+
+    <!-- ── Tab: Adjuntos ── -->
+    @if (activeTab() === 'attachments') {
+    <div class="p-5">
+      <app-file-dropzone [activityId]="activity().id" [attachments]="activity().attachments" />
+    </div>
+    }
+
+    <!-- ── Tab: Historial ── -->
+    @if (activeTab() === 'history') {
+    <div class="p-5">
+      <app-activity-history [history]="activity().history" />
+    </div>
+    }
+
+  </div>
+</div>

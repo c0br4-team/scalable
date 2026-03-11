@@ -1,0 +1,66 @@
+<!-- Header de página -->
+<div class="shrink-0 flex items-center justify-between px-6 py-4 border-b border-gray-200 bg-white">
+  <div>
+    <h1 class="text-xl font-bold text-gray-900">Calendario</h1>
+    <p class="text-sm text-gray-500">Gestiona y programa tus actividades</p>
+  </div>
+  <button (click)="openCreate()" class="flex items-center gap-2 px-4 py-2 bg-[#1e3a5f] text-white text-sm font-semibold rounded-xl
+      hover:bg-[#16304f] active:scale-[0.98] transition-all focus:outline-none
+      focus:ring-2 focus:ring-[#1e3a5f]/40 focus:ring-offset-2">
+    <ng-icon name="heroPlus" class="text-base" />
+    Nueva actividad
+  </button>
+</div>
+
+<!-- Área principal -->
+<div class="flex-1 overflow-hidden flex min-h-0">
+
+  <!-- Grid del calendario -->
+  <div class="flex-1 overflow-hidden p-6 flex flex-col">
+    <app-calendar-grid [selectedDate]="selectedDate()" (dateSelected)="onDateSelected($event)"
+      (activityClicked)="onActivityClicked($event)" />
+  </div>
+
+  <!-- Panel de detalle lateral -->
+  @if (selectedActivity()) {
+  <div class="w-96 shrink-0 border-l border-gray-200 overflow-hidden">
+    <app-activity-detail [activity]="selectedActivity()!" (editRequested)="onEditRequested($event)"
+      (deleteRequested)="onDeleteRequested($event)" (closed)="closeDetail()" />
+  </div>
+  }
+
+</div>
+
+<!-- Modal de crear/editar -->
+@if (showModal()) {
+<app-activity-modal [activity]="editingActivity()" (saved)="onModalSaved()" (cancelled)="onModalCancelled()" />
+}
+
+<!-- Confirmación de eliminación -->
+@if (showDeleteConfirm()) {
+<div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
+  <div class="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-sm">
+    <div class="flex items-center gap-3 mb-3">
+      <div class="w-10 h-10 rounded-xl bg-red-100 flex items-center justify-center shrink-0">
+        <ng-icon name="heroTrash" class="text-xl !text-red-600" />
+      </div>
+      <h3 class="text-base font-semibold text-gray-900">Eliminar actividad</h3>
+    </div>
+    <p class="text-sm text-gray-600 mb-5">
+      ¿Confirmas que deseas eliminar
+      <strong class="text-gray-900">"{{ deletingActivity()?.title }}"</strong>?
+      Esta acción no se puede deshacer.
+    </p>
+    <div class="flex gap-3 justify-end">
+      <button (click)="cancelDelete()"
+        class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors">
+        Cancelar
+      </button>
+      <button (click)="confirmDelete()"
+        class="px-4 py-2 text-sm font-semibold text-white bg-red-600 rounded-xl hover:bg-red-700 active:scale-[0.98] transition-all">
+        Eliminar
+      </button>
+    </div>
+  </div>
+</div>
+}

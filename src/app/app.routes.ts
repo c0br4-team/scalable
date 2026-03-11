@@ -33,6 +33,12 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./features/dashboard/pages/dashboard/dashboard').then(m => m.DashboardPage),
       },
+      {
+        path: 'calendar',
+        data: { breadcrumb: 'Calendario' },
+        loadChildren: () =>
+          import('./features/calendar/calendar.routes').then(m => m.calendarRoutes),
+      },
     ],
   },
   {

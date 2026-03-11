@@ -1,0 +1,127 @@
+<div class="space-y-3">
+
+  <!-- Zona de drop -->
+  <div
+    (dragover)="onDragOver($event)"
+    (dragleave)="onDragLeave($event)"
+    (drop)="onDrop($event)"
+    (click)="openFilePicker()"
+    class="relative border-2 border-dashed rounded-xl p-6 text-center cursor-pointer transition-all"
+    [class.border-[#1e3a5f]]="isDragging()"
+    [class.bg-blue-50]="isDragging()"
+    [class.border-gray-200]="!isDragging()"
+    [class.hover:border-gray-300]="!isDragging()"
+    [class.hover:bg-gray-50]="!isDragging()"
+  >
+    <input
+      #fileInput
+      type="file"
+      multiple
+      class="hidden"
+      accept=".jpg,.jpeg,.png,.gif,.webp,.pdf,.doc,.docx,.xls,.xlsx,.txt,.csv"
+      (change)="onFileInputChange($event)"
+    />
+
+    <div class="flex flex-col items-center gap-2 pointer-events-none">
+      <div
+        class="w-10 h-10 rounded-xl flex items-center justify-center transition-colors"
+        [class.bg-blue-100]="isDragging()"
+        [class.bg-gray-100]="!isDragging()"
+      >
+        <ng-icon
+          name="heroArrowUpTray"
+          class="text-2xl transition-colors"
+          [class.!text-[#1e3a5f]]="isDragging()"
+          [class.!text-gray-400]="!isDragging()"
+        />
+      </div>
+      <div>
+        <p class="text-sm font-medium text-gray-700">
+          @if (isDragging()) {
+            Suelta los archivos aquí
+          } @else {
+            Arrastra archivos aquí o <span class="text-[#1e3a5f] underline">haz clic para seleccionar</span>
+          }
+        </p>
+        <p class="text-xs text-gray-400 mt-0.5">
+          Imágenes, PDF, Word, Excel, CSV · Máx. 10 MB por archivo
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Errores de validación -->
+  @if (errors().length > 0) {
+    <div class="space-y-1">
+      @for (error of errors(); track error) {
+        <div class="flex items-center gap-2 text-xs text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2">
+          <ng-icon name="heroExclamationCircle" class="text-sm shrink-0" />
+          <span>{{ error }}</span>
+        </div>
+      }
+    </div>
+  }
+
+  <!-- Lista de adjuntos -->
+  @if (attachments().length > 0) {
+    <div class="space-y-2">
+      <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide">
+        Archivos adjuntos ({{ attachments().length }})
+      </p>
+      <div class="space-y-1.5">
+        @for (attachment of attachments(); track attachment.id) {
+          <div class="flex items-center gap-3 p-2.5 bg-gray-50 border border-gray-100 rounded-xl group">
+
+            <!-- Thumbnail o ícono -->
+            <div class="w-9 h-9 rounded-lg overflow-hidden shrink-0 bg-gray-100 flex items-center justify-center">
+              @if (isImage(attachment)) {
+                <img
+                  [src]="attachment.url"
+                  [alt]="attachment.name"
+                  class="w-full h-full object-cover"
+                />
+              } @else {
+                <ng-icon
+                  [name]="fileIcon(attachment.type)"
+                  class="text-xl"
+                  [class]="fileIconColor(attachment.type)"
+                />
+              }
+            </div>
+
+            <!-- Info -->
+            <div class="flex-1 min-w-0">
+              <p class="text-sm font-medium text-gray-800 truncate">{{ attachment.name }}</p>
+              <p class="text-xs text-gray-400">{{ formatSize(attachment.size) }}</p>
+            </div>
+
+            <!-- Acciones -->
+            <div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+              <a
+                [href]="attachment.url"
+                [download]="attachment.name"
+                class="p-1 rounded-lg text-gray-400 hover:text-[#1e3a5f] hover:bg-gray-200 transition-colors"
+                title="Descargar"
+                (click)="$event.stopPropagation()"
+              >
+                <ng-icon name="heroArrowUpTray" class="text-base rotate-180" />
+              </a>
+              <button
+                type="button"
+                (click)="removeAttachment(attachment.id)"
+                class="p-1 rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors"
+                title="Eliminar"
+              >
+                <ng-icon name="heroTrash" class="text-base" />
+              </button>
+            </div>
+
+          </div>
+        }
+      </div>
+    </div>
+  } @else {
+    <p class="text-xs text-gray-400 text-center italic">Sin archivos adjuntos.</p>
+  }
+
+</div>

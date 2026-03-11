@@ -23,7 +23,21 @@ import {
   heroExclamationCircle,
   heroExclamationTriangle,
   heroInformationCircle,
-  heroChevronRight
+  heroChevronRight,
+  heroChevronLeft,
+  heroCalendar,
+  heroTag,
+  heroUserPlus,
+  heroTrash,
+  heroPlus,
+  heroArrowUpTray,
+  heroDocument,
+  heroPhoto,
+  heroPaperClip,
+  heroClock,
+  heroPencil,
+  heroCheck,
+  heroArrowPath
 } from '@ng-icons/heroicons/outline';
 
 export const appConfig: ApplicationConfig = {
@@ -54,7 +68,21 @@ export const appConfig: ApplicationConfig = {
       heroExclamationCircle,
       heroExclamationTriangle,
       heroInformationCircle,
-      heroChevronRight
+      heroChevronRight,
+      heroChevronLeft,
+      heroCalendar,
+      heroPlus,
+      heroTrash,
+      heroUserPlus,
+      heroTag,
+      heroArrowUpTray,
+      heroDocument,
+      heroPhoto,
+      heroPaperClip,
+      heroClock,
+      heroPencil,
+      heroCheck,
+      heroArrowPath,
     })
   ]
 };

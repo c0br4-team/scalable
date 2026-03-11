@@ -1,0 +1,265 @@
+<!-- Overlay -->
+<div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
+
+  <!-- Modal -->
+  <form
+    [formGroup]="form"
+    (ngSubmit)="onSubmit()"
+    class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col overflow-hidden"
+    novalidate
+  >
+
+    <!-- Header -->
+    <div class="flex items-center justify-between px-6 py-4 border-b border-gray-100 shrink-0">
+      <h2 class="text-lg font-semibold text-gray-900">
+        {{ mode() === 'create' ? 'Nueva actividad' : 'Editar actividad' }}
+      </h2>
+      <button
+        type="button"
+        (click)="cancel()"
+        class="p-1.5 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors"
+      >
+        <ng-icon name="heroXMark" class="text-xl" />
+      </button>
+    </div>
+
+    <!-- Body -->
+    <div class="flex-1 overflow-y-auto px-6 py-5 space-y-5">
+
+      <!-- Título -->
+      <div class="space-y-1.5">
+        <label class="block text-sm font-medium text-gray-700">
+          Título <span class="text-red-500">*</span>
+        </label>
+        <input
+          type="text"
+          formControlName="title"
+          placeholder="Nombre de la actividad"
+          class="w-full px-4 py-2.5 rounded-xl border text-sm outline-none transition-all focus:ring-2 focus:ring-[#1e3a5f]/20 focus:border-[#1e3a5f]"
+          [class.border-red-400]="hasError('title', 'required') || hasError('title', 'minlength')"
+          [class.border-gray-200]="!hasError('title', 'required') && !hasError('title', 'minlength')"
+        />
+        @if (hasError('title', 'required')) {
+          <p class="text-xs text-red-500">El título es requerido.</p>
+        } @else if (hasError('title', 'minlength')) {
+          <p class="text-xs text-red-500">Mínimo 3 caracteres.</p>
+        }
+      </div>
+
+      <!-- Tipo -->
+      <div class="space-y-1.5">
+        <label class="block text-sm font-medium text-gray-700">
+          Tipo <span class="text-red-500">*</span>
+        </label>
+        <div class="flex flex-wrap gap-2">
+          @for (t of types; track t.value) {
+            <button
+              type="button"
+              (click)="form.get('type')?.setValue(t.value)"
+              class="px-3 py-1.5 rounded-lg border text-sm font-medium transition-all"
+              [class]="form.value.type === t.value
+                ? typeSelectedClass(t.value)
+                : 'border-gray-200 text-gray-600 bg-white hover:border-gray-300 hover:bg-gray-50'"
+            >
+              {{ t.label }}
+            </button>
+          }
+        </div>
+      </div>
+
+      <!-- Prioridad + Estado -->
+      <div class="grid grid-cols-2 gap-4">
+        <div class="space-y-1.5">
+          <label class="block text-sm font-medium text-gray-700">Prioridad</label>
+          <select
+            formControlName="priority"
+            class="w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-white text-sm outline-none focus:ring-2 focus:ring-[#1e3a5f]/20 focus:border-[#1e3a5f]"
+          >
+            @for (p of priorities; track p.value) {
+              <option [value]="p.value">{{ p.label }}</option>
+            }
+          </select>
+        </div>
+        <div class="space-y-1.5">
+          <label class="block text-sm font-medium text-gray-700">Estado</label>
+          <select
+            formControlName="status"
+            class="w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-white text-sm outline-none focus:ring-2 focus:ring-[#1e3a5f]/20 focus:border-[#1e3a5f]"
+          >
+            @for (s of statuses; track s.value) {
+              <option [value]="s.value">{{ s.label }}</option>
+            }
+          </select>
+        </div>
+      </div>
+
+      <!-- Fechas -->
+      <div class="grid grid-cols-2 gap-4">
+        <div class="space-y-1.5">
+          <label class="block text-sm font-medium text-gray-700">
+            Fecha de inicio <span class="text-red-500">*</span>
+          </label>
+          <input
+            type="date"
+            formControlName="startDate"
+            class="w-full px-4 py-2.5 rounded-xl border text-sm outline-none focus:ring-2 focus:ring-[#1e3a5f]/20 focus:border-[#1e3a5f]"
+            [class.border-red-400]="hasError('startDate', 'required')"
+            [class.border-gray-200]="!hasError('startDate', 'required')"
+          />
+          @if (hasError('startDate', 'required')) {
+            <p class="text-xs text-red-500">La fecha de inicio es requerida.</p>
+          }
+        </div>
+        <div class="space-y-1.5">
+          <label class="block text-sm font-medium text-gray-700">
+            Fecha de vencimiento <span class="text-red-500">*</span>
+          </label>
+          <input
+            type="date"
+            formControlName="dueDate"
+            class="w-full px-4 py-2.5 rounded-xl border text-sm outline-none focus:ring-2 focus:ring-[#1e3a5f]/20 focus:border-[#1e3a5f]"
+            [class.border-red-400]="hasError('dueDate', 'required')"
+            [class.border-gray-200]="!hasError('dueDate', 'required')"
+          />
+          @if (hasError('dueDate', 'required')) {
+            <p class="text-xs text-red-500">La fecha de vencimiento es requerida.</p>
+          }
+        </div>
+      </div>
+
+      <!-- Notas -->
+      <div class="space-y-1.5">
+        <label class="block text-sm font-medium text-gray-700">Notas</label>
+        <textarea
+          formControlName="notes"
+          rows="3"
+          placeholder="Descripción, observaciones..."
+          class="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm outline-none resize-none focus:ring-2 focus:ring-[#1e3a5f]/20 focus:border-[#1e3a5f]"
+        ></textarea>
+      </div>
+
+      <!-- Responsables -->
+      <div class="space-y-2">
+        <div class="flex items-center justify-between">
+          <label class="text-sm font-medium text-gray-700">Responsables</label>
+          <button
+            type="button"
+            (click)="showAssigneeForm.set(!showAssigneeForm())"
+            class="flex items-center gap-1 text-xs font-medium text-[#1e3a5f] hover:underline"
+          >
+            <ng-icon name="heroPlus" class="text-sm" />
+            Agregar
+          </button>
+        </div>
+
+        @if (showAssigneeForm()) {
+          <div class="flex gap-2">
+            <input
+              type="text"
+              formControlName="assigneeName"
+              placeholder="Nombre"
+              class="flex-1 px-3 py-2 rounded-lg border border-gray-200 text-sm outline-none focus:border-[#1e3a5f]"
+            />
+            <input
+              type="email"
+              formControlName="assigneeEmail"
+              placeholder="Correo electrónico"
+              class="flex-1 px-3 py-2 rounded-lg border border-gray-200 text-sm outline-none focus:border-[#1e3a5f]"
+            />
+            <button
+              type="button"
+              (click)="addAssignee()"
+              class="px-3 py-2 bg-[#1e3a5f] text-white text-sm rounded-lg hover:bg-[#16304f] transition-colors"
+            >
+              Añadir
+            </button>
+          </div>
+        }
+
+        @if (assignees().length > 0) {
+          <div class="flex flex-wrap gap-2">
+            @for (assignee of assignees(); track assignee.id) {
+              <div class="flex items-center gap-1.5 bg-gray-100 rounded-full pl-1 pr-2 py-1">
+                <div class="w-6 h-6 rounded-full bg-[#1e3a5f] text-white flex items-center justify-center text-xs font-semibold">
+                  {{ assignee.name.charAt(0).toUpperCase() }}
+                </div>
+                <span class="text-sm text-gray-700">{{ assignee.name }}</span>
+                <button
+                  type="button"
+                  (click)="removeAssignee(assignee.id)"
+                  class="text-gray-400 hover:text-red-500 transition-colors"
+                >
+                  <ng-icon name="heroXMark" class="text-sm" />
+                </button>
+              </div>
+            }
+          </div>
+        } @else {
+          <p class="text-xs text-gray-400 italic">Sin responsables asignados.</p>
+        }
+      </div>
+
+      <!-- Checklist inicial (solo en crear) -->
+      @if (mode() === 'create') {
+        <div class="space-y-2">
+          <div class="flex items-center justify-between">
+            <label class="text-sm font-medium text-gray-700">Checklist inicial</label>
+            <button
+              type="button"
+              (click)="addChecklistItem()"
+              class="flex items-center gap-1 text-xs font-medium text-[#1e3a5f] hover:underline"
+            >
+              <ng-icon name="heroPlus" class="text-sm" />
+              Agregar ítem
+            </button>
+          </div>
+
+          <div formArrayName="checklist" class="space-y-2">
+            @for (control of checklistArray.controls; track $index) {
+              <div class="flex items-center gap-2">
+                <div class="w-4 h-4 rounded border-2 border-gray-300 shrink-0"></div>
+                <input
+                  [formControlName]="$index"
+                  type="text"
+                  placeholder="Descripción del ítem..."
+                  class="flex-1 px-3 py-2 rounded-lg border border-gray-200 text-sm outline-none focus:border-[#1e3a5f]"
+                />
+                <button
+                  type="button"
+                  (click)="removeChecklistItem($index)"
+                  class="p-1 text-gray-400 hover:text-red-500 transition-colors"
+                >
+                  <ng-icon name="heroTrash" class="text-base" />
+                </button>
+              </div>
+            }
+            @if (checklistArray.length === 0) {
+              <p class="text-xs text-gray-400 italic">
+                Sin ítems. Puedes agregar el checklist después desde el detalle de la actividad.
+              </p>
+            }
+          </div>
+        </div>
+      }
+
+    </div>
+
+    <!-- Footer -->
+    <div class="flex items-center justify-end gap-3 px-6 py-4 border-t border-gray-100 bg-gray-50 shrink-0">
+      <button
+        type="button"
+        (click)="cancel()"
+        class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors"
+      >
+        Cancelar
+      </button>
+      <button
+        type="submit"
+        class="px-5 py-2 text-sm font-semibold text-white bg-[#1e3a5f] rounded-xl hover:bg-[#16304f] active:scale-[0.98] transition-all focus:outline-none focus:ring-2 focus:ring-[#1e3a5f]/40 focus:ring-offset-2"
+      >
+        {{ mode() === 'create' ? 'Crear actividad' : 'Guardar cambios' }}
+      </button>
+    </div>
+
+  </form>
+</div>

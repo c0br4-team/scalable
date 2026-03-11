@@ -39,6 +39,7 @@ export class AppLayout {
       type: 'group',
       label: 'Gestión',
       children: [
+        { type: 'basic', label: 'Calendario', path: '/calendar', icon: 'heroCalendar' }, // ← nuevo
         { type: 'basic', label: 'Casos', path: '/cases', icon: 'heroDocumentText', badge: 8, badgeType: 'danger' },
         {
           type: 'collapsible',
@@ -86,7 +87,7 @@ export class AppLayout {
       primary: 'bg-blue-500',
       success: 'bg-green-500',
       warning: 'bg-amber-500',
-      danger:  'bg-red-500',
+      danger: 'bg-red-500',
     };
     return map[type ?? 'primary'];
   }

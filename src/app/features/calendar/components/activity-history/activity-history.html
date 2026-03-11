@@ -1,0 +1,28 @@
+@if (history().length > 0) {
+  <ol class="relative border-l border-gray-200 space-y-0">
+    @for (entry of history().slice().reverse(); track entry.id) {
+      <li class="mb-5 ml-5">
+
+        <!-- Nodo del timeline -->
+        <span
+          class="absolute -left-3 flex h-6 w-6 items-center justify-center rounded-full ring-4 ring-white"
+          [class]="historyIconColor(entry.action)"
+        >
+          <ng-icon [name]="historyIcon(entry.action)" class="text-xs" />
+        </span>
+
+        <!-- Contenido -->
+        <div class="rounded-xl border border-gray-100 bg-gray-50 px-3 py-2">
+          <p class="text-xs text-gray-500 mb-0.5">
+            <span class="font-semibold text-gray-700">{{ entry.performedBy }}</span>
+            · {{ formatDateTime(entry.performedAt) }}
+          </p>
+          <p class="text-sm text-gray-800">{{ entry.description }}</p>
+        </div>
+
+      </li>
+    }
+  </ol>
+} @else {
+  <p class="text-xs text-gray-400 italic text-center py-8">Sin historial de acciones.</p>
+}
