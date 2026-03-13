@@ -20,16 +20,35 @@ export class ActivityService {
   readonly filteredActivities = computed(() => {
     const all = this._activities();
     const f = this._filters();
+    const now = Date.now();
 
     return all.filter(a => {
       if (f.types?.length && !f.types.includes(a.type)) return false;
       if (f.statuses?.length && !f.statuses.includes(a.status)) return false;
       if (f.priorities?.length && !f.priorities.includes(a.priority)) return false;
       if (f.assigneeId && !a.assignees.some(x => x.id === f.assigneeId)) return false;
+      if (f.assigneeEmail) {
+        const q = f.assigneeEmail.toLowerCase();
+        if (!a.assignees.some(x => x.email.toLowerCase().includes(q) || x.name.toLowerCase().includes(q))) return false;
+      }
       if (f.dateRange) {
         const start = new Date(a.startDate);
         if (start < f.dateRange.from || start > f.dateRange.to) return false;
       }
+      if (f.dueDateRange) {
+        const due = new Date(a.dueDate);
+        if (due < f.dueDateRange.from || due > f.dueDateRange.to) return false;
+      }
+      if (f.createdDateRange) {
+        const created = new Date(a.createdAt);
+        if (created < f.createdDateRange.from || created > f.createdDateRange.to) return false;
+      }
+      if (f.overdue && new Date(a.dueDate).getTime() >= now) return false;
+      if (f.upcoming) {
+        const due = new Date(a.dueDate).getTime();
+        if (due < now || due > now + 7 * 24 * 60 * 60 * 1000) return false;
+      }
+      if (f.searchTitle && !a.title.toLowerCase().includes(f.searchTitle.toLowerCase())) return false;
       return true;
     });
   });
@@ -43,7 +62,7 @@ export class ActivityService {
   readonly activitiesByDate = computed(() => {
     const map = new Map<string, Activity[]>();
     for (const activity of this.filteredActivities()) {
-      const key = this._toDateKey(new Date(activity.startDate));
+      const key = this._toDateKey(new Date(activity.dueDate));
       const list = map.get(key) ?? [];
       list.push(activity);
       map.set(key, list);

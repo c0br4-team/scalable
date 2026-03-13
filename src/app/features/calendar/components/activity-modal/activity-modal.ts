@@ -17,13 +17,26 @@ export class ActivityModalComponent implements OnInit {
   private activityService = inject(ActivityService);
   private auth = inject(AuthService);
 
-  activity = input<Activity | null>(null);
+  activity    = input<Activity | null>(null);
+  defaultDate = input<Date | null>(null);
   saved = output<void>();
   cancelled = output<void>();
 
   protected mode = computed(() => this.activity() ? 'edit' : 'create');
   protected showAssigneeForm = signal(false);
   protected assignees = signal<Assignee[]>([]);
+
+  // ── Time picker state ───────────────────────────────────────────────────────
+  protected activeTimePicker = signal<'start' | 'due' | null>(null);
+  protected startHour   = signal(9);
+  protected startMinute = signal(0);
+  protected startPeriod = signal<'AM' | 'PM'>('AM');
+  protected dueHour     = signal(5);
+  protected dueMinute   = signal(0);
+  protected duePeriod   = signal<'AM' | 'PM'>('PM');
+
+  protected readonly hours12       = [1,2,3,4,5,6,7,8,9,10,11,12];
+  protected readonly minuteOptions = [0,5,10,15,20,25,30,35,40,45,50,55];
 
   protected readonly types: { value: ActivityType; label: string }[] = [
     { value: 'meeting',  label: 'Reunión' },
@@ -56,7 +69,6 @@ export class ActivityModalComponent implements OnInit {
     dueDate:       ['', Validators.required],
     notes:         [''],
     checklist:     this.fb.array([]),
-    assigneeName:  [''],
     assigneeEmail: ['', Validators.email],
   });
 
@@ -66,6 +78,13 @@ export class ActivityModalComponent implements OnInit {
 
   ngOnInit(): void {
     const activity = this.activity();
+    const def = this.defaultDate();
+    if (!activity && def) {
+      this.form.patchValue({
+        startDate: this._toInputDate(def),
+        dueDate:   this._toInputDate(def),
+      });
+    }
     if (activity) {
       this.form.patchValue({
         title:     activity.title,
@@ -77,6 +96,16 @@ export class ActivityModalComponent implements OnInit {
         notes:     activity.notes ?? '',
       });
       this.assignees.set([...activity.assignees]);
+
+      const sh = activity.startDate.getHours();
+      this.startHour.set(sh % 12 || 12);
+      this.startMinute.set(activity.startDate.getMinutes());
+      this.startPeriod.set(sh < 12 ? 'AM' : 'PM');
+
+      const dh = activity.dueDate.getHours();
+      this.dueHour.set(dh % 12 || 12);
+      this.dueMinute.set(activity.dueDate.getMinutes());
+      this.duePeriod.set(dh < 12 ? 'AM' : 'PM');
     }
   }
 
@@ -89,12 +118,12 @@ export class ActivityModalComponent implements OnInit {
   }
 
   protected addAssignee(): void {
-    const name  = this.form.value.assigneeName?.trim();
     const email = this.form.value.assigneeEmail?.trim();
-    if (!name || !email || this.form.get('assigneeEmail')?.invalid) return;
+    if (!email || this.form.get('assigneeEmail')?.invalid) return;
 
+    const name = email.split('@')[0].replace(/[._-]/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
     this.assignees.update(list => [...list, { id: crypto.randomUUID(), name, email }]);
-    this.form.patchValue({ assigneeName: '', assigneeEmail: '' });
+    this.form.patchValue({ assigneeEmail: '' });
     this.showAssigneeForm.set(false);
   }
 
@@ -117,8 +146,8 @@ export class ActivityModalComponent implements OnInit {
       type:      v.type as ActivityType,
       status:    v.status as ActivityStatus,
       priority:  v.priority as ActivityPriority,
-      startDate: new Date(v.startDate!),
-      dueDate:   new Date(v.dueDate!),
+      startDate: this._parseDatetime(v.startDate!, this.startHour(), this.startMinute(), this.startPeriod()),
+      dueDate:   this._parseDatetime(v.dueDate!, this.dueHour(), this.dueMinute(), this.duePeriod()),
       notes:     v.notes?.trim() || undefined,
       assignees: this.assignees(),
     };
@@ -158,7 +187,38 @@ export class ActivityModalComponent implements OnInit {
     return map[type];
   }
 
+  protected timeDisplay(h: number, m: number, p: 'AM' | 'PM'): string {
+    return `${h}:${String(m).padStart(2, '0')} ${p}`;
+  }
+
+  protected toggleTimePicker(picker: 'start' | 'due', event: MouseEvent): void {
+    event.stopPropagation();
+    this.activeTimePicker.set(this.activeTimePicker() === picker ? null : picker);
+  }
+
+  protected closeTimePicker(): void {
+    this.activeTimePicker.set(null);
+  }
+
+  protected clampHour(v: number): number {
+    if (isNaN(v) || v < 1) return 1;
+    return v > 12 ? 12 : v;
+  }
+
+  protected clampMinute(v: number): number {
+    if (isNaN(v) || v < 0) return 0;
+    return v > 59 ? 59 : v;
+  }
+
   private _toInputDate(date: Date): string {
     return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+  }
+
+  private _parseDatetime(dateStr: string, h: number, m: number, p: 'AM' | 'PM'): Date {
+    const [y, mo, d] = dateStr.split('-').map(Number);
+    let h24 = h;
+    if (p === 'AM' && h === 12) h24 = 0;
+    else if (p === 'PM' && h !== 12) h24 = h + 12;
+    return new Date(y, mo - 1, d, h24, m, 0);
   }
 }

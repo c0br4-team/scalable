@@ -72,5 +72,11 @@ export interface ActivityFilters {
   statuses?: ActivityStatus[];
   priorities?: ActivityPriority[];
   assigneeId?: string;
+  assigneeEmail?: string;
   dateRange?: { from: Date; to: Date };
+  dueDateRange?: { from: Date; to: Date };
+  createdDateRange?: { from: Date; to: Date };
+  overdue?: boolean;
+  upcoming?: boolean;
+  searchTitle?: string;
 }

@@ -4,36 +4,243 @@
     <h1 class="text-xl font-bold text-gray-900">Calendario</h1>
     <p class="text-sm text-gray-500">Gestiona y programa tus actividades</p>
   </div>
-  <button (click)="openCreate()" class="flex items-center gap-2 px-4 py-2 bg-[#1e3a5f] text-white text-sm font-semibold rounded-xl
-      hover:bg-[#16304f] active:scale-[0.98] transition-all focus:outline-none
-      focus:ring-2 focus:ring-[#1e3a5f]/40 focus:ring-offset-2">
-    <ng-icon name="heroPlus" class="text-base" />
-    Nueva actividad
-  </button>
+  <div class="flex items-center gap-2">
+    <!-- Filtros toggle -->
+    <button (click)="showFilters.set(true)"
+      class="relative flex items-center gap-1.5 px-3 py-2 text-sm font-medium rounded-xl border transition-all"
+      [class.bg-[#1e3a5f]]="hasActiveFilters()" [class.text-white]="hasActiveFilters()"
+      [class.border-[#1e3a5f]]="hasActiveFilters()"
+      [class.bg-white]="!hasActiveFilters()" [class.text-gray-700]="!hasActiveFilters()"
+      [class.border-gray-200]="!hasActiveFilters()" [class.hover:bg-gray-50]="!hasActiveFilters()">
+      <ng-icon name="heroFunnel" class="text-base" />
+      Filtros
+      @if (activeFiltersCount() > 0) {
+      <span
+        class="absolute -top-1.5 -right-1.5 w-4 h-4 rounded-full bg-red-500 text-white text-[10px] font-bold flex items-center justify-center">
+        {{ activeFiltersCount() }}
+      </span>
+      }
+    </button>
+  </div>
 </div>
 
 <!-- Área principal -->
 <div class="flex-1 overflow-hidden flex min-h-0">
 
   <!-- Grid del calendario -->
-  <div class="flex-1 overflow-hidden p-6 flex flex-col">
-    <app-calendar-grid [selectedDate]="selectedDate()" (dateSelected)="onDateSelected($event)"
-      (activityClicked)="onActivityClicked($event)" />
+  <div class="overflow-hidden p-4 md:p-6 flex flex-col"
+    [class]="(selectedActivity() || hasActiveFilters()) ? 'hidden md:flex md:flex-1' : 'flex flex-1'">
+    <app-calendar-grid
+      [selectedDate]="selectedDate()"
+      [navigateTo]="navigateToDate()"
+      (dateSelected)="onDateSelected($event)"
+      (activityClicked)="onActivityClicked($event)"
+      (createRequested)="onCreateRequested($event)" />
   </div>
 
-  <!-- Panel de detalle lateral -->
+  <!-- Panel lateral derecho: detalle o resultados de filtro -->
   @if (selectedActivity()) {
-  <div class="w-96 shrink-0 border-l border-gray-200 overflow-hidden">
+  <div class="w-full md:w-96 shrink-0 border-l border-gray-200 overflow-hidden">
     <app-activity-detail [activity]="selectedActivity()!" (editRequested)="onEditRequested($event)"
       (deleteRequested)="onDeleteRequested($event)" (closed)="closeDetail()" />
+  </div>
+  } @else if (hasActiveFilters()) {
+  <div class="w-full md:w-96 shrink-0 border-l border-gray-200 flex flex-col overflow-hidden bg-white">
+    <!-- Header resultados -->
+    <div class="flex items-center justify-between px-4 py-3 border-b border-gray-100 shrink-0">
+      <span class="text-sm font-semibold text-gray-900">
+        Resultados
+        <span class="ml-1 px-1.5 py-0.5 text-xs bg-[#1e3a5f] text-white rounded-full">{{ filterResults().length }}</span>
+      </span>
+      <div class="flex items-center gap-2">
+        <button type="button" (click)="clearFilters()"
+          class="text-xs text-red-500 hover:text-red-700 hover:underline transition-colors">
+          Limpiar
+        </button>
+        <button type="button" (click)="showFilters.set(true)"
+          class="text-xs text-[#1e3a5f] hover:underline transition-colors">
+          Editar filtros
+        </button>
+      </div>
+    </div>
+    <!-- Lista de resultados -->
+    <div class="flex-1 overflow-y-auto divide-y divide-gray-100">
+      @if (filterResults().length === 0) {
+      <div class="flex flex-col items-center justify-center py-16 text-center px-4">
+        <ng-icon name="heroMagnifyingGlass" class="text-4xl text-gray-300 mb-3" />
+        <p class="text-sm font-medium text-gray-500">Sin resultados</p>
+        <p class="text-xs text-gray-400 mt-1">Prueba con otros filtros</p>
+      </div>
+      }
+      @for (activity of filterResults(); track activity.id) {
+      <div class="px-4 py-3 hover:bg-gray-50 transition-colors">
+        <div class="flex items-start gap-2 mb-1.5">
+          <p class="flex-1 text-sm font-medium text-gray-900 leading-snug">{{ activity.title }}</p>
+          <span class="shrink-0 px-1.5 py-0.5 text-[10px] font-bold rounded" [class]="typeBadge(activity.type)">
+            {{ typeLabel(activity.type) }}
+          </span>
+        </div>
+        <div class="flex items-center justify-between">
+          <div class="text-xs text-gray-500 space-y-0.5">
+            <p>{{ statusLabel(activity.status) }}</p>
+            <p>Vence: {{ formatDate(activity.dueDate) }}</p>
+          </div>
+          <button type="button" (click)="goToActivity(activity)"
+            class="flex items-center gap-1 px-2.5 py-1.5 text-xs font-medium text-[#1e3a5f] border border-[#1e3a5f]/30 rounded-lg hover:bg-[#1e3a5f]/10 transition-colors shrink-0">
+            <ng-icon name="heroCalendar" class="text-xs" />
+            Ir al día
+          </button>
+        </div>
+      </div>
+      }
+    </div>
   </div>
   }
 
 </div>
 
+<!-- Modal de filtros -->
+@if (showFilters()) {
+<div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm"
+  (click)="showFilters.set(false)">
+  <div class="bg-white rounded-2xl shadow-2xl w-full max-w-xl max-h-[85vh] flex flex-col"
+    (click)="$event.stopPropagation()">
+
+    <!-- Header -->
+    <div class="flex items-center justify-between px-5 py-4 border-b border-gray-100 shrink-0">
+      <div class="flex items-center gap-2">
+        <ng-icon name="heroFunnel" class="text-[#1e3a5f] text-lg" />
+        <h3 class="text-base font-semibold text-gray-900">Filtros</h3>
+        @if (activeFiltersCount() > 0) {
+        <span class="px-2 py-0.5 text-xs font-bold bg-[#1e3a5f] text-white rounded-full">
+          {{ activeFiltersCount() }} activo{{ activeFiltersCount() === 1 ? '' : 's' }}
+        </span>
+        }
+      </div>
+      <button (click)="showFilters.set(false)"
+        class="p-1.5 rounded-lg text-gray-400 hover:bg-gray-100 transition-colors">
+        <ng-icon name="heroXMark" class="text-xl" />
+      </button>
+    </div>
+
+    <!-- Body -->
+    <div class="overflow-y-auto px-5 py-5 space-y-5">
+
+      <!-- Búsqueda + Responsable -->
+      <div class="space-y-2">
+        <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wide">Búsqueda</label>
+        <div class="relative">
+          <ng-icon name="heroMagnifyingGlass"
+            class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm pointer-events-none" />
+          <input type="text" placeholder="Buscar por título..." [value]="filterSearch()"
+            (input)="filterSearch.set($any($event.target).value)"
+            class="w-full pl-8 pr-3 py-2 text-sm border border-gray-200 rounded-lg outline-none focus:border-[#1e3a5f]" />
+        </div>
+        <input type="text" placeholder="Responsable (nombre o correo)..." [value]="filterAssigneeEmail()"
+          (input)="filterAssigneeEmail.set($any($event.target).value)"
+          class="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg outline-none focus:border-[#1e3a5f]" />
+      </div>
+
+      <!-- Tipo -->
+      <div class="space-y-2">
+        <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wide">Tipo</label>
+        <div class="flex flex-wrap gap-2">
+          @for (t of typeOptions; track t.value) {
+          <button type="button" (click)="toggleType(t.value)"
+            class="px-3 py-1.5 text-xs rounded-lg border font-medium transition-all"
+            [class]="filterTypes().includes(t.value) ? t.activeClass : 'border-gray-200 text-gray-600 bg-white hover:bg-gray-50'">
+            {{ t.label }}
+          </button>
+          }
+        </div>
+      </div>
+
+      <!-- Estado -->
+      <div class="space-y-2">
+        <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wide">Estado</label>
+        <div class="flex flex-wrap gap-2">
+          @for (s of statusOptions; track s.value) {
+          <button type="button" (click)="toggleStatus(s.value)"
+            class="px-3 py-1.5 text-xs rounded-lg border font-medium transition-all"
+            [class]="filterStatuses().includes(s.value) ? s.activeClass : 'border-gray-200 text-gray-600 bg-white hover:bg-gray-50'">
+            {{ s.label }}
+          </button>
+          }
+        </div>
+      </div>
+
+      <!-- Filtros rápidos -->
+      <div class="space-y-2">
+        <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wide">Filtros rápidos</label>
+        <div class="flex gap-2 flex-wrap">
+          <button type="button" (click)="filterOverdue.set(!filterOverdue())"
+            class="px-3 py-1.5 text-xs rounded-lg border font-medium transition-all"
+            [class]="filterOverdue() ? 'bg-red-100 text-red-700 border-red-300' : 'border-gray-200 text-gray-600 bg-white hover:bg-gray-50'">
+            Vencidas
+          </button>
+          <button type="button" (click)="filterUpcoming.set(!filterUpcoming())"
+            class="px-3 py-1.5 text-xs rounded-lg border font-medium transition-all"
+            [class]="filterUpcoming() ? 'bg-amber-100 text-amber-700 border-amber-300' : 'border-gray-200 text-gray-600 bg-white hover:bg-gray-50'">
+            Próximas 7 días
+          </button>
+        </div>
+      </div>
+
+      <!-- Fecha de vencimiento -->
+      <div class="space-y-2">
+        <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wide">Fecha de vencimiento</label>
+        <div class="flex items-center gap-2">
+          <input type="date" [value]="filterDueDateFrom()"
+            (change)="filterDueDateFrom.set($any($event.target).value)"
+            class="flex-1 px-3 py-2 text-sm border border-gray-200 rounded-lg outline-none focus:border-[#1e3a5f]" />
+          <span class="text-gray-400">–</span>
+          <input type="date" [value]="filterDueDateTo()"
+            (change)="filterDueDateTo.set($any($event.target).value)"
+            class="flex-1 px-3 py-2 text-sm border border-gray-200 rounded-lg outline-none focus:border-[#1e3a5f]" />
+        </div>
+      </div>
+
+      <!-- Fecha de creación -->
+      <div class="space-y-2">
+        <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wide">Fecha de creación</label>
+        <div class="flex items-center gap-2">
+          <input type="date" [value]="filterCreatedFrom()"
+            (change)="filterCreatedFrom.set($any($event.target).value)"
+            class="flex-1 px-3 py-2 text-sm border border-gray-200 rounded-lg outline-none focus:border-[#1e3a5f]" />
+          <span class="text-gray-400">–</span>
+          <input type="date" [value]="filterCreatedTo()"
+            (change)="filterCreatedTo.set($any($event.target).value)"
+            class="flex-1 px-3 py-2 text-sm border border-gray-200 rounded-lg outline-none focus:border-[#1e3a5f]" />
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Footer -->
+    <div class="flex items-center justify-between px-5 py-3 border-t border-gray-100 shrink-0 bg-gray-50 rounded-b-2xl">
+      @if (hasActiveFilters()) {
+      <button type="button" (click)="clearFilters()"
+        class="flex items-center gap-1 px-3 py-1.5 text-xs text-red-600 border border-red-200 rounded-lg hover:bg-red-50 transition-colors">
+        <ng-icon name="heroXMark" class="text-xs" />
+        Limpiar filtros
+      </button>
+      } @else {
+      <span></span>
+      }
+      <button type="button" (click)="showFilters.set(false)"
+        class="px-5 py-2 text-sm font-semibold text-white bg-[#1e3a5f] rounded-xl hover:bg-[#16304f] transition-colors">
+        Aplicar
+      </button>
+    </div>
+
+  </div>
+</div>
+}
+
 <!-- Modal de crear/editar -->
 @if (showModal()) {
-<app-activity-modal [activity]="editingActivity()" (saved)="onModalSaved()" (cancelled)="onModalCancelled()" />
+<app-activity-modal [activity]="editingActivity()" [defaultDate]="editingDate()" (saved)="onModalSaved()"
+  (cancelled)="onModalCancelled()" />
 }
 
 <!-- Confirmación de eliminación -->

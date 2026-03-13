@@ -37,7 +37,9 @@ import {
   heroClock,
   heroPencil,
   heroCheck,
-  heroArrowPath
+  heroArrowPath,
+  heroFunnel,
+  heroMagnifyingGlass,
 } from '@ng-icons/heroicons/outline';
 
 export const appConfig: ApplicationConfig = {
@@ -83,6 +85,8 @@ export const appConfig: ApplicationConfig = {
       heroPencil,
       heroCheck,
       heroArrowPath,
+      heroFunnel,
+      heroMagnifyingGlass,
     })
   ]
 };
