@@ -15,32 +15,32 @@ import { ActivityDetailComponent } from '../../components/activity-detail/activi
 export class CalendarPage {
   protected activityService = inject(ActivityService);
 
-  protected selectedDate      = signal<Date | null>(new Date());
-  protected showModal         = signal(false);
-  protected editingActivity   = signal<Activity | null>(null);
-  protected editingDate       = signal<Date | null>(null);
+  protected selectedDate = signal<Date | null>(new Date());
+  protected showModal = signal(false);
+  protected editingActivity = signal<Activity | null>(null);
+  protected editingDate = signal<Date | null>(null);
   protected showDeleteConfirm = signal(false);
-  protected deletingActivity  = signal<Activity | null>(null);
-  protected showFilters       = signal(false);
+  protected deletingActivity = signal<Activity | null>(null);
+  protected showFilters = signal(false);
 
   // ── Filter state ────────────────────────────────────────────────────────────
-  protected filterSearch        = signal('');
-  protected filterTypes         = signal<ActivityType[]>([]);
-  protected filterStatuses      = signal<ActivityStatus[]>([]);
+  protected filterSearch = signal('');
+  protected filterTypes = signal<ActivityType[]>([]);
+  protected filterStatuses = signal<ActivityStatus[]>([]);
   protected filterAssigneeEmail = signal('');
-  protected filterOverdue       = signal(false);
-  protected filterUpcoming      = signal(false);
-  protected filterDueDateFrom   = signal('');
-  protected filterDueDateTo     = signal('');
-  protected filterCreatedFrom   = signal('');
-  protected filterCreatedTo     = signal('');
+  protected filterOverdue = signal(false);
+  protected filterUpcoming = signal(false);
+  protected filterDueDateFrom = signal('');
+  protected filterDueDateTo = signal('');
+  protected filterCreatedFrom = signal('');
+  protected filterCreatedTo = signal('');
 
   // Navigate calendar grid externally
   protected navigateToDate = signal<{ date: Date; seq: number } | null>(null);
   private _navSeq = 0;
 
   protected selectedActivity = this.activityService.selectedActivity;
-  protected filterResults    = computed(() => this.activityService.filteredActivities());
+  protected filterResults = computed(() => this.activityService.filteredActivities());
 
   protected activeFiltersCount = computed(() => {
     let n = 0;
@@ -62,26 +62,26 @@ export class CalendarPage {
   });
 
   protected readonly typeOptions: { value: ActivityType; label: string; activeClass: string }[] = [
-    { value: 'meeting',  label: 'Reunión',       activeClass: 'bg-blue-100 text-blue-700 border-blue-300' },
-    { value: 'task',     label: 'Tarea',          activeClass: 'bg-violet-100 text-violet-700 border-violet-300' },
-    { value: 'reminder', label: 'Recordatorio',   activeClass: 'bg-amber-100 text-amber-700 border-amber-300' },
-    { value: 'deadline', label: 'Fecha límite',   activeClass: 'bg-red-100 text-red-700 border-red-300' },
-    { value: 'event',    label: 'Evento',          activeClass: 'bg-emerald-100 text-emerald-700 border-emerald-300' },
+    { value: 'meeting', label: 'Reunión', activeClass: 'bg-blue-100 text-blue-700 border-blue-300' },
+    { value: 'task', label: 'Tarea', activeClass: 'bg-violet-100 text-violet-700 border-violet-300' },
+    { value: 'reminder', label: 'Recordatorio', activeClass: 'bg-amber-100 text-amber-700 border-amber-300' },
+    { value: 'deadline', label: 'Fecha límite', activeClass: 'bg-red-100 text-red-700 border-red-300' },
+    { value: 'event', label: 'Evento', activeClass: 'bg-emerald-100 text-emerald-700 border-emerald-300' },
   ];
 
   protected readonly statusOptions: { value: ActivityStatus; label: string; activeClass: string }[] = [
-    { value: 'pending',     label: 'Pendiente',   activeClass: 'bg-gray-200 text-gray-700 border-gray-400' },
+    { value: 'pending', label: 'Pendiente', activeClass: 'bg-gray-200 text-gray-700 border-gray-400' },
     { value: 'in-progress', label: 'En progreso', activeClass: 'bg-blue-100 text-blue-700 border-blue-300' },
-    { value: 'completed',   label: 'Completado',  activeClass: 'bg-green-100 text-green-700 border-green-300' },
-    { value: 'cancelled',   label: 'Cancelado',   activeClass: 'bg-red-100 text-red-700 border-red-300' },
+    { value: 'completed', label: 'Completado', activeClass: 'bg-green-100 text-green-700 border-green-300' },
+    { value: 'cancelled', label: 'Cancelado', activeClass: 'bg-red-100 text-red-700 border-red-300' },
   ];
 
   private readonly _typeBadge: Record<ActivityType, string> = {
-    meeting:  'bg-blue-100 text-blue-700',
-    task:     'bg-violet-100 text-violet-700',
+    meeting: 'bg-blue-100 text-blue-700',
+    task: 'bg-violet-100 text-violet-700',
     reminder: 'bg-amber-100 text-amber-700',
     deadline: 'bg-red-100 text-red-700',
-    event:    'bg-emerald-100 text-emerald-700',
+    event: 'bg-emerald-100 text-emerald-700',
   };
 
   private readonly _typeLabels: Record<ActivityType, string> = {
@@ -106,19 +106,19 @@ export class CalendarPage {
       if (this.filterOverdue()) f.overdue = true;
       if (this.filterUpcoming()) f.upcoming = true;
       const dfrom = this.filterDueDateFrom();
-      const dto   = this.filterDueDateTo();
+      const dto = this.filterDueDateTo();
       if (dfrom || dto) {
         f.dueDateRange = {
           from: dfrom ? new Date(dfrom) : new Date(0),
-          to:   dto   ? new Date(dto + 'T23:59:59') : new Date(8640000000000000),
+          to: dto ? new Date(dto + 'T23:59:59') : new Date(8640000000000000),
         };
       }
       const cfrom = this.filterCreatedFrom();
-      const cto   = this.filterCreatedTo();
+      const cto = this.filterCreatedTo();
       if (cfrom || cto) {
         f.createdDateRange = {
           from: cfrom ? new Date(cfrom) : new Date(0),
-          to:   cto   ? new Date(cto + 'T23:59:59') : new Date(8640000000000000),
+          to: cto ? new Date(cto + 'T23:59:59') : new Date(8640000000000000),
         };
       }
       this.activityService.setFilters(f);
@@ -220,9 +220,39 @@ export class CalendarPage {
 
   // ── Helpers ──────────────────────────────────────────────────────────────────
 
-  protected typeBadge(type: ActivityType): string  { return this._typeBadge[type]; }
-  protected typeLabel(type: ActivityType): string   { return this._typeLabels[type]; }
-  protected statusLabel(s: ActivityStatus): string  { return this._statusLabels[s]; }
+  protected typeBadge(type: ActivityType): string { return this._typeBadge[type]; }
+  protected typeLabel(type: ActivityType): string { return this._typeLabels[type]; }
+  protected statusLabel(s: ActivityStatus): string { return this._statusLabels[s]; }
+  protected formatDueDate(activity: Activity): string {
+    return activity.dueDate.toLocaleString('es-ES', {
+      day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit',
+    });
+  }
+
+  protected dueBadgeClass(activity: Activity): string {
+    if (activity.status === 'completed') return 'bg-green-100 text-green-700';
+    if (activity.status === 'cancelled') return 'bg-gray-200 text-gray-500';
+    const overdue = activity.dueDate.getTime() < Date.now();
+    return overdue ? 'bg-red-500 text-white' : 'bg-green-100 text-green-700';
+  }
+
+  protected dueText(activity: Activity): string {
+    if (activity.status === 'completed') return '✓ Completada';
+    if (activity.status === 'cancelled') return '✕ Cancelada';
+    const diff = activity.dueDate.getTime() - Date.now();
+    const abs = Math.abs(diff);
+    const days = Math.floor(abs / 86400000);
+    const hours = Math.floor((abs % 86400000) / 3600000);
+    const mins = Math.floor((abs % 3600000) / 60000);
+    if (diff < 0) {
+      if (days > 0) return `Vencida hace ${days}d`;
+      if (hours > 0) return `Vencida hace ${hours}h`;
+      return `Vencida hace ${mins}min`;
+    }
+    if (days > 0) return `Vence en ${days}d`;
+    if (hours > 0) return `Vence en ${hours}h`;
+    return `Vence en ${mins}min`;
+  }
 
   protected formatDate(date: Date): string {
     return new Date(date).toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' });

@@ -9,9 +9,9 @@
     <button (click)="showFilters.set(true)"
       class="relative flex items-center gap-1.5 px-3 py-2 text-sm font-medium rounded-xl border transition-all"
       [class.bg-[#1e3a5f]]="hasActiveFilters()" [class.text-white]="hasActiveFilters()"
-      [class.border-[#1e3a5f]]="hasActiveFilters()"
-      [class.bg-white]="!hasActiveFilters()" [class.text-gray-700]="!hasActiveFilters()"
-      [class.border-gray-200]="!hasActiveFilters()" [class.hover:bg-gray-50]="!hasActiveFilters()">
+      [class.border-[#1e3a5f]]="hasActiveFilters()" [class.bg-white]="!hasActiveFilters()"
+      [class.text-gray-700]="!hasActiveFilters()" [class.border-gray-200]="!hasActiveFilters()"
+      [class.hover:bg-gray-50]="!hasActiveFilters()">
       <ng-icon name="heroFunnel" class="text-base" />
       Filtros
       @if (activeFiltersCount() > 0) {
@@ -30,11 +30,8 @@
   <!-- Grid del calendario -->
   <div class="overflow-hidden p-4 md:p-6 flex flex-col"
     [class]="(selectedActivity() || hasActiveFilters()) ? 'hidden md:flex md:flex-1' : 'flex flex-1'">
-    <app-calendar-grid
-      [selectedDate]="selectedDate()"
-      [navigateTo]="navigateToDate()"
-      (dateSelected)="onDateSelected($event)"
-      (activityClicked)="onActivityClicked($event)"
+    <app-calendar-grid [selectedDate]="selectedDate()" [navigateTo]="navigateToDate()"
+      (dateSelected)="onDateSelected($event)" (activityClicked)="onActivityClicked($event)"
       (createRequested)="onCreateRequested($event)" />
   </div>
 
@@ -50,7 +47,8 @@
     <div class="flex items-center justify-between px-4 py-3 border-b border-gray-100 shrink-0">
       <span class="text-sm font-semibold text-gray-900">
         Resultados
-        <span class="ml-1 px-1.5 py-0.5 text-xs bg-[#1e3a5f] text-white rounded-full">{{ filterResults().length }}</span>
+        <span class="ml-1 px-1.5 py-0.5 text-xs bg-[#1e3a5f] text-white rounded-full">{{ filterResults().length
+          }}</span>
       </span>
       <div class="flex items-center gap-2">
         <button type="button" (click)="clearFilters()"
@@ -81,14 +79,19 @@
           </span>
         </div>
         <div class="flex items-center justify-between">
-          <div class="text-xs text-gray-500 space-y-0.5">
-            <p>{{ statusLabel(activity.status) }}</p>
-            <p>Vence: {{ formatDate(activity.dueDate) }}</p>
+          <div class="flex items-center gap-2">
+            <div class="flex items-center gap-1">
+              <span class="text-[10px] opacity-60 font-medium">{{ formatDueDate(activity) }}</span>
+              <span class="text-[10px] font-bold px-2 py-0.5 rounded-full" [class]="dueBadgeClass(activity)">
+                {{ dueText(activity) }}
+              </span>
+            </div>
           </div>
+
           <button type="button" (click)="goToActivity(activity)"
             class="flex items-center gap-1 px-2.5 py-1.5 text-xs font-medium text-[#1e3a5f] border border-[#1e3a5f]/30 rounded-lg hover:bg-[#1e3a5f]/10 transition-colors shrink-0">
             <ng-icon name="heroCalendar" class="text-xs" />
-            Ir al día
+            Ver
           </button>
         </div>
       </div>
@@ -190,12 +193,10 @@
       <div class="space-y-2">
         <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wide">Fecha de vencimiento</label>
         <div class="flex items-center gap-2">
-          <input type="date" [value]="filterDueDateFrom()"
-            (change)="filterDueDateFrom.set($any($event.target).value)"
+          <input type="date" [value]="filterDueDateFrom()" (change)="filterDueDateFrom.set($any($event.target).value)"
             class="flex-1 px-3 py-2 text-sm border border-gray-200 rounded-lg outline-none focus:border-[#1e3a5f]" />
           <span class="text-gray-400">–</span>
-          <input type="date" [value]="filterDueDateTo()"
-            (change)="filterDueDateTo.set($any($event.target).value)"
+          <input type="date" [value]="filterDueDateTo()" (change)="filterDueDateTo.set($any($event.target).value)"
             class="flex-1 px-3 py-2 text-sm border border-gray-200 rounded-lg outline-none focus:border-[#1e3a5f]" />
         </div>
       </div>
@@ -204,12 +205,10 @@
       <div class="space-y-2">
         <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wide">Fecha de creación</label>
         <div class="flex items-center gap-2">
-          <input type="date" [value]="filterCreatedFrom()"
-            (change)="filterCreatedFrom.set($any($event.target).value)"
+          <input type="date" [value]="filterCreatedFrom()" (change)="filterCreatedFrom.set($any($event.target).value)"
             class="flex-1 px-3 py-2 text-sm border border-gray-200 rounded-lg outline-none focus:border-[#1e3a5f]" />
           <span class="text-gray-400">–</span>
-          <input type="date" [value]="filterCreatedTo()"
-            (change)="filterCreatedTo.set($any($event.target).value)"
+          <input type="date" [value]="filterCreatedTo()" (change)="filterCreatedTo.set($any($event.target).value)"
             class="flex-1 px-3 py-2 text-sm border border-gray-200 rounded-lg outline-none focus:border-[#1e3a5f]" />
         </div>
       </div>

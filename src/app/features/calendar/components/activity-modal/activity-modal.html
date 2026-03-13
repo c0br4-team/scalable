@@ -8,12 +8,9 @@
     <!-- Header -->
     <div class="flex items-center justify-between px-6 py-4 border-b border-gray-100 shrink-0">
       <div class="flex items-center gap-3 w-full">
-        <h2 class="text-lg font-semibold text-gray-900 shrink-0">
-          {{ mode() === 'create' ? 'Nueva actividad' : 'Editar actividad' }}
-        </h2>
         <!-- Título -->
         <div class="space-y-1.5 flex-1">
-          <input type="text" formControlName="title" placeholder="Título"
+          <input type="text" formControlName="title" placeholder="Agregar título"
             class="w-full px-4 py-2.5 rounded-xl border text-sm outline-none transition-all focus:ring-2 focus:ring-[#1e3a5f]/20 focus:border-[#1e3a5f]"
             [class.border-red-400]="hasError('title', 'required') || hasError('title', 'minlength')"
             [class.border-gray-200]="!hasError('title', 'required') && !hasError('title', 'minlength')" />
@@ -28,7 +25,7 @@
     </div>
 
     <!-- Body -->
-    <div class="flex-1 overflow-y-auto px-6 py-5 space-y-5">
+    <div class="flex-1 overflow-y-auto px-6 space-y-5">
 
       <!-- Tipo -->
       <div class="space-y-1">
@@ -114,82 +111,6 @@
 
       <!-- Fechas + Horas -->
       <div (click)="closeTimePicker()" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-
-        <!-- Inicio -->
-        <div class="space-y-1">
-          <label class="block text-sm font-medium text-gray-700">
-            Fecha de inicio <span class="text-red-500">*</span>
-          </label>
-          <div class="flex items-center gap-2">
-            <input type="date" formControlName="startDate"
-              class="flex-1 px-4 py-2.5 rounded-xl border text-sm outline-none focus:ring-2 focus:ring-[#1e3a5f]/20 focus:border-[#1e3a5f]"
-              [class.border-red-400]="hasError('startDate', 'required')"
-              [class.border-gray-200]="!hasError('startDate', 'required')" />
-
-            <div class="relative shrink-0" (click)="$event.stopPropagation()">
-                <button type="button" (click)="toggleTimePicker('start', $event)"
-                  class="w-full flex items-center gap-2 px-3 py-2 border rounded-xl text-sm transition-colors"
-                  [class.border-[#1e3a5f]]="activeTimePicker() === 'start'"
-                  [class.bg-blue-50]="activeTimePicker() === 'start'"
-                  [class.border-gray-200]="activeTimePicker() !== 'start'"
-                  [class.bg-white]="activeTimePicker() !== 'start'">
-                  <span class="text-base leading-none">🕐</span>
-                  <span class="font-medium text-gray-700">{{ timeDisplay(startHour(), startMinute(), startPeriod())
-                    }}</span>
-                  <span class="ml-auto text-gray-400 text-xs">{{ activeTimePicker() === 'start' ? '▴' : '▾' }}</span>
-                </button>
-                @if (activeTimePicker() === 'start') {
-                <div
-                  class="absolute top-full left-0 mt-1 z-[70] bg-white rounded-xl shadow-xl border border-gray-200 p-3 w-56">
-                  <div class="flex items-center gap-1.5 mb-3 pb-3 border-b border-gray-100">
-                    <input type="number" min="1" max="12" [value]="startHour()"
-                      (input)="startHour.set(clampHour(+$any($event.target).value))"
-                      class="w-10 text-center text-sm font-semibold border border-gray-200 rounded-lg py-1 outline-none focus:border-[#1e3a5f]" />
-                    <span class="text-gray-400 font-bold">:</span>
-                    <input type="number" min="0" max="59" [value]="startMinute()"
-                      (input)="startMinute.set(clampMinute(+$any($event.target).value))"
-                      class="w-10 text-center text-sm font-semibold border border-gray-200 rounded-lg py-1 outline-none focus:border-[#1e3a5f]" />
-                    <div class="flex gap-1 ml-1">
-                      <button type="button" (click)="startPeriod.set('AM')"
-                        class="px-2 py-1 text-xs font-bold rounded-lg transition-colors"
-                        [class.bg-[#1e3a5f]]="startPeriod() === 'AM'" [class.text-white]="startPeriod() === 'AM'"
-                        [class.bg-gray-100]="startPeriod() !== 'AM'"
-                        [class.text-gray-600]="startPeriod() !== 'AM'">AM</button>
-                      <button type="button" (click)="startPeriod.set('PM')"
-                        class="px-2 py-1 text-xs font-bold rounded-lg transition-colors"
-                        [class.bg-[#1e3a5f]]="startPeriod() === 'PM'" [class.text-white]="startPeriod() === 'PM'"
-                        [class.bg-gray-100]="startPeriod() !== 'PM'"
-                        [class.text-gray-600]="startPeriod() !== 'PM'">PM</button>
-                    </div>
-                  </div>
-                  <p class="text-[9px] text-gray-400 font-bold uppercase tracking-wider mb-1.5">Hora</p>
-                  <div class="grid grid-cols-4 gap-1 mb-3">
-                    @for (h of hours12; track h) {
-                    <button type="button" (click)="startHour.set(h)"
-                      class="py-1.5 text-xs rounded-lg font-medium transition-colors text-center"
-                      [class.bg-[#1e3a5f]]="startHour() === h" [class.text-white]="startHour() === h"
-                      [class.bg-gray-50]="startHour() !== h" [class.text-gray-700]="startHour() !== h">{{ h }}</button>
-                    }
-                  </div>
-                  <p class="text-[9px] text-gray-400 font-bold uppercase tracking-wider mb-1.5">Minutos</p>
-                  <div class="grid grid-cols-4 gap-1">
-                    @for (m of minuteOptions; track m) {
-                    <button type="button" (click)="startMinute.set(m)"
-                      class="py-1.5 text-xs rounded-lg font-medium transition-colors text-center"
-                      [class.bg-[#1e3a5f]]="startMinute() === m" [class.text-white]="startMinute() === m"
-                      [class.bg-gray-50]="startMinute() !== m" [class.text-gray-700]="startMinute() !== m">{{ m < 10
-                        ? '0' + m : m }}</button>
-                        }
-                  </div>
-                </div>
-                }
-              </div>
-          </div>
-          @if (hasError('startDate', 'required')) {
-          <p class="text-xs text-red-500">La fecha de inicio es requerida.</p>
-          }
-        </div>
-
         <!-- Vencimiento -->
         <div class="space-y-1.5">
           <label class="block text-sm font-medium text-gray-700">
@@ -202,12 +123,11 @@
               [class.border-gray-200]="!hasError('dueDate', 'required')" />
             <div class="relative shrink-0" (click)="$event.stopPropagation()">
                 <button type="button" (click)="toggleTimePicker('due', $event)"
-                  class="w-full flex items-center gap-2 px-3 py-2 border rounded-xl text-sm transition-colors"
+                  class="flex-1 px-4 py-2.5 rounded-xl border text-sm outline-none focus:ring-2 focus:ring-[#1e3a5f]/20 focus:border-[#1e3a5f]"
                   [class.border-[#1e3a5f]]="activeTimePicker() === 'due'"
                   [class.bg-blue-50]="activeTimePicker() === 'due'"
                   [class.border-gray-200]="activeTimePicker() !== 'due'"
                   [class.bg-white]="activeTimePicker() !== 'due'">
-                  <span class="text-base leading-none">🕐</span>
                   <span class="font-medium text-gray-700">{{ timeDisplay(dueHour(), dueMinute(), duePeriod()) }}</span>
                   <span class="ml-auto text-gray-400 text-xs">{{ activeTimePicker() === 'due' ? '▴' : '▾' }}</span>
                 </button>

@@ -31,10 +31,6 @@ export class ActivityService {
         const q = f.assigneeEmail.toLowerCase();
         if (!a.assignees.some(x => x.email.toLowerCase().includes(q) || x.name.toLowerCase().includes(q))) return false;
       }
-      if (f.dateRange) {
-        const start = new Date(a.startDate);
-        if (start < f.dateRange.from || start > f.dateRange.to) return false;
-      }
       if (f.dueDateRange) {
         const due = new Date(a.dueDate);
         if (due < f.dueDateRange.from || due > f.dueDateRange.to) return false;
@@ -277,7 +273,6 @@ export class ActivityService {
       // Rehidratar fechas (JSON.parse las convierte a string)
       return parsed.map(a => ({
         ...a,
-        startDate: new Date(a.startDate),
         dueDate: new Date(a.dueDate),
         createdAt: new Date(a.createdAt),
         updatedAt: new Date(a.updatedAt),

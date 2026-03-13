@@ -65,7 +65,6 @@ export class ActivityModalComponent implements OnInit {
     type:          ['task' as ActivityType, Validators.required],
     status:        ['pending' as ActivityStatus, Validators.required],
     priority:      ['medium' as ActivityPriority, Validators.required],
-    startDate:     ['', Validators.required],
     dueDate:       ['', Validators.required],
     notes:         [''],
     checklist:     this.fb.array([]),
@@ -81,7 +80,6 @@ export class ActivityModalComponent implements OnInit {
     const def = this.defaultDate();
     if (!activity && def) {
       this.form.patchValue({
-        startDate: this._toInputDate(def),
         dueDate:   this._toInputDate(def),
       });
     }
@@ -91,16 +89,10 @@ export class ActivityModalComponent implements OnInit {
         type:      activity.type,
         status:    activity.status,
         priority:  activity.priority,
-        startDate: this._toInputDate(activity.startDate),
         dueDate:   this._toInputDate(activity.dueDate),
         notes:     activity.notes ?? '',
       });
       this.assignees.set([...activity.assignees]);
-
-      const sh = activity.startDate.getHours();
-      this.startHour.set(sh % 12 || 12);
-      this.startMinute.set(activity.startDate.getMinutes());
-      this.startPeriod.set(sh < 12 ? 'AM' : 'PM');
 
       const dh = activity.dueDate.getHours();
       this.dueHour.set(dh % 12 || 12);
@@ -146,7 +138,6 @@ export class ActivityModalComponent implements OnInit {
       type:      v.type as ActivityType,
       status:    v.status as ActivityStatus,
       priority:  v.priority as ActivityPriority,
-      startDate: this._parseDatetime(v.startDate!, this.startHour(), this.startMinute(), this.startPeriod()),
       dueDate:   this._parseDatetime(v.dueDate!, this.dueHour(), this.dueMinute(), this.duePeriod()),
       notes:     v.notes?.trim() || undefined,
       assignees: this.assignees(),
