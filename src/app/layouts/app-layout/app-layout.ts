@@ -5,13 +5,15 @@ import { AuthService } from '../../core/auth/services/auth.service';
 import { ClickOutsideDirective } from '../../core/directives/click-outside.directive';
 import { BreadcrumbComponent } from '../../shared/ui/breadcrumb/breadcrumb';
 import { NgIcon } from '@ng-icons/core';
+import { TranslatePipe } from '@ngx-translate/core';
+import { LanguageService } from '../../core/services/language.service';
 import {
   NavItem, BasicNavItem, CollapsibleNavItem, GroupNavItem
 } from '../../core/navigation/nav-item.model';
 
 @Component({
   selector: 'app-app-layout',
-  imports: [RouterOutlet, RouterLink, RouterLinkActive, ClickOutsideDirective, BreadcrumbComponent, NgIcon],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, ClickOutsideDirective, BreadcrumbComponent, NgIcon, TranslatePipe],
   templateUrl: './app-layout.html',
   animations: [
     trigger('collapse', [
@@ -27,37 +29,38 @@ import {
 })
 export class AppLayout {
   protected auth = inject(AuthService);
+  protected lang = inject(LanguageService);
   protected sidebarOpen = signal(window.innerWidth >= 1024);
   protected mobileOpen = signal(false);
   protected userMenuOpen = signal(false);
   protected openCollapsibles = signal<Set<string>>(new Set());
 
   protected navItems: NavItem[] = [
-    { type: 'basic', label: 'Dashboard', path: '/dashboard', icon: 'heroHome' },
+    { type: 'basic', label: 'NAV.DASHBOARD', path: '/dashboard', icon: 'heroHome' },
     { type: 'divider' },
     {
       type: 'group',
-      label: 'Gestión',
+      label: 'NAV.MANAGEMENT',
       children: [
-        { type: 'basic', label: 'Calendario', path: '/calendar', icon: 'heroCalendar' }, // ← nuevo
-        { type: 'basic', label: 'Casos', path: '/cases', icon: 'heroDocumentText', badge: 8, badgeType: 'danger' },
+        { type: 'basic', label: 'NAV.CALENDAR', path: '/calendar', icon: 'heroCalendar' },
+        { type: 'basic', label: 'NAV.CASES', path: '/cases', icon: 'heroDocumentText', badge: 8, badgeType: 'danger' },
         {
           type: 'collapsible',
-          label: 'Reportes',
+          label: 'NAV.REPORTS',
           icon: 'heroChartBar',
           children: [
-            { type: 'basic', label: 'Resumen', path: '/reports/summary', icon: 'heroChartBar' },
-            { type: 'basic', label: 'Detallado', path: '/reports/detail', icon: 'heroDocumentText' },
+            { type: 'basic', label: 'NAV.REPORTS_SUMMARY', path: '/reports/summary', icon: 'heroChartBar' },
+            { type: 'basic', label: 'NAV.REPORTS_DETAIL', path: '/reports/detail', icon: 'heroDocumentText' },
           ],
         },
       ],
     },
     {
       type: 'group',
-      label: 'Administración',
+      label: 'NAV.ADMIN',
       children: [
-        { type: 'basic', label: 'Usuarios', path: '/users', icon: 'heroUsers' },
-        { type: 'basic', label: 'Configuración', path: '/settings', icon: 'heroCog6Tooth' },
+        { type: 'basic', label: 'NAV.USERS', path: '/users', icon: 'heroUsers' },
+        { type: 'basic', label: 'NAV.SETTINGS', path: '/settings', icon: 'heroCog6Tooth' },
       ],
     },
   ];

@@ -2,10 +2,11 @@ import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AuthService } from '../../../../core/auth/services/auth.service';
 import { NgIcon } from '@ng-icons/core';
+import { TranslatePipe } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-login',
-  imports: [ReactiveFormsModule, NgIcon],
+  imports: [ReactiveFormsModule, NgIcon, TranslatePipe],
   templateUrl: './login.html',
    host: { class: 'flex w-full min-h-screen' },
 })
@@ -39,7 +40,7 @@ export class LoginPage {
       const { email, password } = this.form.getRawValue();
       this.auth.login({ email: email!, password: password! });
     } catch {
-      this.errorMessage.set('Credenciales inválidas. Intenta de nuevo.');
+      this.errorMessage.set('LOGIN.ERROR_INVALID');
       this.isLoading.set(false);
     }
   }
@@ -50,8 +51,8 @@ export class LoginPage {
   }
 
   protected features = [
-    { icon: 'heroDocumentText', text: 'Seguimiento completo de casos' },
-    { icon: 'heroUsers', text: 'Gestión de equipos y asignaciones' },
-    { icon: 'heroChartBar', text: 'Reportes y métricas en tiempo real' },
+    { icon: 'heroDocumentText', text: 'LOGIN.FEATURE_1' },
+    { icon: 'heroUsers', text: 'LOGIN.FEATURE_2' },
+    { icon: 'heroChartBar', text: 'LOGIN.FEATURE_3' },
   ];
 }

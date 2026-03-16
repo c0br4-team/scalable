@@ -1,0 +1,41 @@
+{
+  "NAV": {
+    "DASHBOARD": "Dashboard",
+    "MANAGEMENT": "Management",
+    "CALENDAR": "Calendar",
+    "CASES": "Cases",
+    "REPORTS": "Reports",
+    "REPORTS_SUMMARY": "Summary",
+    "REPORTS_DETAIL": "Detailed",
+    "ADMIN": "Administration",
+    "USERS": "Users",
+    "SETTINGS": "Settings"
+  },
+  "HEADER": {
+    "ACTIVE_SESSION": "Active session",
+    "LOGOUT": "Sign out"
+  },
+  "LOGIN": {
+    "TAGLINE": "Manage your cases efficiently",
+    "TAGLINE_SUB": "A modern platform for tracking and resolving business cases.",
+    "FEATURE_1": "Complete case tracking",
+    "FEATURE_2": "Team and assignment management",
+    "FEATURE_3": "Reports and real-time metrics",
+    "TITLE": "Sign in",
+    "SUBTITLE": "Enter your credentials to access",
+    "EMAIL": "Email address",
+    "EMAIL_PLACEHOLDER": "you@email.com",
+    "EMAIL_REQUIRED": "Email is required.",
+    "EMAIL_INVALID": "Enter a valid email.",
+    "PASSWORD": "Password",
+    "PASSWORD_FORGOT": "Forgot your password?",
+    "PASSWORD_REQUIRED": "Password is required.",
+    "PASSWORD_MIN": "Minimum 6 characters.",
+    "BUTTON": "Sign in",
+    "BUTTON_LOADING": "Signing in...",
+    "ERROR_INVALID": "Invalid credentials. Please try again.",
+    "FOOTER": "© 2026 Scalable. All rights reserved.",
+    "SHOW_PASSWORD": "Show password",
+    "HIDE_PASSWORD": "Hide password"
+  }
+}

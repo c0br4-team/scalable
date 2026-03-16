@@ -1,7 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { SpinnerComponent } from './shared/ui/spinner/spinner';
 import { ToastComponent } from './shared/ui/toast/toast';
+import { LanguageService } from './core/services/language.service';
 
 @Component({
   selector: 'app-root',
@@ -12,4 +13,6 @@ import { ToastComponent } from './shared/ui/toast/toast';
     <app-toast />
   `,
 })
-export class App { }
+export class App {
+  constructor() { inject(LanguageService); }
+}

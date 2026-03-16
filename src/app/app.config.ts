@@ -7,6 +7,8 @@ import { routes } from './app.routes';
 import { jwtInterceptor } from './core/interceptors/jwt.interceptor';
 import { loadingInterceptor } from './core/interceptors/loading.interceptor';
 import { provideIcons } from '@ng-icons/core';
+import { provideTranslateService } from '@ngx-translate/core';
+import { provideTranslateHttpLoader } from '@ngx-translate/http-loader';
 import {
   heroHome,
   heroDocumentText,
@@ -54,6 +56,8 @@ export const appConfig: ApplicationConfig = {
       enabled: !isDevMode(),
       registrationStrategy: 'registerWhenStable:30000'
     }),
+    provideTranslateService({ lang: 'en' }),
+    provideTranslateHttpLoader(),
     provideIcons({
       heroHome,
       heroDocumentText,

@@ -22,6 +22,8 @@
     "@angular/service-worker": "~21.2.0",
     "@ng-icons/core": "^33.1.0",
     "@ng-icons/heroicons": "^33.1.0",
+    "@ngx-translate/core": "^17.0.0",
+    "@ngx-translate/http-loader": "^17.0.0",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0"
   },

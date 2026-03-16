@@ -37,7 +37,7 @@
           <ng-icon [name]="asBasic(item).icon!" class="shrink-0 text-lg" />
           }
           @if (isExpanded) {
-          <span class="flex-1 whitespace-nowrap">{{ asBasic(item).label }}</span>
+          <span class="flex-1 whitespace-nowrap">{{ asBasic(item).label | translate }}</span>
           @if (asBasic(item).badge !== undefined) {
           <span class="text-xs text-white font-semibold px-1.5 py-0.5 rounded-full"
             [class]="badgeClasses(asBasic(item).badgeType)">
@@ -59,7 +59,7 @@
           <ng-icon [name]="asCollapsible(item).icon!" class="shrink-0 text-lg" />
           }
           @if (isExpanded) {
-          <span class="flex-1 text-left whitespace-nowrap">{{ asCollapsible(item).label }}</span>
+          <span class="flex-1 text-left whitespace-nowrap">{{ asCollapsible(item).label | translate }}</span>
           <ng-icon name="heroChevronRight" class="text-sm text-white/50 transition-transform duration-200"
             [class.rotate-90]="isCollapsibleOpen(asCollapsible(item).label)" />
           }
@@ -74,7 +74,7 @@
             @if (child.icon) {
             <ng-icon [name]="child.icon" class="shrink-0 text-base" />
             }
-            <span class="whitespace-nowrap">{{ child.label }}</span>
+            <span class="whitespace-nowrap">{{ child.label | translate }}</span>
             @if (child.badge !== undefined) {
             <span class="ml-auto text-xs text-white font-semibold px-1.5 py-0.5 rounded-full"
               [class]="badgeClasses(child.badgeType)">
@@ -93,7 +93,7 @@
       <div class="px-2 mt-2">
         @if (isExpanded) {
         <p class="px-3 mb-1 text-xs font-semibold text-white/40 uppercase tracking-wider whitespace-nowrap">
-          {{ asGroup(item).label }}
+          {{ asGroup(item).label | translate }}
         </p>
         } @else {
         <div class="mx-3 my-2 border-t border-white/10"></div>
@@ -110,7 +110,7 @@
           <ng-icon [name]="asBasic(child).icon!" class="shrink-0 text-lg" />
           }
           @if (isExpanded) {
-          <span class="flex-1 whitespace-nowrap">{{ asBasic(child).label }}</span>
+          <span class="flex-1 whitespace-nowrap">{{ asBasic(child).label | translate }}</span>
           @if (asBasic(child).badge !== undefined) {
           <span class="text-xs text-white font-semibold px-1.5 py-0.5 rounded-full"
             [class]="badgeClasses(asBasic(child).badgeType)">
@@ -130,7 +130,7 @@
           <ng-icon [name]="asCollapsible(child).icon!" class="shrink-0 text-lg" />
           }
           @if (isExpanded) {
-          <span class="flex-1 text-left whitespace-nowrap">{{ asCollapsible(child).label }}</span>
+          <span class="flex-1 text-left whitespace-nowrap">{{ asCollapsible(child).label | translate }}</span>
           <ng-icon name="heroChevronRight" class="text-sm text-white/50 transition-transform duration-200"
             [class.rotate-90]="isCollapsibleOpen(asCollapsible(child).label)" />
           }
@@ -144,7 +144,7 @@
             @if (grandchild.icon) {
             <ng-icon [name]="grandchild.icon" class="shrink-0 text-base" />
             }
-            <span class="whitespace-nowrap">{{ grandchild.label }}</span>
+            <span class="whitespace-nowrap">{{ grandchild.label | translate }}</span>
           </a>
           }
         </div>
@@ -182,32 +182,55 @@
         <app-breadcrumb />
       </div>
 
-      <div class="relative" (clickOutside)="closeUserMenu()">
-        <button (click)="toggleUserMenu()"
-          class="flex items-center gap-2 px-3 py-1.5 rounded-lg hover:bg-gray-100 transition-colors">
-          <div
-            class="w-8 h-8 rounded-full bg-[#1e3a5f] text-white flex items-center justify-center text-sm font-bold shrink-0">
-            {{ auth.user()?.name?.charAt(0) ?? 'U' }}
-          </div>
-          <div class="text-left hidden sm:block">
-            <p class="text-sm font-medium text-gray-800 leading-tight">{{ auth.user()?.name ?? 'Usuario' }}</p>
-            <p class="text-xs text-gray-500 leading-tight">{{ auth.user()?.email }}</p>
-          </div>
-          <ng-icon name="heroChevronDown" class="text-base text-gray-400 ml-1 hidden sm:block" />
-        </button>
-        @if (userMenuOpen()) {
-        <div class="absolute right-0 mt-1 w-48 bg-white rounded-xl shadow-lg border border-gray-100 py-1 z-50">
-          <div class="px-4 py-2 border-b border-gray-100">
-            <p class="text-xs text-gray-500">Sesión activa</p>
-            <p class="text-sm font-medium text-gray-800 truncate">{{ auth.user()?.email }}</p>
-          </div>
-          <button (click)="logout()"
-            class="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors">
-            <ng-icon name="heroArrowRightOnRectangle" class="text-base" />
-            Cerrar sesión
+      <div class="flex items-center gap-3">
+        <!-- Selector de idioma -->
+        <div class="flex items-center bg-gray-100 rounded-lg p-0.5">
+          <button (click)="lang.set('en')"
+            class="px-2.5 py-1 rounded-md text-xs font-semibold transition-colors"
+            [class.bg-white]="lang.current() === 'en'"
+            [class.text-[#1e3a5f]]="lang.current() === 'en'"
+            [class.shadow-sm]="lang.current() === 'en'"
+            [class.text-gray-400]="lang.current() !== 'en'">
+            EN
+          </button>
+          <button (click)="lang.set('es')"
+            class="px-2.5 py-1 rounded-md text-xs font-semibold transition-colors"
+            [class.bg-white]="lang.current() === 'es'"
+            [class.text-[#1e3a5f]]="lang.current() === 'es'"
+            [class.shadow-sm]="lang.current() === 'es'"
+            [class.text-gray-400]="lang.current() !== 'es'">
+            ES
           </button>
         </div>
-        }
+
+        <!-- User menu -->
+        <div class="relative" (clickOutside)="closeUserMenu()">
+          <button (click)="toggleUserMenu()"
+            class="flex items-center gap-2 px-3 py-1.5 rounded-lg hover:bg-gray-100 transition-colors">
+            <div
+              class="w-8 h-8 rounded-full bg-[#1e3a5f] text-white flex items-center justify-center text-sm font-bold shrink-0">
+              {{ auth.user()?.name?.charAt(0) ?? 'U' }}
+            </div>
+            <div class="text-left hidden sm:block">
+              <p class="text-sm font-medium text-gray-800 leading-tight">{{ auth.user()?.name ?? 'Usuario' }}</p>
+              <p class="text-xs text-gray-500 leading-tight">{{ auth.user()?.email }}</p>
+            </div>
+            <ng-icon name="heroChevronDown" class="text-base text-gray-400 ml-1 hidden sm:block" />
+          </button>
+          @if (userMenuOpen()) {
+          <div class="absolute right-0 mt-1 w-48 bg-white rounded-xl shadow-lg border border-gray-100 py-1 z-50">
+            <div class="px-4 py-2 border-b border-gray-100">
+              <p class="text-xs text-gray-500">{{ 'HEADER.ACTIVE_SESSION' | translate }}</p>
+              <p class="text-sm font-medium text-gray-800 truncate">{{ auth.user()?.email }}</p>
+            </div>
+            <button (click)="logout()"
+              class="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors">
+              <ng-icon name="heroArrowRightOnRectangle" class="text-base" />
+              {{ 'HEADER.LOGOUT' | translate }}
+            </button>
+          </div>
+          }
+        </div>
       </div>
     </header>
 

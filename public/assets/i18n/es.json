@@ -1,0 +1,41 @@
+{
+  "NAV": {
+    "DASHBOARD": "Panel",
+    "MANAGEMENT": "Gestión",
+    "CALENDAR": "Calendario",
+    "CASES": "Casos",
+    "REPORTS": "Reportes",
+    "REPORTS_SUMMARY": "Resumen",
+    "REPORTS_DETAIL": "Detallado",
+    "ADMIN": "Administración",
+    "USERS": "Usuarios",
+    "SETTINGS": "Configuración"
+  },
+  "HEADER": {
+    "ACTIVE_SESSION": "Sesión activa",
+    "LOGOUT": "Cerrar sesión"
+  },
+  "LOGIN": {
+    "TAGLINE": "Gestiona tus casos de forma eficiente",
+    "TAGLINE_SUB": "Una plataforma moderna para el seguimiento y resolución de casos empresariales.",
+    "FEATURE_1": "Seguimiento completo de casos",
+    "FEATURE_2": "Gestión de equipos y asignaciones",
+    "FEATURE_3": "Reportes y métricas en tiempo real",
+    "TITLE": "Iniciar sesión",
+    "SUBTITLE": "Ingresa tus credenciales para acceder",
+    "EMAIL": "Correo electrónico",
+    "EMAIL_PLACEHOLDER": "tu@correo.com",
+    "EMAIL_REQUIRED": "El correo es requerido.",
+    "EMAIL_INVALID": "Ingresa un correo válido.",
+    "PASSWORD": "Contraseña",
+    "PASSWORD_FORGOT": "¿Olvidaste tu contraseña?",
+    "PASSWORD_REQUIRED": "La contraseña es requerida.",
+    "PASSWORD_MIN": "Mínimo 6 caracteres.",
+    "BUTTON": "Ingresar",
+    "BUTTON_LOADING": "Ingresando...",
+    "ERROR_INVALID": "Credenciales inválidas. Intenta de nuevo.",
+    "FOOTER": "© 2026 Scalable. Todos los derechos reservados.",
+    "SHOW_PASSWORD": "Mostrar contraseña",
+    "HIDE_PASSWORD": "Ocultar contraseña"
+  }
+}
