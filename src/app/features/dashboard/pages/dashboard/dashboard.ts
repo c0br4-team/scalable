@@ -1,10 +1,12 @@
 import { Component, inject } from '@angular/core';
 import { ToastService } from '../../../../core/notifications/toast.service';
+import { DropdownComponent } from '../../../../shared/components/dropdown/dropdown.component';
 
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.html',
   host: { class: 'flex flex-col flex-1 overflow-auto p-4 lg:p-6' },
+  imports: [DropdownComponent]
 })
 export class DashboardPage {
   protected toast = inject(ToastService);
