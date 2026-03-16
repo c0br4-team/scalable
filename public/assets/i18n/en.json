@@ -37,5 +37,26 @@
     "FOOTER": "© 2026 Scalable. All rights reserved.",
     "SHOW_PASSWORD": "Show password",
     "HIDE_PASSWORD": "Hide password"
+  },
+  "DESIGN_SYSTEM": {
+    "PRIMARY": "Primary",
+    "SECONDARY": "Secondary",
+    "SUCCESS": "Success",
+    "ERROR": "Error",
+    "WARNING": "Warning",
+    "INFO": "Info",
+    "LIGHT": "Light",
+    "DARK": "Dark",
+    "FONT_FAMILY": "Font Family",
+    "FONT_SIZE": "Font Size",
+    "SPACING": "Spacing",
+    "SELECT": "Select",
+    "BUTTON": "Button",
+    "INPUT": "Input",
+    "CARD": "Card",
+    "MODAL": "Modal",
+    "TABLE": "Table",
+    "NAVBAR": "Navbar",
+    "FOOTER": "Footer"
   }
 }

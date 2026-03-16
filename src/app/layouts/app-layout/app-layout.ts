@@ -1,6 +1,5 @@
 import { Component, inject, signal, HostListener } from '@angular/core';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
-import { animate, style, transition, trigger } from '@angular/animations';
 import { AuthService } from '../../core/auth/services/auth.service';
 import { ClickOutsideDirective } from '../../core/directives/click-outside.directive';
 import { BreadcrumbComponent } from '../../shared/ui/breadcrumb/breadcrumb';
@@ -15,17 +14,6 @@ import {
   selector: 'app-app-layout',
   imports: [RouterOutlet, RouterLink, RouterLinkActive, ClickOutsideDirective, BreadcrumbComponent, NgIcon, TranslatePipe],
   templateUrl: './app-layout.html',
-  animations: [
-    trigger('collapse', [
-      transition(':enter', [
-        style({ height: 0, opacity: 0 }),
-        animate('200ms ease-out', style({ height: '*', opacity: 1 })),
-      ]),
-      transition(':leave', [
-        animate('180ms ease-in', style({ height: 0, opacity: 0 })),
-      ]),
-    ]),
-  ],
 })
 export class AppLayout {
   protected auth = inject(AuthService);

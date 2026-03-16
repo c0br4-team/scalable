@@ -1,6 +1,8 @@
 import { Component, inject } from '@angular/core';
 import { ToastService } from '../../../../core/notifications/toast.service';
-import { DropdownComponent } from '../../../../shared/components/dropdown/dropdown.component';
+import { DropdownComponent } from '../../../../shared/design-system/dropdown/dropdown.component';
+import { DropdownConfig, DropdownOption } from '../../../../shared/design-system/models/components.model';
+import { ClientService } from '../../../../core/http/services/client.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -10,6 +12,67 @@ import { DropdownComponent } from '../../../../shared/components/dropdown/dropdo
 })
 export class DashboardPage {
   protected toast = inject(ToastService);
+  private clientService = inject(ClientService);
+
+  // Ejemplo: búsqueda remota — se pasa la searchFn al config del dropdown
+  protected clientSearchConfig: DropdownConfig = {
+    searchFn: (query) => this.clientService.search(query),
+    debounceMs: 400,
+    minChars: 2,
+    multiple: true,
+  };
+
+  // Ejemplo: opciones locales con múltiple y búsqueda en memoria
+  protected localConfig: DropdownConfig = {
+    multiple: true,
+    searchable: true,
+  };
+
+  options: DropdownOption[] = [
+    { label: 'Opción 1', value: 'option1' },
+    { label: 'Opción 2', value: 'option2' },
+    { label: 'Opción 3', value: 'option3' },
+    { label: 'Opción 1', value: 'option1' },
+    { label: 'Opción 2', value: 'option2' },
+    { label: 'Opción 3', value: 'option3' },
+    { label: 'Opción 1', value: 'option1' },
+    { label: 'Opción 2', value: 'option2' },
+    { label: 'Opción 3', value: 'option3' },
+    { label: 'Opción 1', value: 'option1' },
+    { label: 'Opción 2', value: 'option2' },
+    { label: 'Opción 3', value: 'option3' },
+    { label: 'Opción 1', value: 'option1' },
+    { label: 'Opción 2', value: 'option2' },
+    { label: 'Opción 3', value: 'option3' },
+    { label: 'Opción 1', value: 'option1' },
+    { label: 'Opción 2', value: 'option2' },
+    { label: 'Opción 3', value: 'option3' },
+    { label: 'Opción 1', value: 'option1' },
+    { label: 'Opción 2', value: 'option2' },
+    { label: 'Opción 3', value: 'option3' },
+    { label: 'Opción 1', value: 'option1' },
+    { label: 'Opción 2', value: 'option2' },
+    { label: 'Opción 3', value: 'option3' },
+    { label: 'Opción 1', value: 'option1' },
+    { label: 'Opción 2', value: 'option2' },
+    { label: 'Opción 3', value: 'option3' },
+    { label: 'Opción 1', value: 'option1' },
+    { label: 'Opción 2', value: 'option2' },
+    { label: 'Opción 3', value: 'option3' },
+    { label: 'Opción 1', value: 'option1' },
+    { label: 'Opción 2', value: 'option2' },
+    { label: 'Opción 3', value: 'option3' },
+    { label: 'Opción 1', value: 'option1' },
+    { label: 'Opción 2', value: 'option2' },
+    { label: 'Opción 3', value: 'option3' },
+    { label: 'Opción 1', value: 'option1' },
+    { label: 'Opción 2', value: 'option2' },
+    { label: 'Opción 3', value: 'option3' },
+  ];
+
+  protected onOptionSelected(value: string | null): void {
+    console.log('Seleccionado:', value);
+  }
 
   protected onDiscard(): void {
     this.toast.info('Cambios descartados');
