@@ -42,6 +42,7 @@ import {
   heroArrowPath,
   heroFunnel,
   heroMagnifyingGlass,
+  heroUserCircle,
 } from '@ng-icons/heroicons/outline';
 
 export const appConfig: ApplicationConfig = {
@@ -91,6 +92,7 @@ export const appConfig: ApplicationConfig = {
       heroArrowPath,
       heroFunnel,
       heroMagnifyingGlass,
+      heroUserCircle,
     })
   ]
 };

@@ -1,0 +1,157 @@
+<div class="max-w-2xl mx-auto px-4 py-8 w-full">
+
+  <!-- Header -->
+  <div class="flex items-center gap-5 mb-8">
+    <div class="w-20 h-20 rounded-full bg-[#1e3a5f] text-white flex items-center justify-center text-3xl font-bold shrink-0 select-none">
+      {{ avatarLetter }}
+    </div>
+    <div>
+      <h1 class="text-2xl font-bold text-gray-900">{{ auth.user()?.name }}</h1>
+      <p class="text-sm text-gray-500 mt-0.5">{{ auth.user()?.email }}</p>
+      <span class="inline-block mt-1.5 text-xs font-semibold px-2.5 py-0.5 rounded-full bg-blue-100 text-blue-700 capitalize">
+        {{ auth.user()?.role }}
+      </span>
+    </div>
+  </div>
+
+  <!-- Personal Info -->
+  <section class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mb-6">
+    <h2 class="text-base font-semibold text-gray-800 mb-5">{{ 'PROFILE.PERSONAL_INFO' | translate }}</h2>
+
+    <form [formGroup]="infoForm" (ngSubmit)="saveInfo()" class="space-y-4">
+
+      <!-- Name -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1.5">
+          {{ 'PROFILE.NAME' | translate }}
+        </label>
+        <input formControlName="name" type="text"
+          class="w-full px-3.5 py-2.5 rounded-lg border border-gray-300 text-sm text-gray-900
+                 focus:outline-none focus:ring-2 focus:ring-[#1e3a5f]/30 focus:border-[#1e3a5f]
+                 transition-colors placeholder-gray-400"
+          [placeholder]="'PROFILE.NAME_PLACEHOLDER' | translate" />
+        @if (infoForm.get('name')?.invalid && infoForm.get('name')?.touched) {
+        <p class="mt-1 text-xs text-red-500">{{ 'PROFILE.NAME_REQUIRED' | translate }}</p>
+        }
+      </div>
+
+      <!-- Email (read-only) -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1.5">
+          {{ 'PROFILE.EMAIL' | translate }}
+        </label>
+        <input formControlName="email" type="email"
+          class="w-full px-3.5 py-2.5 rounded-lg border border-gray-200 bg-gray-50 text-sm text-gray-500 cursor-not-allowed" />
+      </div>
+
+      <!-- Role (read-only) -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1.5">
+          {{ 'PROFILE.ROLE' | translate }}
+        </label>
+        <input formControlName="role" type="text"
+          class="w-full px-3.5 py-2.5 rounded-lg border border-gray-200 bg-gray-50 text-sm text-gray-500 cursor-not-allowed capitalize" />
+      </div>
+
+      <!-- Submit -->
+      <div class="flex items-center gap-3 pt-1">
+        <button type="submit" [disabled]="infoForm.invalid || infoForm.pristine"
+          class="px-5 py-2.5 rounded-lg bg-[#1e3a5f] text-white text-sm font-medium
+                 hover:bg-[#16304f] transition-colors disabled:opacity-40 disabled:cursor-not-allowed">
+          {{ 'PROFILE.SAVE' | translate }}
+        </button>
+        @if (infoSaved()) {
+        <span class="flex items-center gap-1.5 text-sm text-green-600">
+          <ng-icon name="heroCheckCircle" class="text-base" />
+          {{ 'PROFILE.SAVED' | translate }}
+        </span>
+        }
+      </div>
+    </form>
+  </section>
+
+  <!-- Change Password -->
+  <section class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+    <h2 class="text-base font-semibold text-gray-800 mb-5">{{ 'PROFILE.CHANGE_PASSWORD' | translate }}</h2>
+
+    <form [formGroup]="pwdForm" (ngSubmit)="savePwd()" class="space-y-4">
+
+      <!-- Current password -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1.5">
+          {{ 'PROFILE.CURRENT_PASSWORD' | translate }}
+        </label>
+        <div class="relative">
+          <input formControlName="currentPassword" [type]="showCurrent() ? 'text' : 'password'"
+            class="w-full px-3.5 py-2.5 pr-10 rounded-lg border border-gray-300 text-sm text-gray-900
+                   focus:outline-none focus:ring-2 focus:ring-[#1e3a5f]/30 focus:border-[#1e3a5f] transition-colors" />
+          <button type="button" (click)="showCurrent.update(v => !v)"
+            class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors">
+            <ng-icon [name]="showCurrent() ? 'heroEyeSlash' : 'heroEye'" class="text-base" />
+          </button>
+        </div>
+        @if (pwdForm.get('currentPassword')?.invalid && pwdForm.get('currentPassword')?.touched) {
+        <p class="mt-1 text-xs text-red-500">{{ 'PROFILE.PASSWORD_REQUIRED' | translate }}</p>
+        }
+      </div>
+
+      <!-- New password -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1.5">
+          {{ 'PROFILE.NEW_PASSWORD' | translate }}
+        </label>
+        <div class="relative">
+          <input formControlName="newPassword" [type]="showNew() ? 'text' : 'password'"
+            class="w-full px-3.5 py-2.5 pr-10 rounded-lg border border-gray-300 text-sm text-gray-900
+                   focus:outline-none focus:ring-2 focus:ring-[#1e3a5f]/30 focus:border-[#1e3a5f] transition-colors" />
+          <button type="button" (click)="showNew.update(v => !v)"
+            class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors">
+            <ng-icon [name]="showNew() ? 'heroEyeSlash' : 'heroEye'" class="text-base" />
+          </button>
+        </div>
+        @if (pwdForm.get('newPassword')?.invalid && pwdForm.get('newPassword')?.touched) {
+        <p class="mt-1 text-xs text-red-500">{{ 'PROFILE.PASSWORD_MIN' | translate }}</p>
+        }
+      </div>
+
+      <!-- Confirm password -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1.5">
+          {{ 'PROFILE.CONFIRM_PASSWORD' | translate }}
+        </label>
+        <div class="relative">
+          <input formControlName="confirmPassword" [type]="showConfirm() ? 'text' : 'password'"
+            class="w-full px-3.5 py-2.5 pr-10 rounded-lg border border-gray-300 text-sm text-gray-900
+                   focus:outline-none focus:ring-2 focus:ring-[#1e3a5f]/30 focus:border-[#1e3a5f] transition-colors" />
+          <button type="button" (click)="showConfirm.update(v => !v)"
+            class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors">
+            <ng-icon [name]="showConfirm() ? 'heroEyeSlash' : 'heroEye'" class="text-base" />
+          </button>
+        </div>
+        @if (pwdForm.hasError('passwordsMismatch') && pwdForm.get('confirmPassword')?.touched) {
+        <p class="mt-1 text-xs text-red-500">{{ 'PROFILE.PASSWORDS_MISMATCH' | translate }}</p>
+        }
+      </div>
+
+      @if (pwdError()) {
+      <p class="text-sm text-red-600">{{ pwdError() }}</p>
+      }
+
+      <!-- Submit -->
+      <div class="flex items-center gap-3 pt-1">
+        <button type="submit" [disabled]="pwdForm.invalid"
+          class="px-5 py-2.5 rounded-lg bg-[#1e3a5f] text-white text-sm font-medium
+                 hover:bg-[#16304f] transition-colors disabled:opacity-40 disabled:cursor-not-allowed">
+          {{ 'PROFILE.UPDATE_PASSWORD' | translate }}
+        </button>
+        @if (pwdSaved()) {
+        <span class="flex items-center gap-1.5 text-sm text-green-600">
+          <ng-icon name="heroCheckCircle" class="text-base" />
+          {{ 'PROFILE.SAVED' | translate }}
+        </span>
+        }
+      </div>
+    </form>
+  </section>
+
+</div>

@@ -39,6 +39,12 @@ export const routes: Routes = [
         loadChildren: () =>
           import('./features/calendar/calendar.routes').then(m => m.calendarRoutes),
       },
+      {
+        path: 'profile',
+        data: { breadcrumb: 'PROFILE.BREADCRUMB' },
+        loadChildren: () =>
+          import('./features/profile/profile.routes').then(m => m.profileRoutes),
+      },
     ],
   },
   {
