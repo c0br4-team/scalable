@@ -56,7 +56,7 @@ export interface Activity {
   type: ActivityType;
   status: ActivityStatus;
   priority: ActivityPriority;
-  startDate?: Date;
+  startDate?: Date | undefined;
   dueDate: Date;
   notes?: string;
   assignees: Assignee[];

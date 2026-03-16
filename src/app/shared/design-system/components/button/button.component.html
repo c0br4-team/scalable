@@ -1,0 +1,28 @@
+<button
+  [type]="type()"
+  [disabled]="disabled()"
+  [style]="accentStyle()"
+  [class]="'flex items-center border border-gray-500/30 rounded bg-white text-gray-800 transition disabled:opacity-50 disabled:cursor-not-allowed ' + sizeCls()"
+  (click)="clicked.emit($event)">
+
+  <!-- Heroicon via [iconName]="'heroArrowLeft'" -->
+  @if (iconName()) {
+    <ng-icon [name]="iconName()" [size]="iconSize()" />
+  }
+
+  <!-- SVG inline via [icon]="svgString" -->
+  @if (icon()) {
+    <span class="shrink-0 flex items-center" [innerHTML]="icon()"></span>
+  }
+
+  <!-- SVG proyectado: <svg icon .../> -->
+  <ng-content select="[icon]" />
+
+  @if (label()) {
+    <span>{{ label() }}</span>
+  }
+
+  <!-- Contenido libre -->
+  <ng-content />
+
+</button>

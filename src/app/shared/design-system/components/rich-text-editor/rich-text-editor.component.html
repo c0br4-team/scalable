@@ -1,0 +1,39 @@
+<div class="w-full border border-gray-300 rounded-lg overflow-hidden shadow-sm"
+  [class.opacity-50]="isDisabled()"
+  [class.pointer-events-none]="isDisabled()">
+
+  <!-- Toolbar -->
+  <div class="flex flex-wrap items-center gap-1 px-2 py-1.5 bg-gray-50 border-b border-gray-200">
+    @for (group of toolbar; track $index) {
+      <div class="flex items-center gap-0.5">
+        @for (action of group; track action.command) {
+          <button type="button"
+            [title]="action.tooltip"
+            (click)="applyFormat(action.command)"
+            class="w-7 h-7 flex items-center justify-center rounded text-xs font-semibold transition-colors"
+            [class.bg-indigo-100]="isActive(action.command)"
+            [class.text-indigo-700]="isActive(action.command)"
+            [class.text-gray-600]="!isActive(action.command)"
+            [class.hover:bg-gray-200]="!isActive(action.command)">
+            {{ action.icon }}
+          </button>
+        }
+      </div>
+      @if (!$last) {
+        <div class="w-px h-5 bg-gray-300 mx-0.5"></div>
+      }
+    }
+  </div>
+
+  <!-- Editor -->
+  <div #editor
+    contenteditable="true"
+    (input)="onInput()"
+    (keydown)="onKeyDown($event)"
+    (keyup)="onKeyUp()"
+    (mouseup)="onMouseUp()"
+    class="min-h-32 max-h-64 overflow-y-auto px-4 py-3 text-sm text-gray-800 focus:outline-none"
+    [attr.contenteditable]="!isDisabled()">
+  </div>
+
+</div>

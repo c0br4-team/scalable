@@ -9,6 +9,7 @@
   <aside class="fixed lg:static inset-y-0 left-0 z-30 flex flex-col bg-[#1e3a5f] text-white
     transition-all duration-300 shrink-0" [class.w-64]="isExpanded" [class.w-16]="!isExpanded"
     [class.-translate-x-full]="!mobileOpen()" [class.translate-x-0]="mobileOpen()" [class.lg:translate-x-0]="true">
+
     <!-- Logo -->
     <div class="h-16 flex items-center justify-center border-b border-white/10 px-4 gap-3 overflow-hidden shrink-0">
       <img src="icons/manifest-icon-192.maskable.png" alt="Logo" class="w-8 h-8 shrink-0 rounded-lg object-contain" />
@@ -28,7 +29,9 @@
 
       <!-- BASIC -->
       @if (item.type === 'basic') {
-      <div class="px-2">
+      <div class="px-2"
+           (mouseenter)="onItemMouseEnter($event, item)"
+           (mouseleave)="onItemMouseLeave()">
         <a [routerLink]="asBasic(item).path" routerLinkActive="bg-white/20 text-white"
           [routerLinkActiveOptions]="{ exact: asBasic(item).exactPath ?? false }" (click)="closeMobileSidebar()" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium
                 text-white/80 hover:bg-white/10 hover:text-white transition-colors"
@@ -37,7 +40,7 @@
           <ng-icon [name]="asBasic(item).icon!" class="shrink-0 text-lg" />
           }
           @if (isExpanded) {
-          <span class="flex-1 whitespace-nowrap">{{ asBasic(item).label }}</span>
+          <span class="flex-1 whitespace-nowrap">{{ asBasic(item).label | translate }}</span>
           @if (asBasic(item).badge !== undefined) {
           <span class="text-xs text-white font-semibold px-1.5 py-0.5 rounded-full"
             [class]="badgeClasses(asBasic(item).badgeType)">
@@ -51,7 +54,9 @@
 
       <!-- COLLAPSIBLE -->
       @if (item.type === 'collapsible') {
-      <div class="px-2">
+      <div class="px-2"
+           (mouseenter)="onItemMouseEnter($event, item)"
+           (mouseleave)="onItemMouseLeave()">
         <button (click)="toggleCollapsible(asCollapsible(item).label)" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium
                 text-white/80 hover:bg-white/10 hover:text-white transition-colors"
           [class.justify-center]="!isExpanded">
@@ -59,22 +64,22 @@
           <ng-icon [name]="asCollapsible(item).icon!" class="shrink-0 text-lg" />
           }
           @if (isExpanded) {
-          <span class="flex-1 text-left whitespace-nowrap">{{ asCollapsible(item).label }}</span>
+          <span class="flex-1 text-left whitespace-nowrap">{{ asCollapsible(item).label | translate }}</span>
           <ng-icon name="heroChevronRight" class="text-sm text-white/50 transition-transform duration-200"
             [class.rotate-90]="isCollapsibleOpen(asCollapsible(item).label)" />
           }
         </button>
 
-        <!-- Children -->
+        <!-- Children (expanded) -->
         @if (isExpanded && isCollapsibleOpen(asCollapsible(item).label)) {
-        <div @collapse class="overflow-hidden">
+        <div class="overflow-hidden transition-all duration-200">
           @for (child of asCollapsible(item).children; track child.path) {
           <a [routerLink]="child.path" routerLinkActive="bg-white/20 text-white" (click)="closeMobileSidebar()" class="flex items-center gap-3 pl-9 pr-3 py-2 rounded-lg text-sm
                       text-white/70 hover:bg-white/10 hover:text-white transition-colors">
             @if (child.icon) {
             <ng-icon [name]="child.icon" class="shrink-0 text-base" />
             }
-            <span class="whitespace-nowrap">{{ child.label }}</span>
+            <span class="whitespace-nowrap">{{ child.label | translate }}</span>
             @if (child.badge !== undefined) {
             <span class="ml-auto text-xs text-white font-semibold px-1.5 py-0.5 rounded-full"
               [class]="badgeClasses(child.badgeType)">
@@ -93,67 +98,72 @@
       <div class="px-2 mt-2">
         @if (isExpanded) {
         <p class="px-3 mb-1 text-xs font-semibold text-white/40 uppercase tracking-wider whitespace-nowrap">
-          {{ asGroup(item).label }}
+          {{ asGroup(item).label | translate }}
         </p>
         } @else {
         <div class="mx-3 my-2 border-t border-white/10"></div>
         }
+
         @for (child of asGroup(item).children; track $index) {
 
-        <!-- Child Basic -->
-        @if (child.type === 'basic') {
-        <a [routerLink]="asBasic(child).path" routerLinkActive="bg-white/20 text-white" (click)="closeMobileSidebar()"
-          class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium
-                    text-white/80 hover:bg-white/10 hover:text-white transition-colors"
-          [class.justify-center]="!isExpanded">
-          @if (asBasic(child).icon) {
-          <ng-icon [name]="asBasic(child).icon!" class="shrink-0 text-lg" />
-          }
-          @if (isExpanded) {
-          <span class="flex-1 whitespace-nowrap">{{ asBasic(child).label }}</span>
-          @if (asBasic(child).badge !== undefined) {
-          <span class="text-xs text-white font-semibold px-1.5 py-0.5 rounded-full"
-            [class]="badgeClasses(asBasic(child).badgeType)">
-            {{ asBasic(child).badge }}
-          </span>
-          }
-          }
-        </a>
-        }
-
-        <!-- Child Collapsible -->
-        @if (child.type === 'collapsible') {
-        <button (click)="toggleCollapsible(asCollapsible(child).label)" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium
-                    text-white/80 hover:bg-white/10 hover:text-white transition-colors"
-          [class.justify-center]="!isExpanded">
-          @if (asCollapsible(child).icon) {
-          <ng-icon [name]="asCollapsible(child).icon!" class="shrink-0 text-lg" />
-          }
-          @if (isExpanded) {
-          <span class="flex-1 text-left whitespace-nowrap">{{ asCollapsible(child).label }}</span>
-          <ng-icon name="heroChevronRight" class="text-sm text-white/50 transition-transform duration-200"
-            [class.rotate-90]="isCollapsibleOpen(asCollapsible(child).label)" />
-          }
-        </button>
-        @if (isExpanded && isCollapsibleOpen(asCollapsible(child).label)) {
-        <div @collapse class="overflow-hidden">
-          @for (grandchild of asCollapsible(child).children; track grandchild.path) {
-          <a [routerLink]="grandchild.path" routerLinkActive="bg-white/20 text-white" (click)="closeMobileSidebar()"
-            class="flex items-center gap-3 pl-9 pr-3 py-2 rounded-lg text-sm
-                          text-white/70 hover:bg-white/10 hover:text-white transition-colors">
-            @if (grandchild.icon) {
-            <ng-icon [name]="grandchild.icon" class="shrink-0 text-base" />
-            }
-            <span class="whitespace-nowrap">{{ grandchild.label }}</span>
-          </a>
-          }
-        </div>
-        }
-        }
-
-        <!-- Child Divider -->
         @if (child.type === 'divider') {
         <div class="mx-1 my-1 border-t border-white/10"></div>
+        } @else {
+        <div (mouseenter)="onItemMouseEnter($event, child)"
+             (mouseleave)="onItemMouseLeave()">
+
+          <!-- Child Basic -->
+          @if (child.type === 'basic') {
+          <a [routerLink]="asBasic(child).path" routerLinkActive="bg-white/20 text-white" (click)="closeMobileSidebar()"
+            class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium
+                    text-white/80 hover:bg-white/10 hover:text-white transition-colors"
+            [class.justify-center]="!isExpanded">
+            @if (asBasic(child).icon) {
+            <ng-icon [name]="asBasic(child).icon!" class="shrink-0 text-lg" />
+            }
+            @if (isExpanded) {
+            <span class="flex-1 whitespace-nowrap">{{ asBasic(child).label | translate }}</span>
+            @if (asBasic(child).badge !== undefined) {
+            <span class="text-xs text-white font-semibold px-1.5 py-0.5 rounded-full"
+              [class]="badgeClasses(asBasic(child).badgeType)">
+              {{ asBasic(child).badge }}
+            </span>
+            }
+            }
+          </a>
+          }
+
+          <!-- Child Collapsible -->
+          @if (child.type === 'collapsible') {
+          <button (click)="toggleCollapsible(asCollapsible(child).label)" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium
+                      text-white/80 hover:bg-white/10 hover:text-white transition-colors"
+            [class.justify-center]="!isExpanded">
+            @if (asCollapsible(child).icon) {
+            <ng-icon [name]="asCollapsible(child).icon!" class="shrink-0 text-lg" />
+            }
+            @if (isExpanded) {
+            <span class="flex-1 text-left whitespace-nowrap">{{ asCollapsible(child).label | translate }}</span>
+            <ng-icon name="heroChevronRight" class="text-sm text-white/50 transition-transform duration-200"
+              [class.rotate-90]="isCollapsibleOpen(asCollapsible(child).label)" />
+            }
+          </button>
+          @if (isExpanded && isCollapsibleOpen(asCollapsible(child).label)) {
+          <div class="overflow-hidden transition-all duration-200">
+            @for (grandchild of asCollapsible(child).children; track grandchild.path) {
+            <a [routerLink]="grandchild.path" routerLinkActive="bg-white/20 text-white" (click)="closeMobileSidebar()"
+              class="flex items-center gap-3 pl-9 pr-3 py-2 rounded-lg text-sm
+                            text-white/70 hover:bg-white/10 hover:text-white transition-colors">
+              @if (grandchild.icon) {
+              <ng-icon [name]="grandchild.icon" class="shrink-0 text-base" />
+              }
+              <span class="whitespace-nowrap">{{ grandchild.label | translate }}</span>
+            </a>
+            }
+          </div>
+          }
+          }
+
+        </div>
         }
         }
       </div>
@@ -167,6 +177,51 @@
       v1.0.0
     </div>
     }
+
+    <!-- Flyout panel (collapsed state) -->
+    @if (!isExpanded && flyout()) {
+    <div class="fixed z-50 min-w-[180px] max-w-[240px] pointer-events-auto"
+         style="left: 68px"
+         [style.top.px]="flyout()!.top"
+         (mouseenter)="keepFlyout()"
+         (mouseleave)="closeFlyoutPanel()">
+
+      <div class="bg-[#1a3354] rounded-lg shadow-2xl border border-white/10 overflow-hidden">
+
+        <!-- Label -->
+        <div class="px-3 py-2.5 text-xs font-semibold text-white/60 uppercase tracking-wider"
+             [class.border-b]="flyout()!.children?.length"
+             [class.border-white/10]="flyout()!.children?.length">
+          {{ flyout()!.label | translate }}
+        </div>
+
+        <!-- Children links (collapsible only) -->
+        @if (flyout()!.children?.length) {
+        <div class="py-1">
+          @for (child of flyout()!.children!; track child.path) {
+          <a [routerLink]="child.path"
+             routerLinkActive="bg-white/20 text-white"
+             (click)="hideFlyout(); closeMobileSidebar()"
+             class="flex items-center gap-2.5 px-3 py-2 text-sm text-white/80
+                    hover:bg-white/10 hover:text-white transition-colors">
+            @if (child.icon) {
+            <ng-icon [name]="child.icon" class="shrink-0 text-base" />
+            }
+            <span class="whitespace-nowrap flex-1">{{ child.label | translate }}</span>
+            @if (child.badge !== undefined) {
+            <span class="text-xs text-white font-semibold px-1.5 py-0.5 rounded-full"
+                  [class]="badgeClasses(child.badgeType)">
+              {{ child.badge }}
+            </span>
+            }
+          </a>
+          }
+        </div>
+        }
+      </div>
+    </div>
+    }
+
   </aside>
 
   <!-- Main -->
@@ -182,32 +237,55 @@
         <app-breadcrumb />
       </div>
 
-      <div class="relative" (clickOutside)="closeUserMenu()">
-        <button (click)="toggleUserMenu()"
-          class="flex items-center gap-2 px-3 py-1.5 rounded-lg hover:bg-gray-100 transition-colors">
-          <div
-            class="w-8 h-8 rounded-full bg-[#1e3a5f] text-white flex items-center justify-center text-sm font-bold shrink-0">
-            {{ auth.user()?.name?.charAt(0) ?? 'U' }}
-          </div>
-          <div class="text-left hidden sm:block">
-            <p class="text-sm font-medium text-gray-800 leading-tight">{{ auth.user()?.name ?? 'Usuario' }}</p>
-            <p class="text-xs text-gray-500 leading-tight">{{ auth.user()?.email }}</p>
-          </div>
-          <ng-icon name="heroChevronDown" class="text-base text-gray-400 ml-1 hidden sm:block" />
-        </button>
-        @if (userMenuOpen()) {
-        <div class="absolute right-0 mt-1 w-48 bg-white rounded-xl shadow-lg border border-gray-100 py-1 z-50">
-          <div class="px-4 py-2 border-b border-gray-100">
-            <p class="text-xs text-gray-500">Sesión activa</p>
-            <p class="text-sm font-medium text-gray-800 truncate">{{ auth.user()?.email }}</p>
-          </div>
-          <button (click)="logout()"
-            class="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors">
-            <ng-icon name="heroArrowRightOnRectangle" class="text-base" />
-            Cerrar sesión
+      <div class="flex items-center gap-3">
+        <!-- Selector de idioma -->
+        <div class="flex items-center bg-gray-100 rounded-lg p-0.5">
+          <button (click)="lang.set('en')"
+            class="px-2.5 py-1 rounded-md text-xs font-semibold transition-colors"
+            [class.bg-white]="lang.current() === 'en'"
+            [class.text-[#1e3a5f]]="lang.current() === 'en'"
+            [class.shadow-sm]="lang.current() === 'en'"
+            [class.text-gray-400]="lang.current() !== 'en'">
+            EN
+          </button>
+          <button (click)="lang.set('es')"
+            class="px-2.5 py-1 rounded-md text-xs font-semibold transition-colors"
+            [class.bg-white]="lang.current() === 'es'"
+            [class.text-[#1e3a5f]]="lang.current() === 'es'"
+            [class.shadow-sm]="lang.current() === 'es'"
+            [class.text-gray-400]="lang.current() !== 'es'">
+            ES
           </button>
         </div>
-        }
+
+        <!-- User menu -->
+        <div class="relative" (clickOutside)="closeUserMenu()">
+          <button (click)="toggleUserMenu()"
+            class="flex items-center gap-2 px-3 py-1.5 rounded-lg hover:bg-gray-100 transition-colors">
+            <div
+              class="w-8 h-8 rounded-full bg-[#1e3a5f] text-white flex items-center justify-center text-sm font-bold shrink-0">
+              {{ auth.user()?.name?.charAt(0) ?? 'U' }}
+            </div>
+            <div class="text-left hidden sm:block">
+              <p class="text-sm font-medium text-gray-800 leading-tight">{{ auth.user()?.name ?? 'Usuario' }}</p>
+              <p class="text-xs text-gray-500 leading-tight">{{ auth.user()?.email }}</p>
+            </div>
+            <ng-icon name="heroChevronDown" class="text-base text-gray-400 ml-1 hidden sm:block" />
+          </button>
+          @if (userMenuOpen()) {
+          <div class="absolute right-0 mt-1 w-48 bg-white rounded-xl shadow-lg border border-gray-100 py-1 z-50">
+            <div class="px-4 py-2 border-b border-gray-100">
+              <p class="text-xs text-gray-500">{{ 'HEADER.ACTIVE_SESSION' | translate }}</p>
+              <p class="text-sm font-medium text-gray-800 truncate">{{ auth.user()?.email }}</p>
+            </div>
+            <button (click)="logout()"
+              class="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors">
+              <ng-icon name="heroArrowRightOnRectangle" class="text-base" />
+              {{ 'HEADER.LOGOUT' | translate }}
+            </button>
+          </div>
+          }
+        </div>
       </div>
     </header>
 

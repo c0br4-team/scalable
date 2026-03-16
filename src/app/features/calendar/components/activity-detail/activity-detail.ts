@@ -139,7 +139,8 @@ export class ActivityDetailComponent {
     return map[priority];
   }
 
-  protected formatDate(date: Date): string {
+  protected formatDate(date: Date | undefined): string {
+    if (!date) return '';
     return new Date(date).toLocaleDateString('es-ES', {
       day: '2-digit', month: 'short', year: 'numeric'
     });

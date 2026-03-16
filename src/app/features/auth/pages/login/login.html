@@ -22,10 +22,10 @@
       <!-- Tagline -->
       <div class="space-y-3">
         <h2 class="text-2xl font-semibold text-white leading-snug">
-          Gestiona tus casos de forma eficiente
+          {{ 'LOGIN.TAGLINE' | translate }}
         </h2>
         <p class="text-white/60 text-base leading-relaxed">
-          Una plataforma moderna para el seguimiento y resolución de casos empresariales.
+          {{ 'LOGIN.TAGLINE_SUB' | translate }}
         </p>
       </div>
 
@@ -36,7 +36,7 @@
             <div class="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center shrink-0">
               <ng-icon [name]="feature.icon" class="text-white text-base" />
             </div>
-            <span class="text-white/80 text-sm">{{ feature.text }}</span>
+            <span class="text-white/80 text-sm">{{ feature.text | translate }}</span>
           </div>
         }
       </div>
@@ -50,7 +50,7 @@
   <!-- Panel derecho — Formulario -->
   <div class="w-full lg:w-1/2 flex flex-col items-center justify-center bg-gray-50 p-6 sm:p-12">
 
-    <!-- Logo mobile (solo visible en mobile) -->
+    <!-- Logo mobile -->
     <div class="lg:hidden flex items-center gap-2 mb-8">
       <div class="w-10 h-10 bg-[#1e3a5f] rounded-xl flex items-center justify-center">
         <img src="icons/manifest-icon-192.maskable.png" alt="Logo" class="w-6 h-6 object-contain" />
@@ -62,15 +62,15 @@
 
       <!-- Header formulario -->
       <div class="space-y-1">
-        <h1 class="text-2xl font-bold text-gray-900">Iniciar sesión</h1>
-        <p class="text-sm text-gray-500">Ingresa tus credenciales para acceder</p>
+        <h1 class="text-2xl font-bold text-gray-900">{{ 'LOGIN.TITLE' | translate }}</h1>
+        <p class="text-sm text-gray-500">{{ 'LOGIN.SUBTITLE' | translate }}</p>
       </div>
 
       <!-- Error global -->
       @if (errorMessage()) {
         <div class="flex items-center gap-2.5 bg-red-50 border border-red-200 text-red-700 text-sm rounded-xl px-4 py-3">
           <ng-icon name="heroExclamationCircle" class="text-lg shrink-0" />
-          <span>{{ errorMessage() }}</span>
+          <span>{{ errorMessage() | translate }}</span>
         </div>
       }
 
@@ -80,14 +80,14 @@
         <!-- Email -->
         <div class="space-y-1.5">
           <label for="email" class="block text-sm font-medium text-gray-700">
-            Correo electrónico
+            {{ 'LOGIN.EMAIL' | translate }}
           </label>
           <input
             id="email"
             type="email"
             formControlName="email"
             autocomplete="email"
-            placeholder="tu@correo.com"
+            [placeholder]="'LOGIN.EMAIL_PLACEHOLDER' | translate"
             class="w-full px-4 py-3 rounded-xl border bg-white text-sm transition-all outline-none
               focus:ring-2 focus:ring-[#1e3a5f]/20 focus:border-[#1e3a5f]
               disabled:bg-gray-50 disabled:text-gray-400"
@@ -96,11 +96,11 @@
           />
           @if (hasError('email', 'required')) {
             <p class="text-xs text-red-500 flex items-center gap-1">
-              <ng-icon name="heroExclamationCircle" class="text-sm" /> El correo es requerido.
+              <ng-icon name="heroExclamationCircle" class="text-sm" /> {{ 'LOGIN.EMAIL_REQUIRED' | translate }}
             </p>
           } @else if (hasError('email', 'email')) {
             <p class="text-xs text-red-500 flex items-center gap-1">
-              <ng-icon name="heroExclamationCircle" class="text-sm" /> Ingresa un correo válido.
+              <ng-icon name="heroExclamationCircle" class="text-sm" /> {{ 'LOGIN.EMAIL_INVALID' | translate }}
             </p>
           }
         </div>
@@ -109,10 +109,10 @@
         <div class="space-y-1.5">
           <div class="flex items-center justify-between">
             <label for="password" class="block text-sm font-medium text-gray-700">
-              Contraseña
+              {{ 'LOGIN.PASSWORD' | translate }}
             </label>
             <a href="#" class="text-xs text-[#1e3a5f] hover:underline font-medium">
-              ¿Olvidaste tu contraseña?
+              {{ 'LOGIN.PASSWORD_FORGOT' | translate }}
             </a>
           </div>
           <div class="relative">
@@ -132,7 +132,7 @@
               type="button"
               (click)="togglePassword()"
               class="absolute inset-y-0 right-0 px-3.5 flex items-center text-gray-400 hover:text-gray-600 transition-colors"
-              [attr.aria-label]="showPassword() ? 'Ocultar contraseña' : 'Mostrar contraseña'"
+              [attr.aria-label]="(showPassword() ? 'LOGIN.HIDE_PASSWORD' : 'LOGIN.SHOW_PASSWORD') | translate"
             >
               @if (showPassword()) {
                 <ng-icon name="heroEyeSlash" class="text-lg" />
@@ -143,11 +143,11 @@
           </div>
           @if (hasError('password', 'required')) {
             <p class="text-xs text-red-500 flex items-center gap-1">
-              <ng-icon name="heroExclamationCircle" class="text-sm" /> La contraseña es requerida.
+              <ng-icon name="heroExclamationCircle" class="text-sm" /> {{ 'LOGIN.PASSWORD_REQUIRED' | translate }}
             </p>
           } @else if (hasError('password', 'minlength')) {
             <p class="text-xs text-red-500 flex items-center gap-1">
-              <ng-icon name="heroExclamationCircle" class="text-sm" /> Mínimo 6 caracteres.
+              <ng-icon name="heroExclamationCircle" class="text-sm" /> {{ 'LOGIN.PASSWORD_MIN' | translate }}
             </p>
           }
         </div>
@@ -165,9 +165,9 @@
               <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
               <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"/>
             </svg>
-            Ingresando...
+            {{ 'LOGIN.BUTTON_LOADING' | translate }}
           } @else {
-            Ingresar
+            {{ 'LOGIN.BUTTON' | translate }}
           }
         </button>
 
@@ -175,7 +175,7 @@
 
       <!-- Footer mobile -->
       <p class="lg:hidden text-center text-xs text-gray-400 mt-4">
-        © 2026 Scalable. Todos los derechos reservados.
+        {{ 'LOGIN.FOOTER' | translate }}
       </p>
 
     </div>
