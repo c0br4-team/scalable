@@ -20,7 +20,7 @@
 
     <!-- Nav -->
     <nav class="flex-1 py-3 overflow-y-auto overflow-x-hidden">
-      @for (item of navItems; track $index) {
+      @for (item of navItems(); track $index) {
 
       <!-- DIVIDER -->
       @if (item.type === 'divider') {

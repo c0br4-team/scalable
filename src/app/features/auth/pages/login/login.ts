@@ -1,6 +1,7 @@
 import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AuthService } from '../../../../core/auth/services/auth.service';
+import { LanguageService } from '../../../../core/services/language.service';
 import { NgIcon } from '@ng-icons/core';
 import { TranslatePipe } from '@ngx-translate/core';
 
@@ -13,6 +14,7 @@ import { TranslatePipe } from '@ngx-translate/core';
 export class LoginPage {
   private fb = inject(FormBuilder);
   private auth = inject(AuthService);
+  private lang = inject(LanguageService);
 
   protected isLoading = signal(false);
   protected showPassword = signal(false);
@@ -38,6 +40,10 @@ export class LoginPage {
 
     const { email, password } = this.form.getRawValue();
     this.auth.login({ email: email!, password: password! }).subscribe({
+      next: () => {
+        const prefs = this.auth.preferences();
+        if (prefs) this.lang.set(prefs.language);
+      },
       error: () => {
         this.errorMessage.set('LOGIN.ERROR_INVALID');
         this.isLoading.set(false);

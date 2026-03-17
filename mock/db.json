@@ -6,7 +6,8 @@
       "email": "carlos@mercadolaw.com",
       "role": "admin",
       "phone": "+54 11 4321-5678",
-      "password": "password123"
+      "password": "password123",
+      "preferences": { "language": "es", "theme": "light" }
     },
     {
       "id": "2",
@@ -14,7 +15,8 @@
       "email": "maria@mercadolaw.com",
       "role": "abogada",
       "phone": "+54 11 4321-8765",
-      "password": "password123"
+      "password": "password123",
+      "preferences": { "language": "es", "theme": "light" }
     },
     {
       "id": "3",
@@ -22,7 +24,8 @@
       "email": "juan@mercadolaw.com",
       "role": "asistente",
       "phone": "+54 11 4321-0000",
-      "password": "password123"
+      "password": "password123",
+      "preferences": { "language": "es", "theme": "light" }
     },
     {
       "id": "4",
@@ -30,7 +33,8 @@
       "email": "ana@mercadolaw.com",
       "role": "abogada",
       "phone": "+54 11 4321-1111",
-      "password": "password123"
+      "password": "password123",
+      "preferences": { "language": "en", "theme": "light" }
     }
   ],
   "activities": [
@@ -407,6 +411,81 @@
       "description": "Primera consulta por conflicto societario entre hermanos sobre empresa familiar.",
       "createdAt": "2026-03-16T00:00:00.000Z",
       "updatedAt": "2026-03-16T00:00:00.000Z"
+    }
+  ],
+  "navMenus": [
+    {
+      "id": "nav-admin",
+      "role": "admin",
+      "items": [
+        { "type": "basic", "label": "NAV.DASHBOARD", "path": "/dashboard", "icon": "heroHome", "exactPath": true },
+        { "type": "divider" },
+        {
+          "type": "group",
+          "label": "NAV.MANAGEMENT",
+          "children": [
+            { "type": "basic", "label": "NAV.CALENDAR", "path": "/calendar", "icon": "heroCalendar" },
+            { "type": "basic", "label": "NAV.CASES", "path": "/cases", "icon": "heroDocumentText", "badge": 8, "badgeType": "danger" },
+            {
+              "type": "collapsible",
+              "label": "NAV.REPORTS",
+              "icon": "heroChartBar",
+              "children": [
+                { "type": "basic", "label": "NAV.REPORTS_SUMMARY", "path": "/reports/summary", "icon": "heroChartBar" },
+                { "type": "basic", "label": "NAV.REPORTS_DETAIL", "path": "/reports/detail", "icon": "heroDocumentText" }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "group",
+          "label": "NAV.ADMIN",
+          "children": [
+            { "type": "basic", "label": "NAV.USERS", "path": "/users", "icon": "heroUsers" },
+            { "type": "basic", "label": "NAV.SETTINGS", "path": "/settings", "icon": "heroCog6Tooth" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "nav-abogada",
+      "role": "abogada",
+      "items": [
+        { "type": "basic", "label": "NAV.DASHBOARD", "path": "/dashboard", "icon": "heroHome", "exactPath": true },
+        { "type": "divider" },
+        {
+          "type": "group",
+          "label": "NAV.MANAGEMENT",
+          "children": [
+            { "type": "basic", "label": "NAV.CALENDAR", "path": "/calendar", "icon": "heroCalendar" },
+            { "type": "basic", "label": "NAV.CASES", "path": "/cases", "icon": "heroDocumentText" },
+            {
+              "type": "collapsible",
+              "label": "NAV.REPORTS",
+              "icon": "heroChartBar",
+              "children": [
+                { "type": "basic", "label": "NAV.REPORTS_SUMMARY", "path": "/reports/summary", "icon": "heroChartBar" }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "nav-asistente",
+      "role": "asistente",
+      "items": [
+        { "type": "basic", "label": "NAV.DASHBOARD", "path": "/dashboard", "icon": "heroHome", "exactPath": true },
+        { "type": "divider" },
+        {
+          "type": "group",
+          "label": "NAV.MANAGEMENT",
+          "children": [
+            { "type": "basic", "label": "NAV.CALENDAR", "path": "/calendar", "icon": "heroCalendar" },
+            { "type": "basic", "label": "NAV.CASES", "path": "/cases", "icon": "heroDocumentText" }
+          ]
+        }
+      ]
     }
   ],
   "clients": [

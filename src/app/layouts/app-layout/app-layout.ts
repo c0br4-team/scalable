@@ -40,35 +40,7 @@ export class AppLayout implements OnDestroy {
 
   private flyoutTimer: ReturnType<typeof setTimeout> | null = null;
 
-  protected navItems: NavItem[] = [
-    { type: 'basic', label: 'NAV.DASHBOARD', path: '/dashboard', icon: 'heroHome' },
-    { type: 'divider' },
-    {
-      type: 'group',
-      label: 'NAV.MANAGEMENT',
-      children: [
-        { type: 'basic', label: 'NAV.CALENDAR', path: '/calendar', icon: 'heroCalendar' },
-        { type: 'basic', label: 'NAV.CASES', path: '/cases', icon: 'heroDocumentText', badge: 8, badgeType: 'danger' },
-        {
-          type: 'collapsible',
-          label: 'NAV.REPORTS',
-          icon: 'heroChartBar',
-          children: [
-            { type: 'basic', label: 'NAV.REPORTS_SUMMARY', path: '/reports/summary', icon: 'heroChartBar' },
-            { type: 'basic', label: 'NAV.REPORTS_DETAIL', path: '/reports/detail', icon: 'heroDocumentText' },
-          ],
-        },
-      ],
-    },
-    {
-      type: 'group',
-      label: 'NAV.ADMIN',
-      children: [
-        { type: 'basic', label: 'NAV.USERS', path: '/users', icon: 'heroUsers' },
-        { type: 'basic', label: 'NAV.SETTINGS', path: '/settings', icon: 'heroCog6Tooth' },
-      ],
-    },
-  ];
+  protected readonly navItems = this.auth.navItems;
 
   protected get isExpanded(): boolean {
     return this.sidebarOpen() || this.mobileOpen();

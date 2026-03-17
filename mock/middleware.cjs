@@ -1,13 +1,13 @@
 /**
  * Middleware de json-server para simular endpoints de autenticación.
- * Intercepta rutas de auth antes de que json-server las procese.
  *
- * POST /api/auth/login   → valida email+password contra /users, devuelve token mock
- * POST /api/auth/refresh → renueva el token
- * POST /api/auth/logout  → 204 No Content
+ * POST /auth/login   → valida email+password, devuelve token + navItems + preferences
+ * POST /auth/refresh → renueva el token
+ * POST /auth/logout  → 204 No Content
  *
- * NOTA: json-server aplica body-parser antes de los middlewares personalizados,
- * por lo que el body ya está parseado en req.body — no leer el stream manualmente.
+ * NOTA: El rewriter de routes.json transforma /api/* → /* antes de llegar aquí,
+ * por eso las rutas se verifican sin el prefijo /api.
+ * NOTA: body-parser ya parsea el body antes del middleware → usar req.body directamente.
  */
 
 const fs = require('fs');
@@ -20,12 +20,14 @@ function readDb() {
 }
 
 function makeMockToken(user) {
-  const payload = Buffer.from(JSON.stringify({ sub: user.id, email: user.email, role: user.role })).toString('base64');
+  const payload = Buffer.from(
+    JSON.stringify({ sub: user.id, email: user.email, role: user.role })
+  ).toString('base64');
   return `mock.${payload}.signature`;
 }
 
 module.exports = (req, res, next) => {
-  // ── POST /api/auth/login ─────────────────────────────────────────────────────
+  // ── POST /auth/login ─────────────────────────────────────────────────────────
   if (req.method === 'POST' && req.url === '/auth/login') {
     const { email, password } = req.body ?? {};
 
@@ -42,22 +44,30 @@ module.exports = (req, res, next) => {
       return;
     }
 
+    const navMenu = db.navMenus.find(m => m.role === user.role);
+
     const { password: _pwd, ...safeUser } = user;
     const accessToken = makeMockToken(user);
     const refreshToken = `refresh.${user.id}.${Date.now()}`;
     const expiresIn = 8 * 60 * 60 * 1000; // 8 horas en ms
 
-    res.status(200).json({ user: safeUser, accessToken, refreshToken, expiresIn });
+    res.status(200).json({
+      user: safeUser,
+      accessToken,
+      refreshToken,
+      expiresIn,
+      navItems: navMenu?.items ?? [],
+    });
     return;
   }
 
-  // ── POST /api/auth/logout ────────────────────────────────────────────────────
+  // ── POST /auth/logout ────────────────────────────────────────────────────────
   if (req.method === 'POST' && req.url === '/auth/logout') {
     res.status(204).send();
     return;
   }
 
-  // ── POST /api/auth/refresh ───────────────────────────────────────────────────
+  // ── POST /auth/refresh ───────────────────────────────────────────────────────
   if (req.method === 'POST' && req.url === '/auth/refresh') {
     const { refreshToken } = req.body ?? {};
 
@@ -66,7 +76,6 @@ module.exports = (req, res, next) => {
       return;
     }
 
-    // Mock: extraer userId del refreshToken ("refresh.<id>.<ts>")
     const userId = refreshToken.split('.')[1];
     const db = readDb();
     const user = db.users.find(u => u.id === userId);
