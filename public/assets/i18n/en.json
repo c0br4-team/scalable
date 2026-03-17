@@ -13,7 +13,29 @@
   },
   "HEADER": {
     "ACTIVE_SESSION": "Active session",
-    "LOGOUT": "Sign out"
+    "PROFILE": "My profile",
+    "LOGOUT": "Sign out",
+    "LANGUAGE": "Language",
+    "HOME": "Home"
+  },
+  "PROFILE": {
+    "BREADCRUMB": "My Profile",
+    "PERSONAL_INFO": "Personal Information",
+    "NAME": "Full name",
+    "NAME_PLACEHOLDER": "Enter your name",
+    "NAME_REQUIRED": "Name is required (min. 2 characters).",
+    "EMAIL": "Email address",
+    "ROLE": "Role",
+    "SAVE": "Save changes",
+    "SAVED": "Changes saved",
+    "CHANGE_PASSWORD": "Change Password",
+    "CURRENT_PASSWORD": "Current password",
+    "NEW_PASSWORD": "New password",
+    "CONFIRM_PASSWORD": "Confirm new password",
+    "PASSWORD_REQUIRED": "This field is required.",
+    "PASSWORD_MIN": "Minimum 6 characters.",
+    "PASSWORDS_MISMATCH": "Passwords do not match.",
+    "UPDATE_PASSWORD": "Update password"
   },
   "LOGIN": {
     "TAGLINE": "Manage your cases efficiently",
@@ -55,7 +77,20 @@
     "INPUT": "Input",
     "CARD": "Card",
     "MODAL": "Modal",
-    "TABLE": "Table",
+    "TABLE": "Table"
+  },
+  "TABLE": {
+    "EMPTY": "No data available",
+    "EMPTY_EDITABLE": "No rows yet. Add one below.",
+    "ACTIONS": "Actions",
+    "SHOWING": "Showing",
+    "OF": "of",
+    "PAGE": "page",
+    "ADD_ROW": "Add row",
+    "DELETE_ROW": "Delete row",
+    "UNSAVED_CHANGES": "Unsaved changes",
+    "SAVE_CHANGES": "Save changes",
+    "DISCARD": "Discard"
     "NAVBAR": "Navbar",
     "FOOTER": "Footer"
   }

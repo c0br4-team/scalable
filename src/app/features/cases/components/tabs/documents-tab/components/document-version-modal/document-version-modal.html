@@ -1,0 +1,96 @@
+<!-- Backdrop scrollable -->
+<div class="fixed inset-0 z-50 overflow-y-auto bg-black/40"
+     (click)="closed.emit()">
+  <div class="flex min-h-full items-end sm:items-center justify-center sm:px-4 sm:py-6">
+
+    <!-- Sheet / Modal -->
+    <div class="bg-white w-full sm:max-w-md rounded-t-2xl sm:rounded-2xl shadow-2xl"
+         (click)="$event.stopPropagation()">
+
+      <!-- Handle (solo mobile) -->
+      <div class="sm:hidden flex justify-center pt-3 pb-1">
+        <div class="w-10 h-1 rounded-full bg-gray-300"></div>
+      </div>
+
+      <!-- Header -->
+      <div class="flex items-start justify-between px-4 sm:px-6 py-3 sm:py-4 border-b border-gray-100">
+        <div>
+          <h2 class="text-base font-semibold text-gray-900">Cargar nueva versión</h2>
+          <p class="text-xs text-gray-400 mt-0.5">
+            {{ targetDoc.name }} · v{{ targetDoc.currentVersion }} actual
+          </p>
+        </div>
+        <button type="button" class="p-1.5 hover:bg-gray-100 rounded-lg transition-colors mt-0.5"
+                (click)="closed.emit()">
+          <ng-icon name="heroXMark" class="text-base text-gray-500" />
+        </button>
+      </div>
+
+      <!-- Body -->
+      <div class="px-4 sm:px-6 py-4 space-y-4">
+
+        <!-- Version progression banner -->
+        <div class="flex items-center gap-2.5 px-4 py-3 bg-blue-50 rounded-xl">
+          <span class="px-2 py-1 text-xs font-bold bg-blue-200 text-blue-800 rounded">
+            v{{ targetDoc.currentVersion }}
+          </span>
+          <ng-icon name="heroArrowRight" class="text-blue-400 text-base" />
+          <span class="px-2 py-1 text-xs font-bold bg-[#1e3a5f] text-white rounded">
+            v{{ targetDoc.currentVersion + 1 }}
+          </span>
+          <span class="text-xs text-blue-600 ml-0.5">Se conservarán ambas versiones</span>
+        </div>
+
+        <!-- File pick area -->
+        <label class="block border-2 border-dashed rounded-xl cursor-pointer transition-colors group"
+               [class.border-[#1e3a5f]]="isDragging()"
+               [class.bg-blue-50]="isDragging()"
+               [class.border-gray-200]="!isDragging()"
+               (dragover)="onDragOver($event)"
+               (dragleave)="isDragging.set(false)"
+               (drop)="onDrop($event)">
+          <div class="flex flex-col items-center py-5 px-4 text-center">
+            @if (versionFile) {
+            <div class="flex items-center gap-3 w-full">
+              <ng-icon name="heroDocument" class="text-3xl text-[#1e3a5f] shrink-0" />
+              <div class="text-left min-w-0 flex-1">
+                <p class="text-sm font-semibold text-gray-800 truncate">{{ versionFile.name }}</p>
+                <p class="text-xs text-gray-400 mt-0.5">{{ formatSize(versionFile.size / 1024) }}</p>
+              </div>
+              <span class="shrink-0 text-xs text-[#1e3a5f] underline decoration-dotted">cambiar</span>
+            </div>
+            } @else {
+            <ng-icon name="heroArrowUpTray" class="text-3xl text-gray-300 mb-2 group-hover:text-[#1e3a5f]/40 transition-colors" />
+            <p class="text-sm font-semibold text-gray-700">
+              <span class="hidden sm:inline">Arrastrá el archivo actualizado aquí o </span>
+              <span class="text-[#1e3a5f] underline decoration-dotted group-hover:decoration-solid">
+                <span class="sm:hidden">Tocá para seleccionar el archivo</span>
+                <span class="hidden sm:inline">hacé click para seleccionar</span>
+              </span>
+            </p>
+            <p class="text-xs text-gray-400 mt-1">PDF, DOCX, Excel, imágenes · Máx. 25 MB</p>
+            }
+          </div>
+          <input type="file" class="sr-only" (change)="onFileSelected($event)" />
+        </label>
+
+      </div>
+
+      <!-- Footer -->
+      <div class="flex flex-col sm:flex-row sm:justify-end gap-2 px-4 sm:px-6 py-4 border-t border-gray-100">
+        <button type="button"
+                class="order-2 sm:order-1 w-full sm:w-auto px-4 py-2.5 sm:py-2 text-sm text-gray-600 hover:bg-gray-100 rounded-lg transition-colors border border-gray-200 sm:border-0"
+                (click)="closed.emit()">
+          Cancelar
+        </button>
+        <button type="button"
+                class="order-1 sm:order-2 w-full sm:w-auto px-5 py-2.5 sm:py-2 bg-[#1e3a5f] text-white text-sm font-medium rounded-lg hover:bg-[#162d4a] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                [disabled]="!versionFile"
+                (click)="submit()">
+          Cargar versión {{ targetDoc.currentVersion + 1 }}
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>

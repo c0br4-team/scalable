@@ -1,0 +1,48 @@
+<!-- Mobile: chips horizontales scrollables -->
+<div class="sm:hidden flex overflow-x-auto gap-1.5 px-4 py-2.5 border-b border-gray-200 bg-gray-50/60 shrink-0 scrollbar-none">
+  @for (item of items; track item.key) {
+  <button type="button"
+          class="flex-none flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-colors whitespace-nowrap border"
+          [class.bg-[#1e3a5f]]="activeKey === item.key"
+          [class.text-white]="activeKey === item.key"
+          [class.border-[#1e3a5f]]="activeKey === item.key"
+          [class.bg-white]="activeKey !== item.key"
+          [class.text-gray-600]="activeKey !== item.key"
+          [class.border-gray-200]="activeKey !== item.key"
+          (click)="folderSelect.emit(item.key)">
+    <ng-icon [name]="item.key === '__all__' ? 'heroDocumentText' : 'heroFolder'"
+             style="font-size:12px"
+             [class.text-white]="activeKey === item.key"
+             [class.text-amber-500]="activeKey !== item.key && item.key !== '__all__' && item.key !== '__no_folder__'"
+             [class.text-gray-400]="activeKey !== item.key && (item.key === '__all__' || item.key === '__no_folder__')" />
+    {{ item.label }}
+    <span class="text-[10px] opacity-70">({{ item.count }})</span>
+  </button>
+  }
+</div>
+
+<!-- Desktop: panel vertical lateral -->
+<div class="hidden sm:flex flex-col w-48 shrink-0 border-r border-gray-200 overflow-y-auto py-2 bg-gray-50/60">
+  @for (item of items; track item.key) {
+  <button type="button"
+          class="w-full flex items-center gap-2 px-3 py-2.5 text-left transition-all border-l-2"
+          [class.bg-white]="activeKey === item.key"
+          [class.border-[#1e3a5f]]="activeKey === item.key"
+          [class.text-[#1e3a5f]]="activeKey === item.key"
+          [class.font-semibold]="activeKey === item.key"
+          [class.border-transparent]="activeKey !== item.key"
+          [class.text-gray-600]="activeKey !== item.key"
+          [class.hover:bg-gray-100]="activeKey !== item.key"
+          (click)="folderSelect.emit(item.key)">
+    <ng-icon [name]="item.key === '__all__' ? 'heroDocumentText' : 'heroFolder'"
+             class="text-sm shrink-0"
+             [class.text-[#1e3a5f]]="activeKey === item.key"
+             [class.text-amber-500]="activeKey !== item.key && item.key !== '__all__' && item.key !== '__no_folder__'"
+             [class.text-gray-400]="activeKey !== item.key && (item.key === '__all__' || item.key === '__no_folder__')" />
+    <span class="flex-1 text-xs truncate">{{ item.label }}</span>
+    <span class="text-xs shrink-0 tabular-nums"
+          [class.text-[#1e3a5f]]="activeKey === item.key"
+          [class.text-gray-400]="activeKey !== item.key">{{ item.count }}</span>
+  </button>
+  }
+</div>

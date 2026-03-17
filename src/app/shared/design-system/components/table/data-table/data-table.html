@@ -1,0 +1,324 @@
+<div class="flex flex-col w-full gap-0">
+
+  <!-- ══════════════════════════════════════════════════════
+       MOBILE: Vista de cards (< sm)
+  ═══════════════════════════════════════════════════════ -->
+  <div class="sm:hidden space-y-3">
+
+    <!-- Select-all bar (solo si selectable) -->
+    @if (selectable && data.length && !loading) {
+    <div class="flex items-center gap-2 px-1">
+      <input type="checkbox"
+             class="rounded border-gray-300 text-[#1e3a5f] focus:ring-[#1e3a5f]"
+             [checked]="allSelected"
+             [indeterminate]="indeterminate"
+             (change)="toggleAll()" />
+      <span class="text-xs text-gray-500">
+        @if (selectedRows().size) {
+          {{ selectedRows().size }} seleccionado{{ selectedRows().size !== 1 ? 's' : '' }}
+        } @else {
+          Seleccionar todos
+        }
+      </span>
+    </div>
+    }
+
+    <!-- Loading skeleton -->
+    @if (loading) {
+      @for (i of skeletonRows; track i) {
+      <div class="animate-pulse rounded-xl border border-gray-200 bg-white p-4 space-y-3">
+        <div class="h-4 bg-gray-200 rounded w-1/2"></div>
+        <div class="space-y-2">
+          @for (col of columns; track col.key) {
+          <div class="flex gap-3">
+            <div class="h-3 bg-gray-200 rounded w-20 shrink-0"></div>
+            <div class="h-3 bg-gray-200 rounded flex-1"></div>
+          </div>
+          }
+        </div>
+      </div>
+      }
+
+    <!-- Empty state -->
+    } @else if (!data.length) {
+    <div class="flex flex-col items-center justify-center py-14 rounded-xl border border-dashed border-gray-200 bg-white">
+      <ng-icon name="heroFunnel" class="text-3xl text-gray-200 mb-2" />
+      <span class="text-sm text-gray-400">{{ emptyMessage | translate }}</span>
+    </div>
+
+    <!-- Data cards -->
+    } @else {
+      @for (row of data; track $index) {
+      <div class="rounded-xl border bg-white transition-all"
+           [class.border-[#1e3a5f]]="isSelected(row)"
+           [class.border-gray-200]="!isSelected(row)"
+           [class.shadow-sm]="isSelected(row)"
+           [class.cursor-pointer]="rowClick.observed"
+           (click)="rowClick.emit(row)">
+
+        <!-- Card header: checkbox + acciones -->
+        @if (selectable || rowActions.length) {
+        <div class="flex items-center justify-between px-4 pt-3 pb-0 gap-2"
+             (click)="$event.stopPropagation()">
+          @if (selectable) {
+          <input type="checkbox"
+                 class="rounded border-gray-300 text-[#1e3a5f] focus:ring-[#1e3a5f]"
+                 [checked]="isSelected(row)"
+                 (change)="toggleRow(row, $event)" />
+          } @else {
+          <span></span>
+          }
+          @if (rowActions.length) {
+          <div class="flex items-center gap-1">
+            @for (action of visibleActions(row); track action.label) {
+            <button type="button"
+                    [title]="action.label | translate"
+                    class="p-1.5 rounded-lg transition-colors"
+                    [class]="actionColorCls(action.color)"
+                    (click)="$event.stopPropagation(); action.action(row)">
+              @if (action.icon) {
+              <ng-icon [name]="action.icon" class="text-base" />
+              } @else {
+              <span class="text-xs font-medium px-1">{{ action.label | translate }}</span>
+              }
+            </button>
+            }
+          </div>
+          }
+        </div>
+        }
+
+        <!-- Fields -->
+        <div class="px-4 py-3 space-y-2">
+          @for (col of columns; track col.key; let first = $first) {
+          <div class="flex items-start gap-3 min-w-0"
+               [class.pb-2]="first && columns.length > 1"
+               [class.border-b]="first && columns.length > 1"
+               [class.border-gray-100]="first && columns.length > 1">
+            @if (!first) {
+            <span class="text-xs font-semibold text-gray-400 uppercase tracking-wide w-24 shrink-0 pt-px">
+              {{ col.header | translate }}
+            </span>
+            }
+            <span class="min-w-0 flex-1"
+                  [class.text-sm]="!first"
+                  [class.text-gray-700]="!first"
+                  [class.text-base]="first"
+                  [class.font-semibold]="first"
+                  [class.text-gray-900]="first"
+                  [class.text-right]="!first && col.align === 'right'"
+                  [class.text-center]="!first && col.align === 'center'">
+              @if (getTemplate(col.key); as tpl) {
+                <ng-container *ngTemplateOutlet="tpl; context: { $implicit: row, value: getCellValue(row, col.key), index: $index }" />
+              } @else {
+                {{ getCellValue(row, col.key) }}
+              }
+            </span>
+          </div>
+          }
+        </div>
+
+      </div>
+      }
+    }
+
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════
+       DESKTOP: Vista de tabla (≥ sm)
+  ═══════════════════════════════════════════════════════ -->
+  <div class="hidden sm:block w-full overflow-x-auto rounded-lg border border-gray-200">
+    <table class="w-full text-sm text-left text-gray-700">
+
+      <!-- Header -->
+      <thead class="text-xs text-gray-500 uppercase bg-gray-50 border-b border-gray-200"
+             [class.sticky]="stickyHeader" [class.top-0]="stickyHeader" [class.z-10]="stickyHeader">
+        <tr>
+          @if (selectable) {
+          <th class="w-10 px-4 py-3">
+            <input type="checkbox"
+                   class="rounded border-gray-300 text-[#1e3a5f] focus:ring-[#1e3a5f]"
+                   [checked]="allSelected"
+                   [indeterminate]="indeterminate"
+                   (change)="toggleAll()" />
+          </th>
+          }
+
+          @for (col of columns; track col.key) {
+          <th [style.width]="col.width"
+              class="px-4 py-3 whitespace-nowrap font-semibold tracking-wide select-none"
+              [class.cursor-pointer]="col.sortable"
+              (click)="onSort(col)">
+            <span class="inline-flex items-center gap-1.5"
+                  [class.justify-center]="col.align === 'center'"
+                  [class.justify-end]="col.align === 'right'">
+              {{ col.header | translate }}
+              @if (col.sortable) {
+                @if (getSortDirection(col.key) === 'asc') {
+                <ng-icon name="heroChevronUp" class="text-[#1e3a5f] shrink-0" style="font-size:13px" />
+                } @else if (getSortDirection(col.key) === 'desc') {
+                <ng-icon name="heroChevronDown" class="text-[#1e3a5f] shrink-0" style="font-size:13px" />
+                } @else {
+                <span class="text-gray-300 text-xs leading-none select-none">⇅</span>
+                }
+              }
+            </span>
+          </th>
+          }
+
+          @if (rowActions.length) {
+          <th class="px-4 py-3 text-right text-xs font-semibold tracking-wide text-gray-500 uppercase">
+            {{ 'TABLE.ACTIONS' | translate }}
+          </th>
+          }
+        </tr>
+      </thead>
+
+      <!-- Body -->
+      <tbody>
+        @if (loading) {
+          @for (i of skeletonRows; track i) {
+          <tr class="border-b border-gray-100 animate-pulse">
+            @if (selectable) {
+            <td class="px-4 py-3"><div class="h-4 w-4 bg-gray-200 rounded"></div></td>
+            }
+            @for (col of columns; track col.key) {
+            <td class="px-4 py-3">
+              <div class="h-4 bg-gray-200 rounded" style="width:60%"></div>
+            </td>
+            }
+            @if (rowActions.length) {
+            <td class="px-4 py-3 text-right">
+              <div class="h-4 w-16 bg-gray-200 rounded ml-auto"></div>
+            </td>
+            }
+          </tr>
+          }
+
+        } @else if (!data.length) {
+        <tr>
+          <td [attr.colspan]="colSpan" class="px-4 py-14 text-center text-gray-400">
+            <div class="flex flex-col items-center gap-2">
+              <ng-icon name="heroFunnel" class="text-3xl text-gray-200" />
+              <span class="text-sm">{{ emptyMessage | translate }}</span>
+            </div>
+          </td>
+        </tr>
+
+        } @else {
+          @for (row of data; track $index) {
+          <tr class="border-b border-gray-100 hover:bg-slate-50 transition-colors"
+              [class.bg-gray-50]="striped && ($index % 2 !== 0)"
+              [class.cursor-pointer]="rowClick.observed"
+              (click)="rowClick.emit(row)">
+
+            @if (selectable) {
+            <td [class]="cellPadding">
+              <input type="checkbox"
+                     class="rounded border-gray-300 text-[#1e3a5f] focus:ring-[#1e3a5f]"
+                     [checked]="isSelected(row)"
+                     (change)="toggleRow(row, $event)" />
+            </td>
+            }
+
+            @for (col of columns; track col.key) {
+            <td [class]="cellPadding"
+                [class.text-center]="col.align === 'center'"
+                [class.text-right]="col.align === 'right'">
+              @if (getTemplate(col.key); as tpl) {
+                <ng-container *ngTemplateOutlet="tpl; context: { $implicit: row, value: getCellValue(row, col.key), index: $index }" />
+              } @else {
+                {{ getCellValue(row, col.key) }}
+              }
+            </td>
+            }
+
+            @if (rowActions.length) {
+            <td [class]="cellPadding + ' text-right'">
+              <div class="flex items-center justify-end gap-1">
+                @for (action of visibleActions(row); track action.label) {
+                <button type="button"
+                        [title]="action.label"
+                        class="p-1.5 rounded-lg transition-colors"
+                        [class]="actionColorCls(action.color)"
+                        (click)="$event.stopPropagation(); action.action(row)">
+                  @if (action.icon) {
+                  <ng-icon [name]="action.icon" class="text-base" />
+                  } @else {
+                  <span class="text-xs font-medium">{{ action.label }}</span>
+                  }
+                </button>
+                }
+              </div>
+            </td>
+            }
+          </tr>
+          }
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════
+       PAGINADOR (ambas vistas)
+  ═══════════════════════════════════════════════════════ -->
+  @if (paginator) {
+  <div class="flex items-center justify-between px-1 pt-3 pb-1 text-sm text-gray-500 flex-wrap gap-2">
+
+    <!-- Info + page size -->
+    <div class="flex items-center gap-3">
+      <span class="text-xs">
+        {{ 'TABLE.SHOWING' | translate }}
+        <strong class="text-gray-700">{{ paginatorFrom }}–{{ paginatorTo }}</strong>
+        {{ 'TABLE.OF' | translate }}
+        <strong class="text-gray-700">{{ paginator.total }}</strong>
+      </span>
+      <select class="text-xs border border-gray-200 rounded-md px-2 py-1 bg-white focus:outline-none focus:ring-2 focus:ring-[#1e3a5f]/30"
+              [value]="paginator.pageSize"
+              (change)="onPageSizeChange($event)">
+        @for (size of (paginator.pageSizeOptions ?? [10, 20, 50]); track size) {
+        <option [value]="size">{{ size }} / {{ 'TABLE.PAGE' | translate }}</option>
+        }
+      </select>
+    </div>
+
+    <!-- Page buttons -->
+    <div class="flex items-center gap-1">
+      <button class="p-1.5 rounded-lg transition-colors hover:bg-gray-100 disabled:opacity-40 disabled:cursor-not-allowed"
+              [disabled]="paginator.page === 1"
+              (click)="onPageChange(paginator.page - 1)">
+        <ng-icon name="heroChevronLeft" class="text-base" />
+      </button>
+
+      @if (showFirstEllipsis) {
+      <button class="px-2.5 py-1 rounded-lg text-xs hover:bg-gray-100 transition-colors"
+              (click)="onPageChange(1)">1</button>
+      <span class="text-gray-300 text-xs px-0.5">…</span>
+      }
+
+      @for (p of pageNumbers; track p) {
+      <button class="px-2.5 py-1 rounded-lg text-xs font-medium transition-colors"
+              [class]="p === paginator.page
+                ? 'bg-[#1e3a5f] text-white'
+                : 'text-gray-600 hover:bg-gray-100'"
+              (click)="onPageChange(p)">
+        {{ p }}
+      </button>
+      }
+
+      @if (showLastEllipsis) {
+      <span class="text-gray-300 text-xs px-0.5">…</span>
+      <button class="px-2.5 py-1 rounded-lg text-xs hover:bg-gray-100 transition-colors"
+              (click)="onPageChange(totalPages)">{{ totalPages }}</button>
+      }
+
+      <button class="p-1.5 rounded-lg transition-colors hover:bg-gray-100 disabled:opacity-40 disabled:cursor-not-allowed"
+              [disabled]="paginator.page === totalPages"
+              (click)="onPageChange(paginator.page + 1)">
+        <ng-icon name="heroChevronRight" class="text-base" />
+      </button>
+    </div>
+  </div>
+  }
+
+</div>

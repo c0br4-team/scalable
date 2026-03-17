@@ -20,7 +20,7 @@
 
     <!-- Nav -->
     <nav class="flex-1 py-3 overflow-y-auto overflow-x-hidden">
-      @for (item of navItems; track $index) {
+      @for (item of navItems(); track $index) {
 
       <!-- DIVIDER -->
       @if (item.type === 'divider') {
@@ -278,6 +278,11 @@
               <p class="text-xs text-gray-500">{{ 'HEADER.ACTIVE_SESSION' | translate }}</p>
               <p class="text-sm font-medium text-gray-800 truncate">{{ auth.user()?.email }}</p>
             </div>
+            <a routerLink="/profile" (click)="closeUserMenu()"
+              class="w-full flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors">
+              <ng-icon name="heroUserCircle" class="text-base" />
+              {{ 'HEADER.PROFILE' | translate }}
+            </a>
             <button (click)="logout()"
               class="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors">
               <ng-icon name="heroArrowRightOnRectangle" class="text-base" />

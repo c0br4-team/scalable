@@ -27,6 +27,7 @@ import {
   heroInformationCircle,
   heroChevronRight,
   heroChevronLeft,
+  heroChevronUp,
   heroCalendar,
   heroTag,
   heroUserPlus,
@@ -42,6 +43,16 @@ import {
   heroArrowPath,
   heroFunnel,
   heroMagnifyingGlass,
+  heroUserCircle,
+  heroArrowLeft,
+  heroArrowTopRightOnSquare,
+  heroChatBubbleLeftEllipsis,
+  heroFolder,
+  heroFolderOpen,
+  heroArrowDownTray,
+  heroArrowRight,
+  heroCursorArrowRays,
+  heroArrowsPointingIn,
 } from '@ng-icons/heroicons/outline';
 
 export const appConfig: ApplicationConfig = {
@@ -76,6 +87,7 @@ export const appConfig: ApplicationConfig = {
       heroInformationCircle,
       heroChevronRight,
       heroChevronLeft,
+      heroChevronUp,
       heroCalendar,
       heroPlus,
       heroTrash,
@@ -91,6 +103,16 @@ export const appConfig: ApplicationConfig = {
       heroArrowPath,
       heroFunnel,
       heroMagnifyingGlass,
+      heroUserCircle,
+      heroArrowLeft,
+      heroArrowTopRightOnSquare,
+      heroChatBubbleLeftEllipsis,
+      heroFolder,
+      heroFolderOpen,
+      heroArrowDownTray,
+      heroArrowRight,
+      heroCursorArrowRays,
+      heroArrowsPointingIn,
     })
   ]
 };

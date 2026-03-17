@@ -1,0 +1,138 @@
+@if (loading()) {
+<!-- Skeleton -->
+<div class="flex-1 overflow-auto p-6 space-y-4 animate-pulse">
+  <div class="h-8 bg-gray-200 rounded w-1/3"></div>
+  <div class="h-32 bg-gray-200 rounded-xl"></div>
+  <div class="h-10 bg-gray-200 rounded-xl w-2/3"></div>
+  <div class="h-64 bg-gray-200 rounded-xl"></div>
+</div>
+
+} @else if (case_(); as c) {
+
+<!-- Back + header bar -->
+<div class="shrink-0 bg-white border-b border-gray-200 px-4 lg:px-6 py-3 flex items-center gap-3">
+  <button type="button"
+          class="p-1.5 rounded-lg hover:bg-gray-100 text-gray-500 hover:text-gray-700 transition-colors"
+          (click)="goBack()">
+    <ng-icon name="heroArrowLeft" class="text-lg" />
+  </button>
+  <span class="text-sm text-gray-400">Expedientes</span>
+  <ng-icon name="heroChevronRight" class="text-sm text-gray-300" />
+  <span class="text-sm font-semibold text-gray-700">{{ c.caseNumber }}</span>
+  <button type="button"
+          class="ml-auto flex items-center gap-1.5 px-2.5 py-1.5 text-xs text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+          [title]="showCaseHeader() ? 'Ocultar encabezado' : 'Mostrar encabezado'"
+          (click)="showCaseHeader.update(v => !v)">
+    <ng-icon [name]="showCaseHeader() ? 'heroChevronUp' : 'heroChevronDown'" class="text-sm" />
+    {{ showCaseHeader() ? 'Ocultar encabezado' : 'Mostrar encabezado' }}
+  </button>
+</div>
+
+<!-- Case header card (collapsible) -->
+@if (showCaseHeader()) {
+<div class="shrink-0 bg-white border-b border-gray-200 px-4 lg:px-6 py-4">
+
+  <!-- Title row -->
+  <div class="flex items-start justify-between gap-4 mb-3">
+    <div class="min-w-0">
+      <p class="text-xs font-mono text-gray-400 mb-0.5">{{ c.caseNumber }}</p>
+      <h1 class="text-xl font-bold text-gray-900 leading-tight">{{ c.title }}</h1>
+    </div>
+    <div class="flex items-center gap-2 shrink-0">
+      <span class="px-2.5 py-1 rounded-full text-xs font-semibold" [class]="priorityCls(c.priority)">
+        {{ priorityLabel(c.priority) }}
+      </span>
+      <span class="px-2.5 py-1 rounded-full text-xs font-semibold" [class]="statusCls(c.status)">
+        {{ statusLabel(c.status) }}
+      </span>
+      <span class="px-2.5 py-1 rounded-full text-xs font-semibold" [class]="typeCls(c.type)">
+        {{ typeLabel(c.type) }}
+      </span>
+    </div>
+  </div>
+
+  <!-- Meta grid -->
+  <div class="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-2 text-sm">
+    <div>
+      <p class="text-xs text-gray-400 font-medium">Cliente</p>
+      <p class="text-gray-800 font-medium truncate">{{ c.clientName }}</p>
+    </div>
+    <div>
+      <p class="text-xs text-gray-400 font-medium">Fecha apertura</p>
+      <p class="text-gray-800">{{ formatDate(c.openedAt) }}</p>
+    </div>
+    @if (c.court) {
+    <div>
+      <p class="text-xs text-gray-400 font-medium">Tribunal</p>
+      <p class="text-gray-800 truncate">{{ c.court }}</p>
+    </div>
+    }
+    @if (c.judge) {
+    <div>
+      <p class="text-xs text-gray-400 font-medium">Juez/a</p>
+      <p class="text-gray-800 truncate">{{ c.judge }}</p>
+    </div>
+    }
+    @if (c.nextHearing) {
+    <div>
+      <p class="text-xs text-gray-400 font-medium">Próxima audiencia</p>
+      <p class="text-gray-800 flex items-center gap-1">
+        <ng-icon name="heroCalendar" class="text-sm text-gray-400" />
+        {{ formatDate(c.nextHearing) }}
+      </p>
+    </div>
+    }
+    @if (c.closedAt) {
+    <div>
+      <p class="text-xs text-gray-400 font-medium">Fecha cierre</p>
+      <p class="text-gray-800">{{ formatDate(c.closedAt) }}</p>
+    </div>
+    }
+  </div>
+</div>
+}
+
+<!-- Tab strip -->
+<div class="shrink-0 bg-white border-b border-gray-200 px-4 lg:px-6">
+  <nav class="flex gap-0 overflow-x-auto">
+    @for (tab of tabs; track tab.key) {
+    <button type="button"
+            class="flex items-center gap-1.5 px-4 py-3 text-sm font-medium border-b-2 transition-colors whitespace-nowrap"
+            [class.border-[#1e3a5f]]="activeTab() === tab.key"
+            [class.text-[#1e3a5f]]="activeTab() === tab.key"
+            [class.border-transparent]="activeTab() !== tab.key"
+            [class.text-gray-500]="activeTab() !== tab.key"
+            [class.hover:text-gray-700]="activeTab() !== tab.key"
+            (click)="activeTab.set(tab.key)">
+      <ng-icon [name]="tab.icon" class="text-base" />
+      {{ tab.label }}
+    </button>
+    }
+  </nav>
+</div>
+
+<!-- Tab content -->
+<div class="flex-1 overflow-auto">
+  @switch (activeTab()) {
+    @case ('description') {
+      <app-case-description-tab [case]="c" />
+    }
+    @case ('documents') {
+      <app-case-documents-tab
+        [documents]="c.documents ?? []"
+        [folders]="c.folders ?? []"
+        [caseId]="c.id" />
+    }
+    @case ('comments') {
+      <app-case-comments-tab [comments]="c.comments ?? []" />
+    }
+    @case ('notes') {
+      <app-case-notes-tab [notes]="c.notes ?? []" />
+    }
+    @case ('history') {
+      <app-case-history-tab [history]="c.history ?? []" />
+    }
+  }
+</div>
+
+}
