@@ -13,7 +13,29 @@
   },
   "HEADER": {
     "ACTIVE_SESSION": "Sesión activa",
-    "LOGOUT": "Cerrar sesión"
+    "PROFILE": "Mi perfil",
+    "LOGOUT": "Cerrar sesión",
+    "LANGUAGE": "Idioma",
+    "HOME": "Inicio"
+  },
+  "PROFILE": {
+    "BREADCRUMB": "Mi Perfil",
+    "PERSONAL_INFO": "Información personal",
+    "NAME": "Nombre completo",
+    "NAME_PLACEHOLDER": "Ingresa tu nombre",
+    "NAME_REQUIRED": "El nombre es requerido (mín. 2 caracteres).",
+    "EMAIL": "Correo electrónico",
+    "ROLE": "Rol",
+    "SAVE": "Guardar cambios",
+    "SAVED": "Cambios guardados",
+    "CHANGE_PASSWORD": "Cambiar contraseña",
+    "CURRENT_PASSWORD": "Contraseña actual",
+    "NEW_PASSWORD": "Nueva contraseña",
+    "CONFIRM_PASSWORD": "Confirmar nueva contraseña",
+    "PASSWORD_REQUIRED": "Este campo es requerido.",
+    "PASSWORD_MIN": "Mínimo 6 caracteres.",
+    "PASSWORDS_MISMATCH": "Las contraseñas no coinciden.",
+    "UPDATE_PASSWORD": "Actualizar contraseña"
   },
   "LOGIN": {
     "TAGLINE": "Gestiona tus casos de forma eficiente",

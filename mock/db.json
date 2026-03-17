@@ -1,0 +1,469 @@
+{
+  "users": [
+    {
+      "id": "1",
+      "name": "Carlos Rodríguez",
+      "email": "carlos@mercadolaw.com",
+      "role": "admin",
+      "phone": "+54 11 4321-5678",
+      "password": "password123"
+    },
+    {
+      "id": "2",
+      "name": "María García",
+      "email": "maria@mercadolaw.com",
+      "role": "abogada",
+      "phone": "+54 11 4321-8765",
+      "password": "password123"
+    },
+    {
+      "id": "3",
+      "name": "Juan Pérez",
+      "email": "juan@mercadolaw.com",
+      "role": "asistente",
+      "phone": "+54 11 4321-0000",
+      "password": "password123"
+    },
+    {
+      "id": "4",
+      "name": "Ana López",
+      "email": "ana@mercadolaw.com",
+      "role": "abogada",
+      "phone": "+54 11 4321-1111",
+      "password": "password123"
+    }
+  ],
+  "activities": [
+    {
+      "id": "act-001",
+      "title": "Audiencia preliminar — Caso Martínez vs. Fernández",
+      "type": "meeting",
+      "status": "pending",
+      "priority": "critical",
+      "startDate": "2026-03-17T09:00:00.000Z",
+      "dueDate": "2026-03-17T11:00:00.000Z",
+      "notes": "Preparar documentación de prueba y testigos. Revisar últimas comunicaciones con el cliente.",
+      "assignees": [
+        { "id": "1", "name": "Carlos Rodríguez", "email": "carlos@mercadolaw.com" },
+        { "id": "2", "name": "María García", "email": "maria@mercadolaw.com" }
+      ],
+      "checklist": [
+        { "id": "chk-001-1", "text": "Revisar expediente completo", "completed": true, "createdAt": "2026-03-10T08:00:00.000Z", "completedAt": "2026-03-12T10:00:00.000Z" },
+        { "id": "chk-001-2", "text": "Preparar lista de testigos", "completed": true, "createdAt": "2026-03-10T08:00:00.000Z", "completedAt": "2026-03-13T15:00:00.000Z" },
+        { "id": "chk-001-3", "text": "Imprimir documentación para el juez", "completed": false, "createdAt": "2026-03-10T08:00:00.000Z" },
+        { "id": "chk-001-4", "text": "Confirmar asistencia del cliente", "completed": false, "createdAt": "2026-03-10T08:00:00.000Z" }
+      ],
+      "attachments": [],
+      "history": [
+        { "id": "hist-001-1", "action": "created", "description": "Actividad creada por Carlos Rodríguez", "performedBy": "Carlos Rodríguez", "performedAt": "2026-03-10T08:00:00.000Z" },
+        { "id": "hist-001-2", "action": "assignee_added", "description": "Responsable agregado: María García", "performedBy": "Carlos Rodríguez", "performedAt": "2026-03-10T08:05:00.000Z" }
+      ],
+      "createdAt": "2026-03-10T08:00:00.000Z",
+      "updatedAt": "2026-03-10T08:05:00.000Z"
+    },
+    {
+      "id": "act-002",
+      "title": "Redactar contrato de arrendamiento — Cliente Suárez",
+      "type": "task",
+      "status": "in-progress",
+      "priority": "high",
+      "startDate": "2026-03-14T00:00:00.000Z",
+      "dueDate": "2026-03-20T17:00:00.000Z",
+      "notes": "Contrato de arrendamiento comercial por 3 años. Incluir cláusula de indexación por IPC.",
+      "assignees": [
+        { "id": "2", "name": "María García", "email": "maria@mercadolaw.com" }
+      ],
+      "checklist": [
+        { "id": "chk-002-1", "text": "Reunir datos del inmueble", "completed": true, "createdAt": "2026-03-14T09:00:00.000Z", "completedAt": "2026-03-14T14:00:00.000Z" },
+        { "id": "chk-002-2", "text": "Redactar borrador inicial", "completed": true, "createdAt": "2026-03-14T09:00:00.000Z", "completedAt": "2026-03-15T11:00:00.000Z" },
+        { "id": "chk-002-3", "text": "Revisión interna del borrador", "completed": false, "createdAt": "2026-03-14T09:00:00.000Z" },
+        { "id": "chk-002-4", "text": "Enviar a cliente para aprobación", "completed": false, "createdAt": "2026-03-14T09:00:00.000Z" },
+        { "id": "chk-002-5", "text": "Firma final de partes", "completed": false, "createdAt": "2026-03-14T09:00:00.000Z" }
+      ],
+      "attachments": [],
+      "history": [
+        { "id": "hist-002-1", "action": "created", "description": "Actividad creada por Carlos Rodríguez", "performedBy": "Carlos Rodríguez", "performedAt": "2026-03-14T09:00:00.000Z" },
+        { "id": "hist-002-2", "action": "status_changed", "description": "Estado: pending → in-progress", "performedBy": "María García", "performedAt": "2026-03-14T10:00:00.000Z" }
+      ],
+      "createdAt": "2026-03-14T09:00:00.000Z",
+      "updatedAt": "2026-03-14T10:00:00.000Z"
+    },
+    {
+      "id": "act-003",
+      "title": "Vencimiento plazo respuesta — Expediente 4521/2025",
+      "type": "deadline",
+      "status": "pending",
+      "priority": "critical",
+      "dueDate": "2026-03-19T18:00:00.000Z",
+      "notes": "Plazo improrrogable para presentar respuesta al traslado. Verificar con secretaría del juzgado.",
+      "assignees": [
+        { "id": "4", "name": "Ana López", "email": "ana@mercadolaw.com" }
+      ],
+      "checklist": [
+        { "id": "chk-003-1", "text": "Analizar escrito de demanda", "completed": true, "createdAt": "2026-03-05T09:00:00.000Z", "completedAt": "2026-03-07T17:00:00.000Z" },
+        { "id": "chk-003-2", "text": "Redactar escrito de respuesta", "completed": false, "createdAt": "2026-03-05T09:00:00.000Z" },
+        { "id": "chk-003-3", "text": "Presentar en mesa de entradas", "completed": false, "createdAt": "2026-03-05T09:00:00.000Z" }
+      ],
+      "attachments": [],
+      "history": [
+        { "id": "hist-003-1", "action": "created", "description": "Actividad creada por Ana López", "performedBy": "Ana López", "performedAt": "2026-03-05T09:00:00.000Z" }
+      ],
+      "createdAt": "2026-03-05T09:00:00.000Z",
+      "updatedAt": "2026-03-05T09:00:00.000Z"
+    },
+    {
+      "id": "act-004",
+      "title": "Recordatorio: renovar habilitación municipal",
+      "type": "reminder",
+      "status": "pending",
+      "priority": "medium",
+      "dueDate": "2026-03-25T10:00:00.000Z",
+      "notes": "La habilitación vence el 31 de marzo. Iniciar trámite con al menos 5 días de anticipación.",
+      "assignees": [
+        { "id": "3", "name": "Juan Pérez", "email": "juan@mercadolaw.com" }
+      ],
+      "checklist": [],
+      "attachments": [],
+      "history": [
+        { "id": "hist-004-1", "action": "created", "description": "Actividad creada por Carlos Rodríguez", "performedBy": "Carlos Rodríguez", "performedAt": "2026-03-01T09:00:00.000Z" }
+      ],
+      "createdAt": "2026-03-01T09:00:00.000Z",
+      "updatedAt": "2026-03-01T09:00:00.000Z"
+    },
+    {
+      "id": "act-005",
+      "title": "Reunión de equipo — Revisión de cartera de casos Q1",
+      "type": "meeting",
+      "status": "completed",
+      "priority": "medium",
+      "startDate": "2026-03-07T10:00:00.000Z",
+      "dueDate": "2026-03-07T12:00:00.000Z",
+      "notes": "Revisar estado de todos los casos activos. Identificar cuellos de botella y reasignar si necesario.",
+      "assignees": [
+        { "id": "1", "name": "Carlos Rodríguez", "email": "carlos@mercadolaw.com" },
+        { "id": "2", "name": "María García", "email": "maria@mercadolaw.com" },
+        { "id": "4", "name": "Ana López", "email": "ana@mercadolaw.com" }
+      ],
+      "checklist": [
+        { "id": "chk-005-1", "text": "Preparar informe de estado de casos", "completed": true, "createdAt": "2026-03-05T09:00:00.000Z", "completedAt": "2026-03-06T17:00:00.000Z" },
+        { "id": "chk-005-2", "text": "Enviar agenda a todos los participantes", "completed": true, "createdAt": "2026-03-05T09:00:00.000Z", "completedAt": "2026-03-06T09:00:00.000Z" }
+      ],
+      "attachments": [],
+      "history": [
+        { "id": "hist-005-1", "action": "created", "description": "Actividad creada por Carlos Rodríguez", "performedBy": "Carlos Rodríguez", "performedAt": "2026-03-01T09:00:00.000Z" },
+        { "id": "hist-005-2", "action": "status_changed", "description": "Estado: pending → completed", "performedBy": "Carlos Rodríguez", "performedAt": "2026-03-07T12:10:00.000Z" }
+      ],
+      "createdAt": "2026-03-01T09:00:00.000Z",
+      "updatedAt": "2026-03-07T12:10:00.000Z"
+    },
+    {
+      "id": "act-006",
+      "title": "Actualizar base de jurisprudencia Q1/2026",
+      "type": "task",
+      "status": "in-progress",
+      "priority": "low",
+      "dueDate": "2026-03-31T18:00:00.000Z",
+      "notes": "Incorporar fallos relevantes del primer trimestre de la Cámara Civil y Comercial.",
+      "assignees": [
+        { "id": "3", "name": "Juan Pérez", "email": "juan@mercadolaw.com" }
+      ],
+      "checklist": [
+        { "id": "chk-006-1", "text": "Recopilar fallos de enero", "completed": true, "createdAt": "2026-03-03T09:00:00.000Z", "completedAt": "2026-03-05T17:00:00.000Z" },
+        { "id": "chk-006-2", "text": "Recopilar fallos de febrero", "completed": true, "createdAt": "2026-03-03T09:00:00.000Z", "completedAt": "2026-03-10T17:00:00.000Z" },
+        { "id": "chk-006-3", "text": "Recopilar fallos de marzo", "completed": false, "createdAt": "2026-03-03T09:00:00.000Z" },
+        { "id": "chk-006-4", "text": "Cargar en sistema de gestión documental", "completed": false, "createdAt": "2026-03-03T09:00:00.000Z" }
+      ],
+      "attachments": [],
+      "history": [
+        { "id": "hist-006-1", "action": "created", "description": "Actividad creada por Carlos Rodríguez", "performedBy": "Carlos Rodríguez", "performedAt": "2026-03-03T09:00:00.000Z" },
+        { "id": "hist-006-2", "action": "status_changed", "description": "Estado: pending → in-progress", "performedBy": "Juan Pérez", "performedAt": "2026-03-03T10:00:00.000Z" }
+      ],
+      "createdAt": "2026-03-03T09:00:00.000Z",
+      "updatedAt": "2026-03-03T10:00:00.000Z"
+    },
+    {
+      "id": "act-007",
+      "title": "Evento: Jornadas de Derecho Corporativo 2026",
+      "type": "event",
+      "status": "pending",
+      "priority": "low",
+      "startDate": "2026-04-03T09:00:00.000Z",
+      "dueDate": "2026-04-04T18:00:00.000Z",
+      "notes": "Evento organizado por el Colegio de Abogados. Inscripción confirmada para María y Ana.",
+      "assignees": [
+        { "id": "2", "name": "María García", "email": "maria@mercadolaw.com" },
+        { "id": "4", "name": "Ana López", "email": "ana@mercadolaw.com" }
+      ],
+      "checklist": [
+        { "id": "chk-007-1", "text": "Confirmar inscripción", "completed": true, "createdAt": "2026-03-01T09:00:00.000Z", "completedAt": "2026-03-02T10:00:00.000Z" },
+        { "id": "chk-007-2", "text": "Gestionar traslado y alojamiento", "completed": false, "createdAt": "2026-03-01T09:00:00.000Z" }
+      ],
+      "attachments": [],
+      "history": [
+        { "id": "hist-007-1", "action": "created", "description": "Actividad creada por Carlos Rodríguez", "performedBy": "Carlos Rodríguez", "performedAt": "2026-03-01T09:00:00.000Z" }
+      ],
+      "createdAt": "2026-03-01T09:00:00.000Z",
+      "updatedAt": "2026-03-01T09:00:00.000Z"
+    },
+    {
+      "id": "act-008",
+      "title": "Consulta inicial — Nuevo cliente Torres",
+      "type": "meeting",
+      "status": "pending",
+      "priority": "medium",
+      "startDate": "2026-03-18T15:00:00.000Z",
+      "dueDate": "2026-03-18T16:30:00.000Z",
+      "notes": "Primera consulta por conflicto societario. El cliente ya envió documentación preliminar por email.",
+      "assignees": [
+        { "id": "4", "name": "Ana López", "email": "ana@mercadolaw.com" }
+      ],
+      "checklist": [
+        { "id": "chk-008-1", "text": "Revisar documentación enviada por cliente", "completed": false, "createdAt": "2026-03-16T09:00:00.000Z" },
+        { "id": "chk-008-2", "text": "Preparar cuestionario inicial", "completed": false, "createdAt": "2026-03-16T09:00:00.000Z" }
+      ],
+      "attachments": [],
+      "history": [
+        { "id": "hist-008-1", "action": "created", "description": "Actividad creada por Ana López", "performedBy": "Ana López", "performedAt": "2026-03-16T09:00:00.000Z" }
+      ],
+      "createdAt": "2026-03-16T09:00:00.000Z",
+      "updatedAt": "2026-03-16T09:00:00.000Z"
+    },
+    {
+      "id": "act-009",
+      "title": "Presentación escrito de apelación — Caso Rivas",
+      "type": "deadline",
+      "status": "cancelled",
+      "priority": "high",
+      "dueDate": "2026-03-12T18:00:00.000Z",
+      "notes": "El cliente decidió llegar a acuerdo extrajudicial. Se cancela la apelación.",
+      "assignees": [
+        { "id": "1", "name": "Carlos Rodríguez", "email": "carlos@mercadolaw.com" }
+      ],
+      "checklist": [],
+      "attachments": [],
+      "history": [
+        { "id": "hist-009-1", "action": "created", "description": "Actividad creada por Carlos Rodríguez", "performedBy": "Carlos Rodríguez", "performedAt": "2026-03-01T09:00:00.000Z" },
+        { "id": "hist-009-2", "action": "status_changed", "description": "Estado: pending → cancelled", "performedBy": "Carlos Rodríguez", "performedAt": "2026-03-11T14:00:00.000Z", "metadata": { "reason": "Acuerdo extrajudicial alcanzado" } }
+      ],
+      "createdAt": "2026-03-01T09:00:00.000Z",
+      "updatedAt": "2026-03-11T14:00:00.000Z"
+    },
+    {
+      "id": "act-010",
+      "title": "Informe mensual de facturación — Marzo 2026",
+      "type": "task",
+      "status": "pending",
+      "priority": "medium",
+      "dueDate": "2026-03-28T18:00:00.000Z",
+      "notes": "Preparar resumen de honorarios facturados y pendientes de cobro del mes.",
+      "assignees": [
+        { "id": "3", "name": "Juan Pérez", "email": "juan@mercadolaw.com" }
+      ],
+      "checklist": [
+        { "id": "chk-010-1", "text": "Consolidar facturas emitidas", "completed": false, "createdAt": "2026-03-16T09:00:00.000Z" },
+        { "id": "chk-010-2", "text": "Verificar cobros pendientes", "completed": false, "createdAt": "2026-03-16T09:00:00.000Z" },
+        { "id": "chk-010-3", "text": "Redactar informe para directivos", "completed": false, "createdAt": "2026-03-16T09:00:00.000Z" }
+      ],
+      "attachments": [],
+      "history": [
+        { "id": "hist-010-1", "action": "created", "description": "Actividad creada por Carlos Rodríguez", "performedBy": "Carlos Rodríguez", "performedAt": "2026-03-16T09:00:00.000Z" }
+      ],
+      "createdAt": "2026-03-16T09:00:00.000Z",
+      "updatedAt": "2026-03-16T09:00:00.000Z"
+    },
+    {
+      "id": "act-011",
+      "title": "Renovación suscripción — Base de datos jurídica",
+      "type": "reminder",
+      "status": "pending",
+      "priority": "medium",
+      "dueDate": "2026-04-01T10:00:00.000Z",
+      "notes": "La suscripción a Thomson Reuters vence el 5 de abril. Solicitar cotización con 5 días de anticipación.",
+      "assignees": [
+        { "id": "3", "name": "Juan Pérez", "email": "juan@mercadolaw.com" }
+      ],
+      "checklist": [],
+      "attachments": [],
+      "history": [
+        { "id": "hist-011-1", "action": "created", "description": "Actividad creada por Carlos Rodríguez", "performedBy": "Carlos Rodríguez", "performedAt": "2026-03-01T09:00:00.000Z" }
+      ],
+      "createdAt": "2026-03-01T09:00:00.000Z",
+      "updatedAt": "2026-03-01T09:00:00.000Z"
+    },
+    {
+      "id": "act-012",
+      "title": "Revisión anual contrato — Cliente Industrias Boom S.A.",
+      "type": "task",
+      "status": "pending",
+      "priority": "high",
+      "dueDate": "2026-03-26T17:00:00.000Z",
+      "notes": "Revisión anual del contrato de servicios legales permanentes. Actualizar honorarios según IPC.",
+      "assignees": [
+        { "id": "1", "name": "Carlos Rodríguez", "email": "carlos@mercadolaw.com" },
+        { "id": "2", "name": "María García", "email": "maria@mercadolaw.com" }
+      ],
+      "checklist": [
+        { "id": "chk-012-1", "text": "Recuperar contrato vigente del archivo", "completed": true, "createdAt": "2026-03-10T09:00:00.000Z", "completedAt": "2026-03-11T10:00:00.000Z" },
+        { "id": "chk-012-2", "text": "Calcular ajuste por IPC", "completed": false, "createdAt": "2026-03-10T09:00:00.000Z" },
+        { "id": "chk-012-3", "text": "Redactar adendum de actualización", "completed": false, "createdAt": "2026-03-10T09:00:00.000Z" },
+        { "id": "chk-012-4", "text": "Reunión de firma con cliente", "completed": false, "createdAt": "2026-03-10T09:00:00.000Z" }
+      ],
+      "attachments": [],
+      "history": [
+        { "id": "hist-012-1", "action": "created", "description": "Actividad creada por Carlos Rodríguez", "performedBy": "Carlos Rodríguez", "performedAt": "2026-03-10T09:00:00.000Z" }
+      ],
+      "createdAt": "2026-03-10T09:00:00.000Z",
+      "updatedAt": "2026-03-11T10:00:00.000Z"
+    }
+  ],
+  "cases": [
+    {
+      "id": "case-001",
+      "title": "Martínez vs. Fernández",
+      "caseNumber": "4520/2025",
+      "type": "civil",
+      "status": "active",
+      "priority": "high",
+      "clientId": "client-001",
+      "clientName": "Roberto Martínez",
+      "assignedTo": ["1", "2"],
+      "court": "Juzgado Civil y Comercial N° 8",
+      "judge": "Dr. Luis Aldana",
+      "openedAt": "2025-09-15T00:00:00.000Z",
+      "nextHearing": "2026-03-17T09:00:00.000Z",
+      "description": "Demanda por daños y perjuicios derivados de incumplimiento contractual.",
+      "createdAt": "2025-09-15T00:00:00.000Z",
+      "updatedAt": "2026-03-10T08:00:00.000Z"
+    },
+    {
+      "id": "case-002",
+      "title": "Suárez — Contrato arrendamiento local comercial",
+      "caseNumber": "2026-ARREND-01",
+      "type": "contratos",
+      "status": "active",
+      "priority": "medium",
+      "clientId": "client-002",
+      "clientName": "Grupo Suárez Propiedades",
+      "assignedTo": ["2"],
+      "court": null,
+      "judge": null,
+      "openedAt": "2026-02-20T00:00:00.000Z",
+      "nextHearing": null,
+      "description": "Redacción y negociación de contrato de arrendamiento comercial por 3 años.",
+      "createdAt": "2026-02-20T00:00:00.000Z",
+      "updatedAt": "2026-03-15T10:00:00.000Z"
+    },
+    {
+      "id": "case-003",
+      "title": "Expediente 4521/2025 — Respuesta traslado",
+      "caseNumber": "4521/2025",
+      "type": "laboral",
+      "status": "active",
+      "priority": "critical",
+      "clientId": "client-003",
+      "clientName": "Constructora Andina S.A.",
+      "assignedTo": ["4"],
+      "court": "Cámara Nacional de Apelaciones del Trabajo",
+      "judge": "Dra. Susana Medina",
+      "openedAt": "2025-11-01T00:00:00.000Z",
+      "nextHearing": null,
+      "description": "Reclamo laboral por despido sin causa. Plazo para respuesta al traslado vence el 19/03.",
+      "createdAt": "2025-11-01T00:00:00.000Z",
+      "updatedAt": "2026-03-05T09:00:00.000Z"
+    },
+    {
+      "id": "case-004",
+      "title": "Rivas — Conflicto societario",
+      "caseNumber": "3310/2025",
+      "type": "societario",
+      "status": "closed",
+      "priority": "medium",
+      "clientId": "client-004",
+      "clientName": "Hernán Rivas",
+      "assignedTo": ["1"],
+      "court": "Juzgado Comercial N° 3",
+      "judge": "Dr. Pablo Herrera",
+      "openedAt": "2025-07-10T00:00:00.000Z",
+      "nextHearing": null,
+      "description": "Conflicto entre socios. Resuelto mediante acuerdo extrajudicial en marzo 2026.",
+      "closedAt": "2026-03-11T14:00:00.000Z",
+      "createdAt": "2025-07-10T00:00:00.000Z",
+      "updatedAt": "2026-03-11T14:00:00.000Z"
+    },
+    {
+      "id": "case-005",
+      "title": "Torres — Consulta conflicto societario",
+      "caseNumber": "2026-CONS-01",
+      "type": "societario",
+      "status": "active",
+      "priority": "medium",
+      "clientId": "client-005",
+      "clientName": "Familia Torres",
+      "assignedTo": ["4"],
+      "court": null,
+      "judge": null,
+      "openedAt": "2026-03-16T00:00:00.000Z",
+      "nextHearing": "2026-03-18T15:00:00.000Z",
+      "description": "Primera consulta por conflicto societario entre hermanos sobre empresa familiar.",
+      "createdAt": "2026-03-16T00:00:00.000Z",
+      "updatedAt": "2026-03-16T00:00:00.000Z"
+    }
+  ],
+  "clients": [
+    {
+      "id": "client-001",
+      "name": "Roberto Martínez",
+      "email": "r.martinez@email.com",
+      "phone": "+54 11 5555-0001",
+      "type": "individual",
+      "cuit": "20-30000001-5",
+      "address": "Av. Corrientes 1234, CABA",
+      "activeCases": 1,
+      "createdAt": "2025-09-15T00:00:00.000Z"
+    },
+    {
+      "id": "client-002",
+      "name": "Grupo Suárez Propiedades",
+      "email": "legales@suarezprop.com",
+      "phone": "+54 11 5555-0002",
+      "type": "company",
+      "cuit": "30-70000002-1",
+      "address": "Reconquista 720, CABA",
+      "activeCases": 1,
+      "createdAt": "2026-02-20T00:00:00.000Z"
+    },
+    {
+      "id": "client-003",
+      "name": "Constructora Andina S.A.",
+      "email": "legales@andina.com",
+      "phone": "+54 11 5555-0003",
+      "type": "company",
+      "cuit": "30-60000003-8",
+      "address": "Leandro N. Alem 850, CABA",
+      "activeCases": 1,
+      "createdAt": "2025-11-01T00:00:00.000Z"
+    },
+    {
+      "id": "client-004",
+      "name": "Hernán Rivas",
+      "email": "hernan.rivas@email.com",
+      "phone": "+54 11 5555-0004",
+      "type": "individual",
+      "cuit": "20-30000004-2",
+      "address": "Callao 456, CABA",
+      "activeCases": 0,
+      "createdAt": "2025-07-10T00:00:00.000Z"
+    },
+    {
+      "id": "client-005",
+      "name": "Familia Torres",
+      "email": "contacto@torres.com",
+      "phone": "+54 11 5555-0005",
+      "type": "individual",
+      "cuit": "20-30000005-9",
+      "address": "Santa Fe 2100, CABA",
+      "activeCases": 1,
+      "createdAt": "2026-03-16T00:00:00.000Z"
+    }
+  ]
+}

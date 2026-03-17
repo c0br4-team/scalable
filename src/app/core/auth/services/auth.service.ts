@@ -1,9 +1,28 @@
-import { Injectable, signal, computed } from '@angular/core';
+import { Injectable, signal, computed, inject } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
+import { Observable, tap, map } from 'rxjs';
 import { AuthState, LoginCredentials, User } from '../models/user.model';
+import { environment } from '../../../../environments/environment';
+
+interface LoginResponse {
+  user: User;
+  accessToken: string;
+  refreshToken: string;
+  expiresIn: number; // ms
+}
+
+interface RefreshResponse {
+  accessToken: string;
+  expiresIn: number; // ms
+}
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
+  private http = inject(HttpClient);
+  private router = inject(Router);
+
+  private readonly apiUrl = environment.apiUrl;
   private readonly ACCESS_TOKEN_KEY = 'access_token';
   private readonly REFRESH_TOKEN_KEY = 'refresh_token';
   private readonly TOKEN_EXPIRY_KEY = 'token_expiry';
@@ -14,31 +33,37 @@ export class AuthService {
   readonly isAuthenticated = computed(() => this._state().isAuthenticated);
   readonly token = computed(() => this._state().token);
 
-  constructor(private router: Router) {
-    this.setupTabCloseCleanup();
-  }
-
-  login(credentials: LoginCredentials): void {
-    // Reemplazar con llamada HTTP real — ver interceptor JWT
-    const mockUser: User = {
-      id: '1',
-      name: 'Admin',
-      email: credentials.email,
-      role: 'admin',
-    };
-    const mockToken = 'mock-jwt-token';
-    const mockRefresh = 'mock-refresh-token';
-    const expiresAt = Date.now() + 8 * 60 * 60 * 1000; // 8 horas
-
-    this.persistTokens(mockToken, mockRefresh, expiresAt);
-    this._state.set({ user: mockUser, token: mockToken, isAuthenticated: true });
-    this.router.navigate(['/dashboard']);
+  login(credentials: LoginCredentials): Observable<void> {
+    return this.http.post<LoginResponse>(`${this.apiUrl}/auth/login`, credentials).pipe(
+      tap(({ user, accessToken, refreshToken, expiresIn }) => {
+        const expiresAt = Date.now() + expiresIn;
+        this.persistTokens(accessToken, refreshToken, expiresAt);
+        this._state.set({ user, token: accessToken, isAuthenticated: true });
+        this.router.navigate(['/dashboard']);
+      }),
+      map(() => void 0),
+    );
   }
 
   logout(): void {
+    // Fire-and-forget: navegar inmediatamente, notificar al servidor en segundo plano
+    this.http.post(`${this.apiUrl}/auth/logout`, {}).subscribe({ error: () => {} });
     this.clearTokens();
     this._state.set({ user: null, token: null, isAuthenticated: false });
     this.router.navigate(['/login']);
+  }
+
+  refreshToken(): Observable<void> {
+    const refreshToken = this.getRefreshToken();
+    return this.http.post<RefreshResponse>(`${this.apiUrl}/auth/refresh`, { refreshToken }).pipe(
+      tap(({ accessToken, expiresIn }) => {
+        const expiresAt = Date.now() + expiresIn;
+        const storedRefresh = this.getRefreshToken() ?? '';
+        this.persistTokens(accessToken, storedRefresh, expiresAt);
+        this._state.update(s => ({ ...s, token: accessToken, isAuthenticated: true }));
+      }),
+      map(() => void 0),
+    );
   }
 
   isTokenExpired(): boolean {
@@ -77,7 +102,6 @@ export class AuthService {
   }
 
   private persistTokens(access: string, refresh: string, expiresAt: number): void {
-    // sessionStorage: se limpia al cerrar el tab
     sessionStorage.setItem(this.ACCESS_TOKEN_KEY, access);
     sessionStorage.setItem(this.REFRESH_TOKEN_KEY, refresh);
     sessionStorage.setItem(this.TOKEN_EXPIRY_KEY, expiresAt.toString());
@@ -87,12 +111,6 @@ export class AuthService {
     [this.ACCESS_TOKEN_KEY, this.REFRESH_TOKEN_KEY, this.TOKEN_EXPIRY_KEY].forEach(key => {
       sessionStorage.removeItem(key);
       localStorage.removeItem(key);
-    });
-  }
-
-  private setupTabCloseCleanup(): void {
-    window.addEventListener('beforeunload', () => {
-      // Solo limpiar si no hay remember me (se puede extender en el futuro)
     });
   }
 }

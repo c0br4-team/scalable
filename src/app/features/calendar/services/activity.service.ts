@@ -1,14 +1,18 @@
-import { Injectable, computed, signal } from '@angular/core';
+import { Injectable, computed, inject, signal } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import {
-  Activity, ActivityFilters, ActivityPriority, ActivityStatus, ActivityType,
+  Activity, ActivityFilters,
   Assignee, Attachment, ChecklistItem, HistoryEntry
 } from '../models/activity.model';
+import { environment } from '../../../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class ActivityService {
+  private http = inject(HttpClient);
+  private readonly apiUrl = `${environment.apiUrl}/activities`;
 
   // ── Estado ──────────────────────────────────────────────────────────────────
-  private _activities = signal<Activity[]>(this._loadFromStorage());
+  private _activities = signal<Activity[]>([]);
   private _filters = signal<ActivityFilters>({});
   private _selectedId = signal<string | null>(null);
 
@@ -66,6 +70,10 @@ export class ActivityService {
     return map;
   });
 
+  constructor() {
+    this._loadFromServer();
+  }
+
   // ── Selección ────────────────────────────────────────────────────────────────
   select(id: string | null): void {
     this._selectedId.set(id);
@@ -94,7 +102,7 @@ export class ActivityService {
     activity.history.push(this._historyEntry('created', `Actividad creada por ${performedBy}`, performedBy));
 
     this._activities.update(list => [...list, activity]);
-    this._persist();
+    this.http.post<Activity>(this.apiUrl, activity).subscribe({ error: () => {} });
     return activity;
   }
 
@@ -122,13 +130,13 @@ export class ActivityService {
         };
       })
     );
-    this._persist();
+    this._syncActivity(id);
   }
 
   delete(id: string): void {
     this._activities.update(list => list.filter(a => a.id !== id));
     if (this._selectedId() === id) this._selectedId.set(null);
-    this._persist();
+    this.http.delete(`${this.apiUrl}/${id}`).subscribe({ error: () => {} });
   }
 
   // ── Checklist ────────────────────────────────────────────────────────────────
@@ -238,7 +246,44 @@ export class ActivityService {
     this._activities.update(list =>
       list.map(a => a.id === id ? { ...a, ...patch(a), updatedAt: new Date() } : a)
     );
-    this._persist();
+    this._syncActivity(id);
+  }
+
+  private _syncActivity(id: string): void {
+    const activity = this._activities().find(a => a.id === id);
+    if (activity) {
+      this.http.put<Activity>(`${this.apiUrl}/${id}`, activity).subscribe({ error: () => {} });
+    }
+  }
+
+  private _loadFromServer(): void {
+    this.http.get<Activity[]>(this.apiUrl).subscribe({
+      next: raw => this._activities.set(raw.map(a => this._rehydrate(a))),
+      error: () => {},
+    });
+  }
+
+  private _rehydrate(a: Activity): Activity {
+    return {
+      ...a,
+      dueDate: new Date(a.dueDate),
+      startDate: a.startDate ? new Date(a.startDate) : undefined,
+      createdAt: new Date(a.createdAt),
+      updatedAt: new Date(a.updatedAt),
+      checklist: a.checklist.map(c => ({
+        ...c,
+        createdAt: new Date(c.createdAt),
+        completedAt: c.completedAt ? new Date(c.completedAt) : undefined,
+      })),
+      attachments: a.attachments.map(f => ({
+        ...f,
+        uploadedAt: new Date(f.uploadedAt),
+      })),
+      history: a.history.map(h => ({
+        ...h,
+        performedAt: new Date(h.performedAt),
+      })),
+    };
   }
 
   private _historyEntry(
@@ -256,40 +301,5 @@ export class ActivityService {
 
   private _uuid(): string {
     return crypto.randomUUID();
-  }
-
-  private _persist(): void {
-    try {
-      const serialized = JSON.stringify(this._activities());
-      localStorage.setItem('calendar_activities', serialized);
-    } catch { /* cuota excedida — ignorar */ }
-  }
-
-  private _loadFromStorage(): Activity[] {
-    try {
-      const raw = localStorage.getItem('calendar_activities');
-      if (!raw) return [];
-      const parsed = JSON.parse(raw) as Activity[];
-      // Rehidratar fechas (JSON.parse las convierte a string)
-      return parsed.map(a => ({
-        ...a,
-        dueDate: new Date(a.dueDate),
-        createdAt: new Date(a.createdAt),
-        updatedAt: new Date(a.updatedAt),
-        checklist: a.checklist.map(c => ({
-          ...c,
-          createdAt: new Date(c.createdAt),
-          completedAt: c.completedAt ? new Date(c.completedAt) : undefined,
-        })),
-        attachments: a.attachments.map(f => ({
-          ...f,
-          uploadedAt: new Date(f.uploadedAt),
-        })),
-        history: a.history.map(h => ({
-          ...h,
-          performedAt: new Date(h.performedAt),
-        })),
-      }));
-    } catch { return []; }
   }
 }

@@ -36,13 +36,13 @@ export class LoginPage {
     this.isLoading.set(true);
     this.errorMessage.set(null);
 
-    try {
-      const { email, password } = this.form.getRawValue();
-      this.auth.login({ email: email!, password: password! });
-    } catch {
-      this.errorMessage.set('LOGIN.ERROR_INVALID');
-      this.isLoading.set(false);
-    }
+    const { email, password } = this.form.getRawValue();
+    this.auth.login({ email: email!, password: password! }).subscribe({
+      error: () => {
+        this.errorMessage.set('LOGIN.ERROR_INVALID');
+        this.isLoading.set(false);
+      },
+    });
   }
 
   protected hasError(field: string, error: string): boolean {
