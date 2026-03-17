@@ -335,7 +335,74 @@
       "judge": "Dr. Luis Aldana",
       "openedAt": "2025-09-15T00:00:00.000Z",
       "nextHearing": "2026-03-17T09:00:00.000Z",
-      "description": "Demanda por daños y perjuicios derivados de incumplimiento contractual.",
+      "description": "Demanda por daños y perjuicios derivados de incumplimiento contractual entre las partes. El actor reclama indemnización por los perjuicios sufridos como consecuencia del incumplimiento de las obligaciones asumidas en el contrato de compraventa celebrado el 12 de junio de 2025.\n\nSe encuentra pendiente la audiencia de conciliación y la producción de la prueba pericial contable para determinar el monto definitivo del daño.",
+      "folders": [
+        { "id": "folder-001-1", "name": "Escritos" },
+        { "id": "folder-001-2", "name": "Contratos" },
+        { "id": "folder-001-3", "name": "Pericias" }
+      ],
+      "documents": [
+        {
+          "id": "doc-001-1",
+          "name": "Demanda inicial",
+          "originalFileName": "Demanda inicial.pdf",
+          "documentType": "escrito",
+          "folderId": "folder-001-1",
+          "fileType": "pdf",
+          "sizeKb": 342,
+          "uploadedBy": "Carlos Rodríguez",
+          "uploadedAt": "2025-09-15T10:00:00.000Z",
+          "currentVersion": 2,
+          "versions": [
+            { "versionNumber": 1, "sizeKb": 318, "uploadedBy": "Carlos Rodríguez", "uploadedAt": "2025-09-15T10:00:00.000Z" },
+            { "versionNumber": 2, "sizeKb": 342, "uploadedBy": "María García", "uploadedAt": "2026-02-01T14:30:00.000Z" }
+          ]
+        },
+        {
+          "id": "doc-001-2",
+          "name": "Contrato de compraventa",
+          "originalFileName": "Contrato de compraventa.pdf",
+          "documentType": "contrato",
+          "folderId": "folder-001-2",
+          "fileType": "pdf",
+          "sizeKb": 128,
+          "uploadedBy": "Carlos Rodríguez",
+          "uploadedAt": "2025-09-16T09:30:00.000Z",
+          "currentVersion": 1,
+          "versions": [
+            { "versionNumber": 1, "sizeKb": 128, "uploadedBy": "Carlos Rodríguez", "uploadedAt": "2025-09-16T09:30:00.000Z" }
+          ]
+        },
+        {
+          "id": "doc-001-3",
+          "name": "Pericia contable - borrador",
+          "originalFileName": "Pericia contable - borrador.docx",
+          "documentType": "pericia",
+          "folderId": "folder-001-3",
+          "fileType": "docx",
+          "sizeKb": 87,
+          "uploadedBy": "María García",
+          "uploadedAt": "2026-02-10T14:00:00.000Z",
+          "currentVersion": 1,
+          "versions": [
+            { "versionNumber": 1, "sizeKb": 87, "uploadedBy": "María García", "uploadedAt": "2026-02-10T14:00:00.000Z" }
+          ]
+        }
+      ],
+      "comments": [
+        { "id": "cmt-001-1", "text": "El cliente confirmó que puede asistir a la audiencia del 17/03. Llegar 30 minutos antes para revisar la documentación.", "authorId": "2", "authorName": "María García", "createdAt": "2026-03-15T11:00:00.000Z" },
+        { "id": "cmt-001-2", "text": "La contraparte solicitó prórroga. Se rechazó. La audiencia se mantiene.", "authorId": "1", "authorName": "Carlos Rodríguez", "createdAt": "2026-03-16T09:00:00.000Z" }
+      ],
+      "notes": [
+        { "id": "note-001-1", "title": "Estrategia para la audiencia", "content": "Enfocarse en la pericia contable como prueba principal. Evitar entrar en argumentos sobre la conducta del demandado que no estén respaldados por documentación.\n\nPrepara al cliente para el interrogatorio cruzado.", "authorId": "1", "authorName": "Carlos Rodríguez", "createdAt": "2026-03-10T10:00:00.000Z", "updatedAt": "2026-03-14T16:00:00.000Z" }
+      ],
+      "history": [
+        { "id": "hist-c001-1", "action": "created", "description": "Expediente creado por Carlos Rodríguez", "performedBy": "Carlos Rodríguez", "performedAt": "2025-09-15T10:00:00.000Z" },
+        { "id": "hist-c001-2", "action": "document_added", "description": "Documento adjunto: Demanda inicial.pdf", "performedBy": "Carlos Rodríguez", "performedAt": "2025-09-15T10:05:00.000Z" },
+        { "id": "hist-c001-3", "action": "assignee_changed", "description": "Abogada asignada: María García", "performedBy": "Carlos Rodríguez", "performedAt": "2025-09-16T08:00:00.000Z" },
+        { "id": "hist-c001-4", "action": "status_changed", "description": "Estado actualizado a Activo", "performedBy": "Carlos Rodríguez", "performedAt": "2025-09-16T08:01:00.000Z" },
+        { "id": "hist-c001-5", "action": "comment_added", "description": "Comentario agregado por María García", "performedBy": "María García", "performedAt": "2026-03-15T11:00:00.000Z" }
+      ],
       "createdAt": "2025-09-15T00:00:00.000Z",
       "updatedAt": "2026-03-10T08:00:00.000Z"
     },
@@ -353,7 +420,37 @@
       "judge": null,
       "openedAt": "2026-02-20T00:00:00.000Z",
       "nextHearing": null,
-      "description": "Redacción y negociación de contrato de arrendamiento comercial por 3 años.",
+      "description": "Redacción y negociación de contrato de arrendamiento comercial por 3 años con opción a renovación. El local se ubica en Av. Corrientes 1450, CABA. El contrato incluye cláusula de indexación por IPC trimestral y garantías reales.",
+      "folders": [
+        { "id": "folder-002-1", "name": "Borradores" },
+        { "id": "folder-002-2", "name": "Comunicaciones" }
+      ],
+      "documents": [
+        {
+          "id": "doc-002-1",
+          "name": "Contrato de arrendamiento",
+          "originalFileName": "Borrador contrato v2 - revisado.docx",
+          "documentType": "contrato",
+          "folderId": "folder-002-1",
+          "fileType": "docx",
+          "sizeKb": 102,
+          "uploadedBy": "María García",
+          "uploadedAt": "2026-03-08T15:30:00.000Z",
+          "currentVersion": 2,
+          "versions": [
+            { "versionNumber": 1, "sizeKb": 95, "uploadedBy": "María García", "uploadedAt": "2026-02-22T10:00:00.000Z" },
+            { "versionNumber": 2, "sizeKb": 102, "uploadedBy": "María García", "uploadedAt": "2026-03-08T15:30:00.000Z" }
+          ]
+        }
+      ],
+      "comments": [
+        { "id": "cmt-002-1", "text": "La parte arrendataria pidió modificar la cláusula 7 sobre subarrendamiento. Respuesta pendiente del cliente.", "authorId": "2", "authorName": "María García", "createdAt": "2026-03-10T09:00:00.000Z" }
+      ],
+      "notes": [],
+      "history": [
+        { "id": "hist-c002-1", "action": "created", "description": "Expediente creado por María García", "performedBy": "María García", "performedAt": "2026-02-20T10:00:00.000Z" },
+        { "id": "hist-c002-2", "action": "document_added", "description": "Documento adjunto: Borrador contrato v1.docx", "performedBy": "María García", "performedAt": "2026-02-22T10:00:00.000Z" }
+      ],
       "createdAt": "2026-02-20T00:00:00.000Z",
       "updatedAt": "2026-03-15T10:00:00.000Z"
     },
@@ -371,7 +468,54 @@
       "judge": "Dra. Susana Medina",
       "openedAt": "2025-11-01T00:00:00.000Z",
       "nextHearing": null,
-      "description": "Reclamo laboral por despido sin causa. Plazo para respuesta al traslado vence el 19/03.",
+      "description": "Reclamo laboral iniciado por el Sr. Hugo Benítez contra Constructora Andina S.A. por despido sin causa justificada. El actor reclama indemnización por antigüedad, preaviso y vacaciones no gozadas.\n\nPlazo para presentar respuesta al traslado vence el 19/03/2026. Se requiere urgente recopilación de legajo del empleado.",
+      "folders": [
+        { "id": "folder-003-1", "name": "Notificaciones" },
+        { "id": "folder-003-2", "name": "Legajos" }
+      ],
+      "documents": [
+        {
+          "id": "doc-003-1",
+          "name": "Cédula de notificación",
+          "originalFileName": "Cédula de notificación.pdf",
+          "documentType": "notificacion",
+          "folderId": "folder-003-1",
+          "fileType": "pdf",
+          "sizeKb": 45,
+          "uploadedBy": "Ana López",
+          "uploadedAt": "2026-03-05T08:00:00.000Z",
+          "currentVersion": 1,
+          "versions": [
+            { "versionNumber": 1, "sizeKb": 45, "uploadedBy": "Ana López", "uploadedAt": "2026-03-05T08:00:00.000Z" }
+          ]
+        },
+        {
+          "id": "doc-003-2",
+          "name": "Legajo empleado Benítez",
+          "originalFileName": "Legajo empleado Benítez.pdf",
+          "documentType": "prueba",
+          "folderId": "folder-003-2",
+          "fileType": "pdf",
+          "sizeKb": 210,
+          "uploadedBy": "Ana López",
+          "uploadedAt": "2026-03-12T11:00:00.000Z",
+          "currentVersion": 1,
+          "versions": [
+            { "versionNumber": 1, "sizeKb": 210, "uploadedBy": "Ana López", "uploadedAt": "2026-03-12T11:00:00.000Z" }
+          ]
+        }
+      ],
+      "comments": [
+        { "id": "cmt-003-1", "text": "Urgente: confirmar con el cliente si hubo actas de sanción previas al despido. Impactan directamente en la defensa.", "authorId": "4", "authorName": "Ana López", "createdAt": "2026-03-13T10:00:00.000Z" }
+      ],
+      "notes": [
+        { "id": "note-003-1", "title": "Puntos clave para la respuesta", "content": "1. Acreditar causa justa del despido\n2. Presentar actas de sanción previas\n3. Adjuntar liquidación final con constancia de pago\n4. Solicitar perito laboral para determinar antigüedad efectiva", "authorId": "4", "authorName": "Ana López", "createdAt": "2026-03-12T14:00:00.000Z", "updatedAt": "2026-03-12T14:00:00.000Z" }
+      ],
+      "history": [
+        { "id": "hist-c003-1", "action": "created", "description": "Expediente creado por Ana López", "performedBy": "Ana López", "performedAt": "2025-11-01T10:00:00.000Z" },
+        { "id": "hist-c003-2", "action": "status_changed", "description": "Estado actualizado a Activo", "performedBy": "Ana López", "performedAt": "2025-11-01T10:01:00.000Z" },
+        { "id": "hist-c003-3", "action": "document_added", "description": "Documento adjunto: Cédula de notificación.pdf", "performedBy": "Ana López", "performedAt": "2026-03-05T08:00:00.000Z" }
+      ],
       "createdAt": "2025-11-01T00:00:00.000Z",
       "updatedAt": "2026-03-05T09:00:00.000Z"
     },
@@ -389,8 +533,33 @@
       "judge": "Dr. Pablo Herrera",
       "openedAt": "2025-07-10T00:00:00.000Z",
       "nextHearing": null,
-      "description": "Conflicto entre socios. Resuelto mediante acuerdo extrajudicial en marzo 2026.",
       "closedAt": "2026-03-11T14:00:00.000Z",
+      "description": "Conflicto entre socios de la empresa Rivas & Asociados S.R.L. por distribución de utilidades y uso indebido de fondos societarios. Resuelto mediante acuerdo extrajudicial en marzo 2026 con homologación judicial.",
+      "folders": [],
+      "documents": [
+        {
+          "id": "doc-004-1",
+          "name": "Acuerdo extrajudicial firmado",
+          "originalFileName": "Acuerdo extrajudicial firmado.pdf",
+          "documentType": "contrato",
+          "folderId": null,
+          "fileType": "pdf",
+          "sizeKb": 185,
+          "uploadedBy": "Carlos Rodríguez",
+          "uploadedAt": "2026-03-11T13:00:00.000Z",
+          "currentVersion": 1,
+          "versions": [
+            { "versionNumber": 1, "sizeKb": 185, "uploadedBy": "Carlos Rodríguez", "uploadedAt": "2026-03-11T13:00:00.000Z" }
+          ]
+        }
+      ],
+      "comments": [],
+      "notes": [],
+      "history": [
+        { "id": "hist-c004-1", "action": "created", "description": "Expediente creado por Carlos Rodríguez", "performedBy": "Carlos Rodríguez", "performedAt": "2025-07-10T10:00:00.000Z" },
+        { "id": "hist-c004-2", "action": "status_changed", "description": "Estado actualizado a Activo", "performedBy": "Carlos Rodríguez", "performedAt": "2025-07-10T10:01:00.000Z" },
+        { "id": "hist-c004-3", "action": "closed", "description": "Expediente cerrado — Acuerdo extrajudicial homologado", "performedBy": "Carlos Rodríguez", "performedAt": "2026-03-11T14:00:00.000Z" }
+      ],
       "createdAt": "2025-07-10T00:00:00.000Z",
       "updatedAt": "2026-03-11T14:00:00.000Z"
     },
@@ -408,7 +577,16 @@
       "judge": null,
       "openedAt": "2026-03-16T00:00:00.000Z",
       "nextHearing": "2026-03-18T15:00:00.000Z",
-      "description": "Primera consulta por conflicto societario entre hermanos sobre empresa familiar.",
+      "description": "Primera consulta por conflicto societario entre hermanos sobre empresa familiar Torres Agropecuaria S.A. Se evalúa la posibilidad de iniciar acción judicial para la disolución y liquidación de la sociedad o alcanzar un acuerdo de compra de participaciones.",
+      "folders": [],
+      "documents": [],
+      "comments": [],
+      "notes": [
+        { "id": "note-005-1", "title": "Notas primera reunión", "content": "Los hermanos tienen posiciones muy distantes. Martín quiere vender, Laura quiere continuar.\nRevisar estatuto societario para cláusulas de preferencia.\nConsultar valuación del campo.", "authorId": "4", "authorName": "Ana López", "createdAt": "2026-03-16T16:00:00.000Z", "updatedAt": "2026-03-16T16:00:00.000Z" }
+      ],
+      "history": [
+        { "id": "hist-c005-1", "action": "created", "description": "Expediente creado por Ana López", "performedBy": "Ana López", "performedAt": "2026-03-16T10:00:00.000Z" }
+      ],
       "createdAt": "2026-03-16T00:00:00.000Z",
       "updatedAt": "2026-03-16T00:00:00.000Z"
     }

@@ -15,7 +15,7 @@ import { TableCellDirective } from '../table-cell.directive';
 @Component({
   selector: 'sce-data-table',
   standalone: true,
-  imports: [NgTemplateOutlet, NgIcon, TranslatePipe, TableCellDirective],
+  imports: [NgTemplateOutlet, NgIcon, TranslatePipe],
   templateUrl: './data-table.html',
 })
 export class DataTableComponent<T extends Record<string, any>> implements AfterContentInit {

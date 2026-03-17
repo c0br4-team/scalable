@@ -1,0 +1,141 @@
+<!-- Backdrop scrollable — el modal crece con el contenido, no hace scroll interno -->
+<div class="fixed inset-0 z-50 overflow-y-auto bg-black/40"
+     (click)="closed.emit()">
+  <div class="flex min-h-full items-end sm:items-center justify-center sm:px-4 sm:py-6">
+
+    <!-- Sheet / Modal -->
+    <div class="bg-white w-full sm:max-w-md rounded-t-2xl sm:rounded-2xl shadow-2xl"
+         (click)="$event.stopPropagation()">
+
+      <!-- Handle (solo mobile) -->
+      <div class="sm:hidden flex justify-center pt-3 pb-1">
+        <div class="w-10 h-1 rounded-full bg-gray-300"></div>
+      </div>
+
+      <!-- Header -->
+      <div class="flex items-center justify-between px-4 sm:px-6 py-3 sm:py-4 border-b border-gray-100">
+        <h2 class="text-base font-semibold text-gray-900">Subir documento</h2>
+        <button type="button" class="p-1.5 hover:bg-gray-100 rounded-lg transition-colors"
+                (click)="closed.emit()">
+          <ng-icon name="heroXMark" class="text-base text-gray-500" />
+        </button>
+      </div>
+
+      <!-- Body -->
+      <div class="px-4 sm:px-6 py-4 space-y-4">
+
+        <!-- File pick area -->
+        <label class="block border-2 border-dashed rounded-xl cursor-pointer transition-colors group"
+               [class.border-[#1e3a5f]]="isDragging()"
+               [class.bg-blue-50]="isDragging()"
+               [class.border-gray-200]="!isDragging()"
+               (dragover)="onDragOver($event)"
+               (dragleave)="isDragging.set(false)"
+               (drop)="onDrop($event)">
+          <div class="flex flex-col items-center py-5 px-4 text-center">
+            @if (uploadFile) {
+            <div class="flex items-center gap-3 w-full">
+              <ng-icon name="heroDocument" class="text-3xl text-[#1e3a5f] shrink-0" />
+              <div class="text-left min-w-0 flex-1">
+                <p class="text-sm font-semibold text-gray-800 truncate">{{ uploadFile.name }}</p>
+                <p class="text-xs text-gray-400 mt-0.5">{{ formatSize(uploadFile.size / 1024) }}</p>
+              </div>
+              <span class="shrink-0 text-xs text-[#1e3a5f] underline decoration-dotted">cambiar</span>
+            </div>
+            } @else {
+            <ng-icon name="heroArrowUpTray" class="text-3xl text-gray-300 mb-2 group-hover:text-[#1e3a5f]/40 transition-colors" />
+            <p class="text-sm font-semibold text-gray-700">
+              <span class="hidden sm:inline">Arrastrá un archivo aquí o </span>
+              <span class="text-[#1e3a5f] underline decoration-dotted group-hover:decoration-solid">
+                <span class="sm:hidden">Tocá para seleccionar un archivo</span>
+                <span class="hidden sm:inline">hacé click para seleccionar</span>
+              </span>
+            </p>
+            <p class="text-xs text-gray-400 mt-1">PDF, DOCX, Excel, imágenes · Máx. 25 MB</p>
+            }
+          </div>
+          <input type="file" class="sr-only" (change)="onFileSelected($event)" />
+        </label>
+
+        <!-- Nombre -->
+        <div>
+          <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5">
+            Nombre del documento
+          </label>
+          <input type="text" [(ngModel)]="uploadName"
+                 placeholder="Nombre personalizado..."
+                 class="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1e3a5f]/20" />
+        </div>
+
+        <!-- Tipo de documento -->
+        <div>
+          <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5">
+            Tipo de documento
+            <span class="text-red-400 ml-1 normal-case font-normal">requerido</span>
+          </label>
+          <sce-dropdown [(ngModel)]="uploadDocType"
+                        [options]="docTypeOptions"
+                        placeholder="Seleccionar tipo..."
+                        [config]="{ searchable: true }" />
+        </div>
+
+        <!-- Carpeta -->
+        <div>
+          <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5">
+            Carpeta
+          </label>
+
+          @if (showNewFolder()) {
+          <div class="flex items-center gap-2 p-3 bg-amber-50 rounded-lg border border-amber-200">
+            <ng-icon name="heroFolder" class="text-amber-500 text-base shrink-0" />
+            <input type="text" [(ngModel)]="newFolderName"
+                   placeholder="Nombre de la carpeta..."
+                   class="flex-1 min-w-0 px-2 py-1 text-sm border border-amber-200 rounded-md bg-white focus:outline-none focus:ring-1 focus:ring-amber-400"
+                   (keydown.enter)="createFolder()"
+                   (keydown.escape)="showNewFolder.set(false); newFolderName = ''" />
+            <button type="button"
+                    class="shrink-0 px-2.5 py-1 text-xs font-medium bg-amber-500 text-white rounded-md hover:bg-amber-600 transition-colors"
+                    (click)="createFolder()">
+              Crear
+            </button>
+            <button type="button"
+                    class="shrink-0 p-1 hover:bg-amber-100 rounded text-amber-600 transition-colors"
+                    (click)="showNewFolder.set(false); newFolderName = ''">
+              <ng-icon name="heroXMark" style="font-size:14px" />
+            </button>
+          </div>
+          } @else {
+          <div class="space-y-1.5">
+            <sce-dropdown [(ngModel)]="uploadFolderId"
+                          [options]="folderOptions"
+                          placeholder="Sin carpeta" />
+            <button type="button"
+                    class="flex items-center gap-1 text-xs text-[#1e3a5f] hover:underline transition-colors"
+                    (click)="showNewFolder.set(true)">
+              <ng-icon name="heroPlus" style="font-size:12px" />
+              Crear nueva carpeta
+            </button>
+          </div>
+          }
+        </div>
+
+      </div>
+
+      <!-- Footer -->
+      <div class="flex flex-col sm:flex-row sm:justify-end gap-2 px-4 sm:px-6 py-4 border-t border-gray-100">
+        <button type="button"
+                class="order-2 sm:order-1 w-full sm:w-auto px-4 py-2.5 sm:py-2 text-sm text-gray-600 hover:bg-gray-100 rounded-lg transition-colors border border-gray-200 sm:border-0"
+                (click)="closed.emit()">
+          Cancelar
+        </button>
+        <button type="button"
+                class="order-1 sm:order-2 w-full sm:w-auto px-5 py-2.5 sm:py-2 bg-[#1e3a5f] text-white text-sm font-medium rounded-lg hover:bg-[#162d4a] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                [disabled]="!uploadFile || !uploadDocType"
+                (click)="submit()">
+          Subir documento
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>

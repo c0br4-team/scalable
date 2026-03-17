@@ -29,6 +29,7 @@ export class AuthService {
   private readonly REFRESH_TOKEN_KEY = 'refresh_token';
   private readonly TOKEN_EXPIRY_KEY = 'token_expiry';
   private readonly NAV_ITEMS_KEY = 'nav_items';
+  private readonly USER_KEY = 'auth_user';
 
   private _state = signal<AuthState>(this.resolveInitialState());
 
@@ -44,6 +45,7 @@ export class AuthService {
         const expiresAt = Date.now() + expiresIn;
         this.persistTokens(accessToken, refreshToken, expiresAt);
         this.persistNavItems(navItems);
+        this.persistUser(user);
         this._state.set({ user, token: accessToken, isAuthenticated: true, navItems });
         this.router.navigate(['/dashboard']);
       }),
@@ -103,7 +105,8 @@ export class AuthService {
     }
 
     const navItems = this.restoreNavItems();
-    return { user: null, token, isAuthenticated: true, navItems };
+    const user = this.restoreUser();
+    return { user, token, isAuthenticated: true, navItems };
   }
 
   private persistTokens(access: string, refresh: string, expiresAt: number): void {
@@ -116,6 +119,10 @@ export class AuthService {
     sessionStorage.setItem(this.NAV_ITEMS_KEY, JSON.stringify(navItems));
   }
 
+  private persistUser(user: User): void {
+    sessionStorage.setItem(this.USER_KEY, JSON.stringify(user));
+  }
+
   private restoreNavItems(): NavItem[] {
     try {
       const raw = sessionStorage.getItem(this.NAV_ITEMS_KEY);
@@ -125,12 +132,22 @@ export class AuthService {
     }
   }
 
+  private restoreUser(): User | null {
+    try {
+      const raw = sessionStorage.getItem(this.USER_KEY);
+      return raw ? (JSON.parse(raw) as User) : null;
+    } catch {
+      return null;
+    }
+  }
+
   private clearSession(): void {
     [
       this.ACCESS_TOKEN_KEY,
       this.REFRESH_TOKEN_KEY,
       this.TOKEN_EXPIRY_KEY,
       this.NAV_ITEMS_KEY,
+      this.USER_KEY,
     ].forEach(key => {
       sessionStorage.removeItem(key);
       localStorage.removeItem(key);

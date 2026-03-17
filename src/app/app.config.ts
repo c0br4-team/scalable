@@ -44,6 +44,15 @@ import {
   heroFunnel,
   heroMagnifyingGlass,
   heroUserCircle,
+  heroArrowLeft,
+  heroArrowTopRightOnSquare,
+  heroChatBubbleLeftEllipsis,
+  heroFolder,
+  heroFolderOpen,
+  heroArrowDownTray,
+  heroArrowRight,
+  heroCursorArrowRays,
+  heroArrowsPointingIn,
 } from '@ng-icons/heroicons/outline';
 
 export const appConfig: ApplicationConfig = {
@@ -95,6 +104,15 @@ export const appConfig: ApplicationConfig = {
       heroFunnel,
       heroMagnifyingGlass,
       heroUserCircle,
+      heroArrowLeft,
+      heroArrowTopRightOnSquare,
+      heroChatBubbleLeftEllipsis,
+      heroFolder,
+      heroFolderOpen,
+      heroArrowDownTray,
+      heroArrowRight,
+      heroCursorArrowRays,
+      heroArrowsPointingIn,
     })
   ]
 };

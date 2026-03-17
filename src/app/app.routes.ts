@@ -40,6 +40,12 @@ export const routes: Routes = [
           import('./features/calendar/calendar.routes').then(m => m.calendarRoutes),
       },
       {
+        path: 'cases',
+        data: { breadcrumb: 'Expedientes' },
+        loadChildren: () =>
+          import('./features/cases/cases.routes').then(m => m.casesRoutes),
+      },
+      {
         path: 'profile',
         data: { breadcrumb: 'PROFILE.BREADCRUMB' },
         loadChildren: () =>

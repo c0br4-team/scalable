@@ -1,0 +1,178 @@
+<div class="flex flex-col h-full">
+
+  <!-- ── Header ─────────────────────────────────────────────────── -->
+  <div class="shrink-0 flex items-center justify-between px-4 sm:px-6 py-3 sm:py-4 border-b border-gray-100 bg-white">
+    <div class="flex items-center gap-2">
+      <h3 class="text-sm font-semibold text-gray-600">Documentos</h3>
+      <span class="px-1.5 py-0.5 text-xs bg-gray-100 text-gray-500 rounded-full">{{ internalDocs().length }}</span>
+    </div>
+    @if (canUpload) {
+    <div class="flex items-center gap-2">
+      <button type="button"
+              class="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 text-sm font-medium text-gray-600 bg-white border border-gray-200 hover:bg-gray-50 rounded-lg transition-colors"
+              (click)="showNewFolder.update(v => !v)">
+        <ng-icon name="heroPlus" class="text-sm" />
+        <span class="hidden xs:inline">Carpeta</span>
+        <span class="xs:hidden">Nueva</span>
+      </button>
+      <button type="button"
+              class="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 text-sm font-medium text-white bg-[#1e3a5f] hover:bg-[#162d4a] rounded-lg transition-colors"
+              (click)="openUpload()">
+        <ng-icon name="heroArrowUpTray" class="text-sm" />
+        <span class="hidden sm:inline">Subir documento</span>
+        <span class="sm:hidden">Subir</span>
+      </button>
+    </div>
+    }
+  </div>
+
+  <!-- ── New folder bar ─────────────────────────────────────────── -->
+  @if (showNewFolder()) {
+  <div class="shrink-0 flex items-center gap-2 px-4 sm:px-6 py-2.5 sm:py-3 bg-amber-50 border-b border-amber-100">
+    <ng-icon name="heroFolder" class="text-amber-500 text-base shrink-0" />
+    <input type="text" [(ngModel)]="newFolderName"
+           placeholder="Nombre de la carpeta..."
+           autofocus
+           class="flex-1 min-w-0 px-3 py-1.5 text-sm border border-amber-200 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-amber-300"
+           (keydown.enter)="submitNewFolder()"
+           (keydown.escape)="cancelNewFolder()" />
+    <button type="button"
+            class="shrink-0 px-3 py-1.5 text-sm font-medium bg-amber-500 text-white rounded-lg hover:bg-amber-600 transition-colors"
+            (click)="submitNewFolder()">Crear</button>
+    <button type="button"
+            class="shrink-0 p-1.5 rounded-lg hover:bg-amber-100 text-amber-600 transition-colors"
+            (click)="cancelNewFolder()">
+      <ng-icon name="heroXMark" class="text-base" />
+    </button>
+  </div>
+  }
+
+  <!-- ── Content: sidebar + main ───────────────────────────────── -->
+  <!-- En mobile: columna (sidebar arriba como chips, main abajo) -->
+  <!-- En sm+: fila (sidebar lateral + main) -->
+  <div class="flex-1 overflow-hidden flex flex-col sm:flex-row">
+
+    @if (hasSidebar) {
+    <app-document-folder-sidebar
+      [items]="sidebarItems"
+      [activeKey]="activeFolderKey()"
+      (folderSelect)="activeFolderKey.set($event)" />
+    }
+
+    <!-- Main document area -->
+    <div class="flex-1 min-h-0 overflow-auto px-4 sm:px-6 py-4 space-y-4"
+         (dragover)="onDragOver($event)"
+         (dragleave)="onDragLeave($event)"
+         (drop)="onDrop($event)">
+
+      <!-- Drop zone -->
+      @if (canUpload) {
+      <div class="block w-full rounded-xl cursor-pointer transition-all group border-2 border-dashed"
+           [class.border-[#1e3a5f]]="isDragging()"
+           [class.bg-blue-50]="isDragging()"
+           [class.border-gray-200]="!isDragging()"
+           [class.bg-white]="!isDragging()"
+           (click)="openUpload()"
+           (dragover)="onDragOver($event)"
+           (dragleave)="isDragging.set(false)"
+           (drop)="onDrop($event)">
+        <div class="flex flex-col items-center gap-3 px-4 sm:px-6 py-4 sm:py-5">
+          <p class="text-sm font-semibold text-gray-700">Podés cargar documentos de dos formas:</p>
+          <div class="flex flex-col sm:flex-row flex-wrap gap-2 sm:gap-3 w-full sm:w-auto">
+            <!-- Opción 1: click (siempre visible) -->
+            <div class="flex items-center gap-2 px-3 py-2 bg-[#1e3a5f]/5 group-hover:bg-[#1e3a5f]/10 rounded-lg transition-colors">
+              <ng-icon name="heroCursorArrowRays" class="text-base text-[#1e3a5f]/60 shrink-0" />
+              <div>
+                <p class="text-xs font-semibold text-[#1e3a5f]">Hacé click aquí</p>
+                <p class="text-xs text-gray-500">para abrir el formulario de carga</p>
+              </div>
+            </div>
+            <!-- Opción 2: drag & drop (solo en desktop) -->
+            <div class="hidden sm:flex items-center gap-2 px-3 py-2 bg-gray-50 rounded-lg">
+              <ng-icon name="heroArrowsPointingIn" class="text-base text-gray-400 shrink-0" />
+              <div>
+                <p class="text-xs font-semibold text-gray-600">Arrastrar y soltar</p>
+                <p class="text-xs text-gray-500">soltá el archivo directamente aquí</p>
+              </div>
+            </div>
+          </div>
+          <div class="flex items-center gap-3">
+            <span class="flex items-center gap-1 text-xs text-gray-400">
+              <ng-icon name="heroDocument" class="text-red-400 text-sm" /> PDF
+            </span>
+            <span class="flex items-center gap-1 text-xs text-gray-400">
+              <ng-icon name="heroPaperClip" class="text-blue-400 text-sm" /> DOCX / XLSX
+            </span>
+            <span class="flex items-center gap-1 text-xs text-gray-400">
+              <ng-icon name="heroPhoto" class="text-purple-400 text-sm" /> Imágenes
+            </span>
+            <span class="text-xs text-gray-300">· 25 MB máx.</span>
+          </div>
+        </div>
+      </div>
+      }
+
+      <!-- Estado vacío sin permiso de subir -->
+      @if (!internalDocs().length && !canUpload) {
+      <div class="flex flex-col items-center justify-center py-16 bg-white rounded-xl border border-dashed border-gray-200">
+        <ng-icon name="heroPaperClip" class="text-4xl text-gray-200 mb-3" />
+        <p class="text-sm font-medium text-gray-500">Sin documentos adjuntos</p>
+      </div>
+      }
+
+      @if (internalDocs().length && !visibleDocs.length) {
+      <p class="text-sm text-gray-400 text-center py-10">
+        Esta carpeta está vacía · Subí el primer documento
+      </p>
+      }
+
+      <!-- Folder label -->
+      @if (visibleDocs.length && activeFolderKey() !== '__all__' && hasSidebar) {
+      <div class="flex items-center gap-2 mb-1">
+        <ng-icon name="heroFolder" class="text-amber-500 text-base" />
+        <span class="text-sm font-semibold text-gray-700">{{ activeFolderLabel }}</span>
+        <span class="text-xs text-gray-400">({{ visibleDocs.length }})</span>
+      </div>
+      }
+
+      <!-- Grid de tarjetas -->
+      @if (visibleDocs.length) {
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+        @for (doc of visibleDocs; track doc.id) {
+        <app-document-card
+          [doc]="doc"
+          [folderName]="docFolderName(doc)"
+          [showFolderBadge]="activeFolderKey() === '__all__'"
+          [isVersionExpanded]="isVersionExpanded(doc.id)"
+          [canDownload]="canDownload"
+          [canUploadVersion]="canUploadVersion"
+          [canDelete]="canDelete"
+          (toggleVersions)="toggleVersionExpand($event)"
+          (requestNewVersion)="openVersionUpload($event)"
+          (deleteDocument)="deleteDoc($event)" />
+        }
+      </div>
+      }
+
+    </div><!-- /main -->
+  </div><!-- /content -->
+</div>
+
+<!-- Modal de carga -->
+@if (showUploadModal()) {
+<app-document-upload-modal
+  [folders]="allFolders"
+  [preselectedFolderId]="preselectedFolderId"
+  [preselectedFile]="preselectedFile"
+  (submitted)="onUploadSubmitted($event)"
+  (closed)="showUploadModal.set(false)"
+  (folderCreated)="onFolderCreated($event)" />
+}
+
+<!-- Modal de nueva versión -->
+@if (versionTarget(); as targetDoc) {
+<app-document-version-modal
+  [targetDoc]="targetDoc"
+  (submitted)="onVersionSubmitted($event)"
+  (closed)="versionTarget.set(null)" />
+}

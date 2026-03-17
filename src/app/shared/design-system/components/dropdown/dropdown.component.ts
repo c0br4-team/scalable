@@ -1,4 +1,4 @@
-import { Component, forwardRef, Input, signal, computed, ElementRef, viewChild, OnInit, OnDestroy } from '@angular/core';
+import { Component, forwardRef, Input, signal, computed, ElementRef, viewChild, OnInit, OnDestroy, inject } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { ClickOutsideDirective } from '../../../../core/directives/click-outside.directive';
 import { DropdownOption, DropdownConfig } from '../../models/components.model';
@@ -25,6 +25,9 @@ export class DropdownComponent implements OnInit, OnDestroy, ControlValueAccesso
   @Input() maxVisibleChips: number = 2;
 
   protected searchInput = viewChild<ElementRef<HTMLInputElement>>('searchInput');
+
+  private el = inject(ElementRef);
+  protected panelStyle = signal<Record<string, string>>({});
 
   protected isOpen = signal(false);
   protected isDisabled = signal(false);
@@ -79,10 +82,36 @@ export class DropdownComponent implements OnInit, OnDestroy, ControlValueAccesso
   protected toggle(): void {
     if (this.isDisabled()) return;
     this.isOpen.update(v => !v);
-    if (this.isOpen() && this.isSearchable) {
-      setTimeout(() => this.searchInput()?.nativeElement.focus(), 0);
+    if (this.isOpen()) {
+      this.positionPanel();
+      if (this.isSearchable) {
+        setTimeout(() => this.searchInput()?.nativeElement.focus(), 0);
+      }
     }
     if (!this.isOpen()) this.closeCleanup();
+  }
+
+  private positionPanel(): void {
+    const host = this.el.nativeElement as HTMLElement;
+    const rect = (host.firstElementChild ?? host).getBoundingClientRect();
+    const vh = window.innerHeight;
+    const panelMaxH = 220;
+    const spaceBelow = vh - rect.bottom;
+
+    const style: Record<string, string> = {
+      position: 'fixed',
+      left: `${rect.left}px`,
+      width: `${rect.width}px`,
+      zIndex: '9999',
+    };
+
+    if (spaceBelow >= panelMaxH || spaceBelow >= rect.top) {
+      style['top'] = `${rect.bottom + 4}px`;
+    } else {
+      style['bottom'] = `${vh - rect.top + 4}px`;
+    }
+
+    this.panelStyle.set(style);
   }
 
   protected close(): void {
