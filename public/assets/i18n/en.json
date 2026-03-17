@@ -77,7 +77,9 @@
     "INPUT": "Input",
     "CARD": "Card",
     "MODAL": "Modal",
-    "TABLE": "Table"
+    "TABLE": "Table",
+    "NAVBAR": "Navbar",
+    "FOOTER": "Footer"
   },
   "TABLE": {
     "EMPTY": "No data available",
@@ -90,7 +92,7 @@
     "DELETE_ROW": "Delete row",
     "UNSAVED_CHANGES": "Unsaved changes",
     "SAVE_CHANGES": "Save changes",
-    "DISCARD": "Discard"
+    "DISCARD": "Discard",
     "NAVBAR": "Navbar",
     "FOOTER": "Footer"
   }

@@ -20,7 +20,15 @@ export class LanguageService {
   }
 
   private getSaved(): AppLang {
+    // 1. Preferencia guardada en localStorage
     const saved = localStorage.getItem(this.STORAGE_KEY);
-    return saved === 'es' ? 'es' : 'en';
+    if (saved === 'es' || saved === 'en') return saved;
+
+    // 2. Idioma del navegador
+    const browserLang = navigator.language?.split('-')[0];
+    if (browserLang === 'es' || browserLang === 'en') return browserLang as AppLang;
+
+    // 3. Fallback
+    return 'en';
   }
 }

@@ -92,6 +92,8 @@
     "DELETE_ROW": "Eliminar fila",
     "UNSAVED_CHANGES": "Cambios sin guardar",
     "SAVE_CHANGES": "Guardar cambios",
-    "DISCARD": "Descartar"
+    "DISCARD": "Descartar",
+    "NAVBAR": "Barra de navegación",
+    "FOOTER": "Pie de página"
   }
 }
