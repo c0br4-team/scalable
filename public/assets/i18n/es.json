@@ -80,5 +80,18 @@
     "TABLE": "Tabla",
     "NAVBAR": "Barra de navegación",
     "FOOTER": "Pie de página"
+  },
+  "TABLE": {
+    "EMPTY": "No hay datos disponibles",
+    "EMPTY_EDITABLE": "Sin filas. Agrega una abajo.",
+    "ACTIONS": "Acciones",
+    "SHOWING": "Mostrando",
+    "OF": "de",
+    "PAGE": "página",
+    "ADD_ROW": "Agregar fila",
+    "DELETE_ROW": "Eliminar fila",
+    "UNSAVED_CHANGES": "Cambios sin guardar",
+    "SAVE_CHANGES": "Guardar cambios",
+    "DISCARD": "Descartar"
   }
 }

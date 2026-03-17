@@ -77,7 +77,20 @@
     "INPUT": "Input",
     "CARD": "Card",
     "MODAL": "Modal",
-    "TABLE": "Table",
+    "TABLE": "Table"
+  },
+  "TABLE": {
+    "EMPTY": "No data available",
+    "EMPTY_EDITABLE": "No rows yet. Add one below.",
+    "ACTIONS": "Actions",
+    "SHOWING": "Showing",
+    "OF": "of",
+    "PAGE": "page",
+    "ADD_ROW": "Add row",
+    "DELETE_ROW": "Delete row",
+    "UNSAVED_CHANGES": "Unsaved changes",
+    "SAVE_CHANGES": "Save changes",
+    "DISCARD": "Discard"
     "NAVBAR": "Navbar",
     "FOOTER": "Footer"
   }
