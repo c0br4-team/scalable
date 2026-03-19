@@ -1,27 +1,12 @@
 import { Component, inject } from '@angular/core';
-import { animate, style, transition, trigger } from '@angular/animations';
 import { Toast, ToastPosition, ToastService } from '../../../core/notifications/toast.service';
 import { NgIcon } from '@ng-icons/core';
-
-export const toastAnimation = trigger('toast', [
-  transition(':enter', [
-    style({ opacity: 0, transform: 'translateX(110%) scale(0.95)' }),
-    animate('280ms cubic-bezier(0.34, 1.56, 0.64, 1)',
-      style({ opacity: 1, transform: 'translateX(0) scale(1)' })
-    ),
-  ]),
-  transition(':leave', [
-    animate('200ms cubic-bezier(0.4, 0, 1, 1)',
-      style({ opacity: 0, transform: 'translateX(110%) scale(0.95)', height: 0, marginBottom: 0 })
-    ),
-  ]),
-]);
+import { TranslatePipe } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-toast',
   templateUrl: './toast.html',
-  imports: [NgIcon],
-  animations: [toastAnimation],
+  imports: [NgIcon, TranslatePipe],
 })
 export class ToastComponent {
   protected toastService = inject(ToastService);
