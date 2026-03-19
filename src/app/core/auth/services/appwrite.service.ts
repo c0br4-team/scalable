@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Account, Client } from 'appwrite';
+import { Account, Client, Models } from 'appwrite';
 import { environment } from '../../../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
@@ -16,7 +16,8 @@ export class AppwriteService {
   }
 
   async createSession(email: string, password: string): Promise<void> {
-    await this.account.createEmailPasswordSession(email, password);
+    await this.account.deleteSession({ sessionId: 'current' }).catch(() => {});
+    await this.account.createEmailPasswordSession({ email, password });
   }
 
   async createJWT(): Promise<string> {
@@ -25,6 +26,10 @@ export class AppwriteService {
   }
 
   async deleteSession(): Promise<void> {
-    await this.account.deleteSession('current');
+    await this.account.deleteSession({ sessionId: 'current' });
+  }
+
+  async getAccount(): Promise<Models.User<Models.Preferences> | null> {
+    return this.account.get().catch(() => null);
   }
 }

@@ -1,5 +1,6 @@
-import { ApplicationConfig, isDevMode, provideBrowserGlobalErrorListeners } from '@angular/core';
+import { ApplicationConfig, inject, isDevMode, provideAppInitializer, provideBrowserGlobalErrorListeners } from '@angular/core';
 import { provideRouter } from '@angular/router';
+import { AuthService } from './core/auth/services/auth.service';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { provideServiceWorker } from '@angular/service-worker';
 import { provideAnimations } from '@angular/platform-browser/animations';
@@ -58,6 +59,7 @@ import {
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
+    provideAppInitializer(() => inject(AuthService).initializeSession()),
     provideRouter(routes),
     provideAnimations(),
     provideHttpClient(

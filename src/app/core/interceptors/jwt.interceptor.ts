@@ -1,22 +1,35 @@
-import { HttpInterceptorFn, HttpErrorResponse } from '@angular/common/http';
+import { HttpInterceptorFn, HttpErrorResponse, HttpRequest, HttpHandlerFn } from '@angular/common/http';
 import { inject } from '@angular/core';
-import { catchError, throwError } from 'rxjs';
+import { catchError, from, switchMap, throwError } from 'rxjs';
 import { AuthService } from '../auth/services/auth.service';
+import { AppwriteService } from '../auth/services/appwrite.service';
 
-export const jwtInterceptor: HttpInterceptorFn = (req, next) => {
-  const auth = inject(AuthService);
-  const token = auth.token();
+const attachToken = (req: HttpRequest<unknown>, token: string) =>
+  req.clone({ setHeaders: { Authorization: `Bearer ${token}` } });
 
-  const authReq = token
-    ? req.clone({ setHeaders: { Authorization: `Bearer ${token}` } })
-    : req;
+const handleRequest = (req: HttpRequest<unknown>, next: HttpHandlerFn, token: string | null, auth: AuthService, appwrite: AppwriteService) => {
+  const authReq = token ? attachToken(req, token) : req;
 
   return next(authReq).pipe(
     catchError((error: HttpErrorResponse) => {
-      if (error.status === 401) {
-        auth.logout();
-      }
-      return throwError(() => error);
-    })
+      if (error.status !== 401) return throwError(() => error);
+
+      return from(appwrite.createJWT()).pipe(
+        switchMap(freshJwt => {
+          auth.updateToken(freshJwt);
+          return next(attachToken(req, freshJwt));
+        }),
+        catchError(() => {
+          auth.logout();
+          return throwError(() => error);
+        }),
+      );
+    }),
   );
+};
+
+export const jwtInterceptor: HttpInterceptorFn = (req, next) => {
+  const auth = inject(AuthService);
+  const appwrite = inject(AppwriteService);
+  return handleRequest(req, next, auth.token(), auth, appwrite);
 };
