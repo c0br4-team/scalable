@@ -6,7 +6,7 @@
   },
   "newProjectRoot": "projects",
   "projects": {
-    "scalable": {
+    "mercadoLaw": {
       "projectType": "application",
       "schematics": {},
       "root": "",
@@ -68,10 +68,10 @@
           "builder": "@angular/build:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "scalable:build:production"
+              "buildTarget": "mercadoLaw:build:production"
             },
             "development": {
-              "buildTarget": "scalable:build:development"
+              "buildTarget": "mercadoLaw:build:development"
             }
           },
           "defaultConfiguration": "development"
