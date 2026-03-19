@@ -4,6 +4,7 @@ import { AuthService } from '../../../../core/auth/services/auth.service';
 import { LanguageService } from '../../../../core/services/language.service';
 import { NgIcon } from '@ng-icons/core';
 import { TranslatePipe } from '@ngx-translate/core';
+import { AppwriteException } from 'appwrite';
 
 @Component({
   selector: 'app-login',
@@ -44,8 +45,9 @@ export class LoginPage {
         const prefs = this.auth.preferences();
         if (prefs) this.lang.set(prefs.language);
       },
-      error: () => {
-        this.errorMessage.set('LOGIN.ERROR_INVALID');
+      error: (err: unknown) => {
+        const isInvalidCredentials = err instanceof AppwriteException && err.code === 401;
+        this.errorMessage.set(isInvalidCredentials ? 'LOGIN.ERROR_INVALID' : 'LOGIN.ERROR_NETWORK');
         this.isLoading.set(false);
       },
     });

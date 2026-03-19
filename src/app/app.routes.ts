@@ -19,6 +19,11 @@ export const routes: Routes = [
         loadChildren: () =>
           import('./features/auth/auth.routes').then(m => m.authRoutes),
       },
+      {
+        path: 'reset-password',
+        loadComponent: () =>
+          import('./features/auth/pages/reset-password/reset-password').then(m => m.ResetPasswordPage),
+      },
     ],
   },
   {
@@ -50,6 +55,12 @@ export const routes: Routes = [
         data: { breadcrumb: 'PROFILE.BREADCRUMB' },
         loadChildren: () =>
           import('./features/profile/profile.routes').then(m => m.profileRoutes),
+      },
+      {
+        path: 'users',
+        data: { breadcrumb: 'USERS.BREADCRUMB' },
+        loadChildren: () =>
+          import('./features/users/users.routes').then(m => m.usersRoutes),
       },
     ],
   },

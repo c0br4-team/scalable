@@ -37,6 +37,37 @@
     "PASSWORDS_MISMATCH": "Las contraseñas no coinciden.",
     "UPDATE_PASSWORD": "Actualizar contraseña"
   },
+  "USERS": {
+    "BREADCRUMB": "Usuarios",
+    "TITLE": "Gestión de usuarios",
+    "SUBTITLE": "Administrá los usuarios del sistema",
+    "SEARCH_PLACEHOLDER": "Buscar por nombre o email...",
+    "NAME": "Nombre",
+    "NAME_PLACEHOLDER": "Nombre completo",
+    "NAME_REQUIRED": "El nombre es requerido.",
+    "EMAIL": "Correo electrónico",
+    "EMAIL_PLACEHOLDER": "correo@ejemplo.com",
+    "EMAIL_REQUIRED": "El correo es requerido.",
+    "EMAIL_INVALID": "Ingresá un correo válido.",
+    "PASSWORD": "Contraseña",
+    "PASSWORD_REQUIRED": "La contraseña es requerida.",
+    "PASSWORD_MIN": "Mínimo 8 caracteres.",
+    "ROLE": "Rol",
+    "ROLE_ADMIN": "Administrador",
+    "ROLE_USER": "Usuario",
+    "STATUS": "Estado",
+    "CREATED_AT": "Fecha de alta",
+    "CREATE": "Nuevo usuario",
+    "SAVE": "Guardar cambios",
+    "CANCEL": "Cancelar",
+    "DRAWER_CREATE_TITLE": "Nuevo usuario",
+    "DRAWER_EDIT_TITLE": "Editar usuario",
+    "CREATED": "Usuario creado correctamente.",
+    "UPDATED": "Usuario actualizado correctamente.",
+    "LOAD_ERROR": "Error al cargar los usuarios.",
+    "CREATE_ERROR": "Error al crear el usuario.",
+    "UPDATE_ERROR": "Error al actualizar el usuario."
+  },
   "LOGIN": {
     "TAGLINE": "Gestiona tus casos de forma eficiente",
     "TAGLINE_SUB": "Una plataforma moderna para el seguimiento y resolución de casos empresariales.",
@@ -56,7 +87,8 @@
     "BUTTON": "Ingresar",
     "BUTTON_LOADING": "Ingresando...",
     "ERROR_INVALID": "Credenciales inválidas. Intenta de nuevo.",
-    "FOOTER": "© 2026 Scalable. Todos los derechos reservados.",
+    "ERROR_NETWORK": "No se pudo conectar al servidor. Verifica tu conexión.",
+    "FOOTER": "© 2026 mercadoLaw. Todos los derechos reservados.",
     "SHOW_PASSWORD": "Mostrar contraseña",
     "HIDE_PASSWORD": "Ocultar contraseña"
   },
@@ -81,6 +113,21 @@
     "NAVBAR": "Barra de navegación",
     "FOOTER": "Pie de página"
   },
+  "RESET_PASSWORD": {
+    "TITLE": "Configurar contraseña",
+    "SUBTITLE": "Creá una contraseña segura para tu cuenta",
+    "NEW_PASSWORD": "Nueva contraseña",
+    "CONFIRM_PASSWORD": "Confirmar contraseña",
+    "PASSWORD_REQUIRED": "La contraseña es requerida.",
+    "PASSWORD_MIN": "Mínimo 8 caracteres.",
+    "PASSWORDS_MISMATCH": "Las contraseñas no coinciden.",
+    "BUTTON": "Confirmar contraseña",
+    "BUTTON_LOADING": "Guardando...",
+    "SUCCESS": "¡Contraseña configurada correctamente!",
+    "REDIRECT": "Serás redirigido al inicio de sesión en unos segundos...",
+    "INVALID_LINK": "El enlace es inválido o ha expirado.",
+    "ERROR": "Ocurrió un error. Por favor solicitá un nuevo enlace."
+  },
   "TABLE": {
     "EMPTY": "No hay datos disponibles",
     "EMPTY_EDITABLE": "Sin filas. Agrega una abajo.",
@@ -92,6 +139,8 @@
     "DELETE_ROW": "Eliminar fila",
     "UNSAVED_CHANGES": "Cambios sin guardar",
     "SAVE_CHANGES": "Guardar cambios",
-    "DISCARD": "Descartar"
+    "DISCARD": "Descartar",
+    "NAVBAR": "Barra de navegación",
+    "FOOTER": "Pie de página"
   }
 }

@@ -28,6 +28,7 @@ export interface Toast {
   progress: boolean;
   action?: ToastAction;
   createdAt: number;
+  leaving?: boolean;
 }
 
 export interface ToastConfig {
@@ -80,7 +81,9 @@ export class ToastService {
     this._timers.delete(id);
     this._remaining.delete(id);
     this._pausedAt.delete(id);
-    this.toasts.update(list => list.filter(t => t.id !== id));
+
+    this.toasts.update(list => list.map(t => t.id === id ? { ...t, leaving: true } : t));
+    setTimeout(() => this.toasts.update(list => list.filter(t => t.id !== id)), 200);
   }
 
   dismissAll(): void {

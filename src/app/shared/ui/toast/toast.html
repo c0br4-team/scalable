@@ -1,8 +1,8 @@
 <div class="fixed z-[9998] flex flex-col gap-2 w-80 pointer-events-auto group"
   [class]="positionClasses(toastService.config().position)">
   @for (toast of toastService.toasts(); track trackById($index, toast)) {
-  <div [@toast] class="relative rounded-xl shadow-lg overflow-hidden pointer-events-auto group"
-    [class]="cardClasses(toast.type)" (mouseenter)="toastService.pause(toast.id)"
+  <div [class]="'relative rounded-xl shadow-lg overflow-hidden pointer-events-auto group ' + cardClasses(toast.type) + ' ' + (toast.leaving ? 'toast-leave' : 'toast-enter')"
+    (mouseenter)="toastService.pause(toast.id)"
     (mouseleave)="toastService.resume(toast.id)">
     <!-- Contenido -->
     <div class="flex gap-3 px-4 pt-3.5" [class.items-center]="!toast.title" [class.items-start]="toast.title"
@@ -14,16 +14,16 @@
       <!-- Texto -->
       <div class="flex-1 min-w-0">
         @if (toast.title) {
-        <p class="text-sm font-semibold text-gray-900 leading-tight">{{ toast.title }}</p>
+        <p class="text-sm font-semibold text-gray-900 leading-tight">{{ toast.title | translate }}</p>
         }
-        <p class="text-sm text-gray-600 leading-snug" [class.mt-0.5]="toast.title">{{ toast.message }}</p>
+        <p class="text-sm text-gray-600 leading-snug" [class.mt-0.5]="toast.title">{{ toast.message | translate }}</p>
 
         <!-- Acción -->
         @if (toast.action) {
         <button (click)="toast.action.onClick(); toastService.dismiss(toast.id)"
           class="mt-2 text-xs font-semibold underline underline-offset-2 hover:opacity-70 transition-opacity"
           [class]="iconClasses(toast.type)">
-          {{ toast.action.label }}
+          {{ toast.action.label | translate }}
         </button>
         }
       </div>
