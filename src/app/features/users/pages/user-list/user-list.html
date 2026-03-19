@@ -1,0 +1,43 @@
+<div class="p-4 lg:p-6 space-y-5">
+
+  <!-- Header -->
+  <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+    <div>
+      <h1 class="text-xl font-bold text-gray-900">{{ 'USERS.TITLE' | translate }}</h1>
+      <p class="text-sm text-gray-500 mt-0.5">{{ 'USERS.SUBTITLE' | translate }}</p>
+    </div>
+    <button
+      type="button"
+      (click)="openCreateDrawer()"
+      class="inline-flex items-center gap-2 px-4 py-2.5 bg-[#1e3a5f] text-white text-sm font-semibold
+        rounded-xl hover:bg-[#16304f] active:scale-[0.98] transition-all focus:outline-none
+        focus:ring-2 focus:ring-[#1e3a5f]/40 focus:ring-offset-2">
+      <ng-icon name="heroUserPlus" class="text-base" />
+      {{ 'USERS.CREATE' | translate }}
+    </button>
+  </div>
+
+  <!-- Search -->
+  <div class="max-w-sm">
+    <sce-search-bar
+      [placeholder]="'USERS.SEARCH_PLACEHOLDER' | translate"
+      (search)="onSearch($event)"
+      (cleared)="onSearch('')" />
+  </div>
+
+  <!-- Table -->
+  <sce-editable-table
+    [columns]="columns"
+    [data]="users()"
+    [loading]="isLoading()"
+    [deleteRowEnabled]="false"
+    (save)="onTableSave($event)" />
+
+</div>
+
+<!-- Drawer -->
+<app-user-drawer
+  [open]="drawerOpen()"
+  [user]="editingUser()"
+  (submitted)="onDrawerSubmit($event)"
+  (closed)="closeDrawer()" />

@@ -32,4 +32,12 @@ export class AppwriteService {
   async getAccount(): Promise<Models.User<Models.Preferences> | null> {
     return this.account.get().catch(() => null);
   }
+
+  async sendPasswordRecovery(email: string, url: string): Promise<void> {
+    await this.account.createRecovery({ email, url });
+  }
+
+  async updateRecovery(userId: string, secret: string, password: string): Promise<void> {
+    await this.account.updateRecovery({ userId, secret, password });
+  }
 }

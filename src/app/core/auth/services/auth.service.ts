@@ -12,6 +12,27 @@ interface LoginResponse {
   navItems: NavItem[];
 }
 
+const DEFAULT_NAV_ITEMS: NavItem[] = [
+  {
+    type: 'group',
+    label: 'NAV.MANAGEMENT',
+    children: [
+      { type: 'basic', label: 'NAV.DASHBOARD',  path: '/dashboard', icon: 'heroHome' },
+      { type: 'basic', label: 'NAV.CASES',      path: '/cases',     icon: 'heroDocumentText' },
+      { type: 'basic', label: 'NAV.CALENDAR',   path: '/calendar',  icon: 'heroCalendar' },
+    ],
+  },
+  { type: 'divider' },
+  {
+    type: 'group',
+    label: 'NAV.ADMIN',
+    children: [
+      { type: 'basic', label: 'NAV.USERS',    path: '/users',   icon: 'heroUsers' },
+      { type: 'basic', label: 'NAV.SETTINGS', path: '/profile', icon: 'heroCog6Tooth' },
+    ],
+  },
+];
+
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private http = inject(HttpClient);
@@ -48,7 +69,7 @@ export class AuthService {
     }
 
     const user = this.restoreUser();
-    const navItems = this.restoreNavItems();
+    const navItems = this.restoreNavItems().length ? this.restoreNavItems() : DEFAULT_NAV_ITEMS;
 
     if (!user) {
       this.clearSession();
@@ -66,7 +87,8 @@ export class AuthService {
         this.http.post<LoginResponse>(`${this.apiUrl}/auth/login`, null, {
           headers: { Authorization: `Bearer ${jwt}` },
         }).pipe(
-          tap(({ user, navItems }) => {
+          tap(({ user }) => {
+            const navItems = DEFAULT_NAV_ITEMS;
             this.persistToken(jwt);
             this.persistNavItems(navItems);
             this.persistUser(user);

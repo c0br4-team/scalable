@@ -4,5 +4,6 @@ export const environment = {
   appwrite: {
     endpoint: 'https://nyc.cloud.appwrite.io/v1',
     projectId: '69b1cc5f00027b15eced',
+    url:'https://mercadolaw.appwrite.network/'
   },
 };

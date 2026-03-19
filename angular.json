@@ -6,7 +6,7 @@
   },
   "newProjectRoot": "projects",
   "projects": {
-    "mercadoLaw": {
+    "mercadolaw": {
       "projectType": "application",
       "schematics": {},
       "root": "",
@@ -32,14 +32,15 @@
             "security": {
               "allowedHosts": []
             },
-            "serviceWorker": "ngsw-config.json"
+            "serviceWorker": "ngsw-config.json",
+            "allowedCommonJsDependencies": ["json-bigint"]
           },
           "configurations": {
             "production": {
               "budgets": [
                 {
                   "type": "initial",
-                  "maximumWarning": "500kB",
+                  "maximumWarning": "600kB",
                   "maximumError": "1MB"
                 },
                 {
@@ -68,10 +69,10 @@
           "builder": "@angular/build:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "mercadoLaw:build:production"
+              "buildTarget": "mercadolaw:build:production"
             },
             "development": {
-              "buildTarget": "mercadoLaw:build:development"
+              "buildTarget": "mercadolaw:build:development"
             }
           },
           "defaultConfiguration": "development"
