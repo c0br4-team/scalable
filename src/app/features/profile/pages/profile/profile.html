@@ -2,15 +2,59 @@
 
   <!-- Header -->
   <div class="flex items-center gap-5 mb-8">
-    <div class="w-20 h-20 rounded-full bg-[#1e3a5f] text-white flex items-center justify-center text-3xl font-bold shrink-0 select-none">
-      {{ avatarLetter }}
+
+    <!-- Avatar con overlay de cámara -->
+    <div class="relative shrink-0 group">
+      <label for="avatar-input" class="cursor-pointer block">
+
+        <!-- Foto o inicial -->
+        @if (auth.currentAvatarUrl()) {
+          <img [src]="auth.currentAvatarUrl()!" alt="Avatar"
+            class="w-20 h-20 rounded-full object-cover ring-2 ring-[#1e3a5f]/20" />
+        } @else {
+          <div class="w-20 h-20 rounded-full bg-[#1e3a5f] text-white flex items-center justify-center text-3xl font-bold select-none">
+            {{ avatarLetter() }}
+          </div>
+        }
+
+        <!-- Overlay cámara al hover -->
+        <div class="absolute inset-0 rounded-full bg-black/40 flex items-center justify-center
+                    opacity-0 group-hover:opacity-100 transition-opacity">
+          @if (avatarUploading()) {
+            <svg class="w-6 h-6 text-white animate-spin" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"/>
+            </svg>
+          } @else {
+            <ng-icon name="heroCamera" class="text-white text-2xl" />
+          }
+        </div>
+      </label>
+
+      <!-- Input oculto -->
+      <input id="avatar-input" type="file" accept="image/jpeg,image/png,image/webp"
+        class="hidden" (change)="onAvatarFileSelected($event)" [disabled]="avatarUploading()" />
     </div>
+
     <div>
       <h1 class="text-2xl font-bold text-gray-900">{{ auth.user()?.name }}</h1>
       <p class="text-sm text-gray-500 mt-0.5">{{ auth.user()?.email }}</p>
       <span class="inline-block mt-1.5 text-xs font-semibold px-2.5 py-0.5 rounded-full bg-blue-100 text-blue-700 capitalize">
         {{ auth.user()?.role }}
       </span>
+
+      <!-- Error avatar -->
+      @if (avatarError()) {
+        <p class="mt-1.5 text-xs text-red-500 flex items-center gap-1">
+          <ng-icon name="heroExclamationCircle" class="text-sm shrink-0" />
+          {{ avatarError() }}
+        </p>
+      }
+
+      <!-- Hint -->
+      @if (!avatarUploading() && !avatarError()) {
+        <p class="mt-1.5 text-xs text-gray-400">{{ 'PROFILE.AVATAR_HINT' | translate }}</p>
+      }
     </div>
   </div>
 

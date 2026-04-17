@@ -2,15 +2,11 @@ import { Injectable, signal, computed, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { Observable, from, switchMap, tap, map } from 'rxjs';
-import { AuthState, LoginCredentials, User } from '../models/user.model';
+import { AuthState, LoginCredentials, LoginResponse, User } from '../models/user.model';
 import { NavItem } from '../../navigation/nav-item.model';
 import { environment } from '../../../../environments/environment';
 import { AppwriteService } from './appwrite.service';
 
-interface LoginResponse {
-  user: User;
-  navItems: NavItem[];
-}
 
 const DEFAULT_NAV_ITEMS: NavItem[] = [
   {
@@ -52,6 +48,14 @@ export class AuthService {
   readonly navItems = computed(() => this._state().navItems);
   readonly preferences = computed(() => this._state().user?.preferences ?? null);
 
+  /** Preview local (base64) del avatar durante la subida — compartido en toda la app. */
+  readonly avatarPreview = signal<string | null>(null);
+
+  /** URL efectiva del avatar: preview local durante la subida, URL de Appwrite una vez guardada. */
+  readonly currentAvatarUrl = computed(() =>
+    this.avatarPreview() ?? this._state().user?.avatarUrl ?? null
+  );
+
   async initializeSession(): Promise<void> {
     const storedToken = sessionStorage.getItem(this.ACCESS_TOKEN_KEY);
     if (!storedToken) return;
@@ -87,8 +91,7 @@ export class AuthService {
         this.http.post<LoginResponse>(`${this.apiUrl}/auth/login`, null, {
           headers: { Authorization: `Bearer ${jwt}` },
         }).pipe(
-          tap(({ user }) => {
-            const navItems = DEFAULT_NAV_ITEMS;
+          tap(({ user, navItems }) => {
             this.persistToken(jwt);
             this.persistNavItems(navItems);
             this.persistUser(user);
@@ -104,6 +107,54 @@ export class AuthService {
   updateToken(jwt: string): void {
     this.persistToken(jwt);
     this._state.update(s => ({ ...s, token: jwt }));
+  }
+
+  /**
+   * Sube una nueva foto de perfil.
+   * Valida tipo y tamaño en el cliente, luego envía al backend vía multipart/form-data.
+   * El backend sube el archivo a Appwrite Storage, guarda la URL y devuelve el UserDto actualizado.
+   */
+  uploadAvatar(file: File): Observable<void> {
+    const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
+    const MAX_SIZE_MB = 5;
+
+    if (!ALLOWED_TYPES.includes(file.type)) {
+      return new Observable(obs => {
+        obs.error(new Error('Tipo de archivo no permitido. Solo se aceptan JPEG, PNG o WebP.'));
+      });
+    }
+
+    if (file.size > MAX_SIZE_MB * 1024 * 1024) {
+      return new Observable(obs => {
+        obs.error(new Error(`El archivo supera el límite de ${MAX_SIZE_MB} MB.`));
+      });
+    }
+
+    const form = new FormData();
+    form.append('file', file, file.name);
+
+    const userId = this._state().user?.id;
+    if (!userId) {
+      return new Observable(obs => obs.error(new Error('No hay sesión activa.')));
+    }
+
+    return this.http.patch<{ id: string; name: string; email: string; role: string; phone?: string; avatarUrl?: string; preferences: { language: string; theme: string } }>(
+      `${this.apiUrl}/users/${userId}/avatar`,
+      form
+    ).pipe(
+      tap(updatedUser => {
+        const mapped = updatedUser as typeof updatedUser;
+        this._state.update(s => ({
+          ...s,
+          user: s.user ? { ...s.user, avatarUrl: mapped.avatarUrl } : s.user,
+        }));
+        this.avatarPreview.set(null); // la URL real ya está en user.avatarUrl
+        if (this._state().user) {
+          this.persistUser(this._state().user!);
+        }
+      }),
+      map(() => void 0),
+    );
   }
 
   logout(): void {

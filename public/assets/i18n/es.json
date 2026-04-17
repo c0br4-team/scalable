@@ -35,7 +35,8 @@
     "PASSWORD_REQUIRED": "Este campo es requerido.",
     "PASSWORD_MIN": "Mínimo 6 caracteres.",
     "PASSWORDS_MISMATCH": "Las contraseñas no coinciden.",
-    "UPDATE_PASSWORD": "Actualizar contraseña"
+    "UPDATE_PASSWORD": "Actualizar contraseña",
+    "AVATAR_HINT": "Haz clic para cambiar tu foto · JPEG, PNG o WebP · máx. 5 MB"
   },
   "USERS": {
     "BREADCRUMB": "Usuarios",

@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
 import { NgIcon } from '@ng-icons/core';
 import { TranslatePipe } from '@ngx-translate/core';
@@ -26,6 +26,9 @@ export class ProfilePage {
   protected showCurrent = signal(false);
   protected showNew = signal(false);
   protected showConfirm = signal(false);
+
+  protected avatarUploading = signal(false);
+  protected avatarError = signal<string | null>(null);
 
   protected infoForm = this.fb.group({
     name: [this.auth.user()?.name ?? '', [Validators.required, Validators.minLength(2)]],
@@ -58,7 +61,45 @@ export class ProfilePage {
     setTimeout(() => this.pwdSaved.set(false), 3000);
   }
 
-  protected get avatarLetter(): string {
-    return this.auth.user()?.name?.charAt(0)?.toUpperCase() ?? 'U';
+  protected readonly avatarLetter = computed(() =>
+    this.auth.user()?.name?.charAt(0)?.toUpperCase() ?? 'U'
+  );
+
+  protected onAvatarFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    if (!file) return;
+
+    this.avatarError.set(null);
+
+    const ALLOWED = ['image/jpeg', 'image/png', 'image/webp'];
+    if (!ALLOWED.includes(file.type)) {
+      this.avatarError.set('Solo se aceptan imágenes JPEG, PNG o WebP.');
+      input.value = '';
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      this.avatarError.set('El archivo supera el límite de 5 MB.');
+      input.value = '';
+      return;
+    }
+
+    // Preview local inmediato — se guarda en AuthService para que el header también lo refleje
+    const reader = new FileReader();
+    reader.onload = e => this.auth.avatarPreview.set(e.target?.result as string);
+    reader.readAsDataURL(file);
+
+    this.avatarUploading.set(true);
+    this.auth.uploadAvatar(file).subscribe({
+      next: () => {
+        this.avatarUploading.set(false);
+      },
+      error: (err: unknown) => {
+        this.avatarUploading.set(false);
+        this.auth.avatarPreview.set(null);
+        this.avatarError.set(err instanceof Error ? err.message : 'Error al subir la imagen.');
+        input.value = '';
+      },
+    });
   }
 }

@@ -11,6 +11,7 @@ export interface User {
   email: string;
   role: string;
   phone?: string;
+  avatarUrl?: string;
   preferences: UserPreferences;
 }
 
@@ -23,5 +24,10 @@ export interface AuthState {
   user: User | null;
   token: string | null;
   isAuthenticated: boolean;
+  navItems: NavItem[];
+}
+
+export interface LoginResponse {
+  user: User;
   navItems: NavItem[];
 }

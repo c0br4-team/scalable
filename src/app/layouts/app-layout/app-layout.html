@@ -262,9 +262,16 @@
         <div class="relative" (clickOutside)="closeUserMenu()">
           <button (click)="toggleUserMenu()"
             class="flex items-center gap-2 px-3 py-1.5 rounded-lg hover:bg-gray-100 transition-colors">
-            <div
-              class="w-8 h-8 rounded-full bg-[#1e3a5f] text-white flex items-center justify-center text-sm font-bold shrink-0">
-              {{ auth.user()?.name?.charAt(0) ?? 'U' }}
+            <div class="w-8 h-8 rounded-full shrink-0 overflow-hidden">
+              @if (auth.currentAvatarUrl() && !headerAvatarError) {
+                <img [src]="auth.currentAvatarUrl()!" [alt]="auth.user()?.name"
+                  class="w-full h-full object-cover"
+                  (error)="headerAvatarError = true" />
+              } @else {
+                <div class="w-full h-full bg-[#1e3a5f] text-white flex items-center justify-center text-sm font-bold">
+                  {{ auth.user()?.name?.charAt(0) ?? 'U' }}
+                </div>
+              }
             </div>
             <div class="text-left hidden sm:block">
               <p class="text-sm font-medium text-gray-800 leading-tight">{{ auth.user()?.name ?? 'Usuario' }}</p>

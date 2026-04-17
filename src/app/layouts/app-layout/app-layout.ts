@@ -1,4 +1,4 @@
-import { Component, inject, signal, HostListener, OnDestroy } from '@angular/core';
+import { Component, inject, signal, effect, HostListener, OnDestroy } from '@angular/core';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { AuthService } from '../../core/auth/services/auth.service';
 import { ClickOutsideDirective } from '../../core/directives/click-outside.directive';
@@ -31,6 +31,7 @@ interface FlyoutState {
 })
 export class AppLayout implements OnDestroy {
   protected auth = inject(AuthService);
+  protected headerAvatarError = false;
   protected lang = inject(LanguageService);
   protected sidebarOpen = signal(window.innerWidth >= 1024);
   protected mobileOpen = signal(false);
@@ -41,6 +42,12 @@ export class AppLayout implements OnDestroy {
   private flyoutTimer: ReturnType<typeof setTimeout> | null = null;
 
   protected readonly navItems = this.auth.navItems;
+
+  // Resetear el error de carga cuando el avatar cambia (nueva subida o nuevo login)
+  protected readonly _avatarWatcher = effect(() => {
+    this.auth.currentAvatarUrl(); // dependencia reactiva
+    this.headerAvatarError = false;
+  });
 
   protected get isExpanded(): boolean {
     return this.sidebarOpen() || this.mobileOpen();
