@@ -26,12 +26,13 @@
   </div>
 
   <!-- Table -->
-  <sce-editable-table
+  <sce-data-table
     [columns]="columns"
     [data]="users()"
     [loading]="isLoading()"
-    [deleteRowEnabled]="false"
-    (save)="onTableSave($event)" />
+    [paginator]="paginator()"
+    (pageChange)="onPageChange($event)"
+    (rowClick)="onRowClick($event)" />
 
 </div>
 

@@ -76,6 +76,14 @@
       </select>
     </div>
 
+    <label class="flex items-start gap-3 rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 cursor-pointer">
+      <input type="checkbox" formControlName="otpRequired" class="mt-0.5 h-4 w-4 rounded border-gray-300 text-[#1e3a5f] focus:ring-[#1e3a5f]/30" />
+      <span class="space-y-1">
+        <span class="block text-sm font-medium text-gray-800">{{ 'USERS.OTP_REQUIRED_LABEL' | translate }}</span>
+        <span class="block text-xs text-gray-500">{{ 'USERS.OTP_REQUIRED_HELP' | translate }}</span>
+      </span>
+    </label>
+
     <!-- Spacer -->
     <div class="flex-1"></div>
 

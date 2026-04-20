@@ -3,12 +3,13 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { ClickOutsideDirective } from '../../../../core/directives/click-outside.directive';
 import { DropdownOption, DropdownConfig } from '../../models/components.model';
 import { DropdownSearchService } from '../../services/dropdown-search.service';
+import { TranslatePipe } from '@ngx-translate/core';
 
 @Component({
   selector: 'sce-dropdown',
   templateUrl: './dropdown.component.html',
   standalone: true,
-  imports: [ClickOutsideDirective],
+  imports: [ClickOutsideDirective, TranslatePipe],
   providers: [
     DropdownSearchService,
     {
@@ -19,10 +20,21 @@ import { DropdownSearchService } from '../../services/dropdown-search.service';
   ],
 })
 export class DropdownComponent implements OnInit, OnDestroy, ControlValueAccessor {
-  @Input() options: DropdownOption[] = [];
+  private _options: DropdownOption[] = [];
+
+  @Input() set options(value: DropdownOption[]) {
+    this._options = value ?? [];
+    this.syncSelectedOptions();
+  }
+
+  get options(): DropdownOption[] {
+    return this._options;
+  }
+
   @Input() placeholder: string = 'Select';
   @Input() config: DropdownConfig = {};
   @Input() maxVisibleChips: number = 2;
+  @Input() set disabled(v: boolean) { this.isDisabled.set(v); }
 
   protected searchInput = viewChild<ElementRef<HTMLInputElement>>('searchInput');
 
@@ -194,7 +206,33 @@ export class DropdownComponent implements OnInit, OnDestroy, ControlValueAccesso
       const values = Array.isArray(value) ? value : [];
       this.selectedOptions.set(this.options.filter(o => values.includes(o.value)));
     } else {
-      this.selectedOption.set(this.options.find(o => o.value === value) ?? null);
+      const strVal = Array.isArray(value) ? null : value;
+      const found = this.options.find(o => o.value === strVal);
+      // For remote-search dropdowns the options list may be empty on initial load;
+      // create a synthetic option so the current value is still displayed.
+      this.selectedOption.set(found ?? (strVal ? { label: strVal, value: strVal } : null));
+      this.syncSelectedOptions();
+    }
+  }
+
+  private syncSelectedOptions(): void {
+    if (this.isMultiple) {
+      const values = this.selectedOptions().map(o => o.value);
+      if (!values.length) return;
+
+      const matched = this.options.filter(o => values.includes(o.value));
+      if (matched.length) {
+        this.selectedOptions.set(matched);
+      }
+      return;
+    }
+
+    const currentValue = this.selectedOption()?.value;
+    if (!currentValue) return;
+
+    const found = this.options.find(o => o.value === currentValue);
+    if (found) {
+      this.selectedOption.set(found);
     }
   }
 

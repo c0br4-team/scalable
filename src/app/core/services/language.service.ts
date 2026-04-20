@@ -10,7 +10,8 @@ export class LanguageService {
   readonly current = signal<AppLang>(this.getSaved());
 
   constructor(private translate: TranslateService) {
-    this.translate.use(this.current());
+    // translate.use() is awaited in provideAppInitializer before the splash
+    // screen hides, so no translation call is needed here.
   }
 
   set(lang: AppLang): void {

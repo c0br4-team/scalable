@@ -34,7 +34,7 @@
       @if ((isMultiple && selectedOptions().length) || (!isMultiple && selectedOption())) {
         <button type="button" (click)="clearAll($event)"
           class="text-xs text-gray-400 hover:text-gray-600 font-medium px-1">
-          clear
+          {{ 'DS.DROPDOWN.CLEAR' | translate }}
         </button>
       }
       <svg class="w-4 h-4 shrink-0 transition-transform duration-200 text-gray-400"
@@ -52,7 +52,7 @@
     @if (isSearchable) {
     <div class="p-2 border-b border-gray-100">
       <input #searchInput type="text" [value]="searchQuery()" (input)="onSearch($event)"
-        placeholder="Search..."
+        [placeholder]="'DS.DROPDOWN.SEARCH_PLACEHOLDER' | translate"
         class="w-full px-3 py-1.5 text-sm border border-gray-200 rounded focus:outline-none focus:border-indigo-400" />
     </div>
     }
@@ -89,7 +89,7 @@
             </svg>
           }
         </span>
-        <span>{{ allSelected ? 'Deselect all' : 'Select all' }}</span>
+        <span>{{ (allSelected ? 'DS.DROPDOWN.DESELECT_ALL' : 'DS.DROPDOWN.SELECT_ALL') | translate }}</span>
       </li>
       }
 
@@ -100,7 +100,7 @@
           <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
           <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
         </svg>
-        <span>Searching...</span>
+        <span>{{ 'DS.DROPDOWN.SEARCHING' | translate }}</span>
       </li>
       }
 
@@ -111,7 +111,7 @@
 
       <!-- Remote: esperando input -->
       @else if (isRemote && !searchQuery()) {
-      <li class="px-4 py-3 text-gray-400 text-center">Type to search...</li>
+      <li class="px-4 py-3 text-gray-400 text-center">{{ 'DS.DROPDOWN.TYPE_TO_SEARCH' | translate }}</li>
       }
 
       <!-- Opciones -->
@@ -137,7 +137,7 @@
         }
 
         @if (visibleOptions().length === 0) {
-        <li class="px-4 py-3 text-gray-400 text-center">No results</li>
+        <li class="px-4 py-3 text-gray-400 text-center">{{ 'DS.DROPDOWN.NO_RESULTS' | translate }}</li>
         }
       }
 

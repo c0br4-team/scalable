@@ -1,0 +1,124 @@
+:host {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  background-color: #1e3a5f;
+  transition: opacity 400ms ease, visibility 400ms ease;
+  opacity: 1;
+  visibility: visible;
+}
+
+:host(.sce-splash--hidden) {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.sce-splash__logo {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.sce-splash__icon {
+  width: 72px;
+  height: 72px;
+  flex: 0 0 auto;
+  border-radius: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.18);
+}
+
+.sce-splash__image {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: contain;
+}
+
+.sce-splash__brand {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+}
+
+.sce-splash__title {
+  display: block;
+  font-family: system-ui, -apple-system, sans-serif;
+  font-size: 26px;
+  font-weight: 700;
+  line-height: 1.1;
+  color: #ffffff;
+  letter-spacing: -0.4px;
+  white-space: nowrap;
+  text-shadow: 0 1px 10px rgba(0, 0, 0, 0.18);
+}
+
+.sce-splash__title span {
+  font-weight: 300;
+  opacity: 0.84;
+}
+
+.sce-splash__subtitle {
+  font-size: 12px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.68);
+}
+
+.sce-splash__dots {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.sce-splash__dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.92);
+  opacity: 0.18;
+  transform: scale(0.72);
+  animation: sce-splash-breathe 1.2s ease-in-out infinite;
+  will-change: transform, opacity;
+}
+
+.sce-splash__dot:nth-child(1) {
+  animation-delay: 0s;
+}
+
+.sce-splash__dot:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.sce-splash__dot:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes sce-splash-breathe {
+  0%,
+  100% {
+    opacity: 0.18;
+    transform: scale(0.72);
+  }
+
+  35% {
+    opacity: 1;
+    transform: scale(1.18);
+  }
+
+  60% {
+    opacity: 0.42;
+    transform: scale(0.9);
+  }
+}

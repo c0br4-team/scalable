@@ -13,6 +13,8 @@ export interface User {
   phone?: string;
   avatarUrl?: string;
   preferences: UserPreferences;
+  otpEnabled?: boolean;
+  otpConfigured?: boolean;
 }
 
 export interface LoginCredentials {
@@ -28,6 +30,24 @@ export interface AuthState {
 }
 
 export interface LoginResponse {
-  user: User;
-  navItems: NavItem[];
+  user: User | null;
+  navItems: NavItem[] | null;
+  otpRequired: boolean;
+  pendingToken?: string | null;
+  otpSetupRequired?: boolean;
+}
+
+export interface OtpSetupResponse {
+  otpRequired: boolean;
+  otpConfigured: boolean;
+  manualEntryKey?: string | null;
+  otpAuthUri?: string | null;
+  qrCodeDataUrl?: string | null;
+  email: string;
+  digits: number;
+  issuer: string;
+}
+
+export interface OtpVerificationResponse {
+  success: boolean;
 }

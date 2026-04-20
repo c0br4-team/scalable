@@ -62,6 +62,12 @@ export const routes: Routes = [
         loadChildren: () =>
           import('./features/users/users.routes').then(m => m.usersRoutes),
       },
+      {
+        path: 'leads',
+        data: { breadcrumb: 'LEADS.BREADCRUMB' },
+        loadChildren: () =>
+          import('./features/lead/lead.routes').then(m => m.leadRoutes),
+      }
     ],
   },
   {

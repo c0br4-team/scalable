@@ -23,6 +23,39 @@
     </div>
     }
 
+    @if (data.length && !loading) {
+    <div class="flex items-center justify-end gap-2 px-1">
+      <button
+        type="button"
+        class="inline-flex h-9 w-9 items-center justify-center rounded-lg border transition-colors"
+        [class]="mobileCardColumns() === 1
+          ? 'border-[#1e3a5f] bg-[#1e3a5f] text-white'
+          : 'border-gray-200 bg-white text-gray-500 hover:bg-gray-50'"
+        (click)="setMobileCardColumns(1)"
+        aria-label="Mostrar una tarjeta por fila"
+        title="Mostrar una tarjeta por fila">
+        <svg viewBox="0 0 20 20" class="h-4 w-4" fill="none" aria-hidden="true">
+          <rect x="4" y="3" width="12" height="14" rx="2" stroke="currentColor" stroke-width="1.7"></rect>
+        </svg>
+      </button>
+
+      <button
+        type="button"
+        class="inline-flex h-9 w-9 items-center justify-center rounded-lg border transition-colors"
+        [class]="mobileCardColumns() === 2
+          ? 'border-[#1e3a5f] bg-[#1e3a5f] text-white'
+          : 'border-gray-200 bg-white text-gray-500 hover:bg-gray-50'"
+        (click)="setMobileCardColumns(2)"
+        aria-label="Mostrar dos tarjetas por fila"
+        title="Mostrar dos tarjetas por fila">
+        <svg viewBox="0 0 20 20" class="h-4 w-4" fill="none" aria-hidden="true">
+          <rect x="2.5" y="4" width="6" height="12" rx="1.5" stroke="currentColor" stroke-width="1.7"></rect>
+          <rect x="11.5" y="4" width="6" height="12" rx="1.5" stroke="currentColor" stroke-width="1.7"></rect>
+        </svg>
+      </button>
+    </div>
+    }
+
     <!-- Loading skeleton -->
     @if (loading) {
       @for (i of skeletonRows; track i) {
@@ -48,8 +81,13 @@
 
     <!-- Data cards -->
     } @else {
+      <div class="grid"
+           [class.gap-3]="mobileCardColumns() === 1"
+           [class.gap-2]="mobileCardColumns() === 2"
+           [class.grid-cols-1]="mobileCardColumns() === 1"
+           [class.grid-cols-2]="mobileCardColumns() === 2">
       @for (row of data; track $index) {
-      <div class="rounded-xl border bg-white transition-all"
+      <div class="h-full rounded-xl border bg-white transition-all"
            [class.border-[#1e3a5f]]="isSelected(row)"
            [class.border-gray-200]="!isSelected(row)"
            [class.shadow-sm]="isSelected(row)"
@@ -58,7 +96,13 @@
 
         <!-- Card header: checkbox + acciones -->
         @if (selectable || rowActions.length) {
-        <div class="flex items-center justify-between px-4 pt-3 pb-0 gap-2"
+        <div class="flex items-center justify-between gap-2"
+             [class.px-4]="mobileCardColumns() === 1"
+             [class.pt-3]="mobileCardColumns() === 1"
+             [class.pb-0]="mobileCardColumns() === 1"
+             [class.px-2.5]="mobileCardColumns() === 2"
+             [class.pt-2.5]="mobileCardColumns() === 2"
+             [class.pb-0]="mobileCardColumns() === 2"
              (click)="$event.stopPropagation()">
           @if (selectable) {
           <input type="checkbox"
@@ -73,7 +117,9 @@
             @for (action of visibleActions(row); track action.label) {
             <button type="button"
                     [title]="action.label | translate"
-                    class="p-1.5 rounded-lg transition-colors"
+                    class="rounded-lg transition-colors"
+                    [class.p-1.5]="mobileCardColumns() === 1"
+                    [class.p-1]="mobileCardColumns() === 2"
                     [class]="actionColorCls(action.color)"
                     (click)="$event.stopPropagation(); action.action(row)">
               @if (action.icon) {
@@ -89,23 +135,37 @@
         }
 
         <!-- Fields -->
-        <div class="px-4 py-3 space-y-2">
+        <div
+          [class.px-4]="mobileCardColumns() === 1"
+          [class.py-3]="mobileCardColumns() === 1"
+          [class.space-y-2]="mobileCardColumns() === 1"
+          [class.px-2.5]="mobileCardColumns() === 2"
+          [class.py-2.5]="mobileCardColumns() === 2"
+          [class.space-y-1.5]="mobileCardColumns() === 2">
           @for (col of columns; track col.key; let first = $first) {
-          <div class="flex items-start gap-3 min-w-0"
-               [class.pb-2]="first && columns.length > 1"
+          <div class="min-w-0"
+               [class.flex]="mobileCardColumns() === 1"
+               [class.items-start]="mobileCardColumns() === 1"
+               [class.gap-3]="mobileCardColumns() === 1"
+               [class.space-y-0.5]="mobileCardColumns() === 2"
+               [class.pb-2]="first && columns.length > 1 && mobileCardColumns() === 1"
+               [class.pb-1.5]="first && columns.length > 1 && mobileCardColumns() === 2"
                [class.border-b]="first && columns.length > 1"
                [class.border-gray-100]="first && columns.length > 1">
             @if (!first) {
-            <span class="text-xs font-semibold text-gray-400 uppercase tracking-wide w-24 shrink-0 pt-px">
+            <span class="block shrink-0 pt-px font-semibold text-gray-400"
+                  [class.w-24]="mobileCardColumns() === 1"
+                  [class.uppercase]="mobileCardColumns() === 1"
+                  [class.tracking-wide]="mobileCardColumns() === 1"
+                  [class.text-xs]="mobileCardColumns() === 1"
+                  [class.text-[10px]]="mobileCardColumns() === 2">
               {{ col.header | translate }}
             </span>
             }
-            <span class="min-w-0 flex-1"
-                  [class.text-sm]="!first"
-                  [class.text-gray-700]="!first"
-                  [class.text-base]="first"
-                  [class.font-semibold]="first"
-                  [class.text-gray-900]="first"
+            <span class="min-w-0 flex-1 break-words leading-snug"
+                  [class]="mobileCardColumns() === 2
+                    ? (first ? 'text-sm font-semibold text-gray-900' : 'text-xs text-gray-700')
+                    : (first ? 'text-base font-semibold text-gray-900' : 'text-sm text-gray-700')"
                   [class.text-right]="!first && col.align === 'right'"
                   [class.text-center]="!first && col.align === 'center'">
               @if (getTemplate(col.key); as tpl) {
@@ -120,6 +180,7 @@
 
       </div>
       }
+      </div>
     }
 
   </div>
@@ -263,60 +324,117 @@
        PAGINADOR (ambas vistas)
   ═══════════════════════════════════════════════════════ -->
   @if (paginator) {
-  <div class="flex items-center justify-between px-1 pt-3 pb-1 text-sm text-gray-500 flex-wrap gap-2">
+  <div class="flex flex-col gap-3 px-1 pt-3 pb-1 text-sm text-gray-500
+              sm:flex-row sm:items-center sm:justify-between">
 
-    <!-- Info + page size -->
-    <div class="flex items-center gap-3">
-      <span class="text-xs">
+    <!-- Fila 1 (mobile) / Izquierda (desktop): info + selector -->
+    <div class="flex min-w-0 flex-col gap-2 sm:flex-row sm:items-center sm:justify-start sm:gap-3">
+      <span class="min-w-0 text-xs leading-relaxed text-gray-500 break-words">
         {{ 'TABLE.SHOWING' | translate }}
         <strong class="text-gray-700">{{ paginatorFrom }}–{{ paginatorTo }}</strong>
         {{ 'TABLE.OF' | translate }}
         <strong class="text-gray-700">{{ paginator.total }}</strong>
       </span>
-      <select class="text-xs border border-gray-200 rounded-md px-2 py-1 bg-white focus:outline-none focus:ring-2 focus:ring-[#1e3a5f]/30"
+
+      <div class="flex w-full items-center gap-1 sm:hidden">
+        @for (size of (paginator.pageSizeOptions ?? [10, 20, 50]); track size) {
+          <button
+            type="button"
+            class="flex-1 rounded-md px-2 py-1 text-xs font-medium transition-colors"
+            [class]="size === paginator.pageSize
+              ? 'bg-[#1e3a5f] text-white'
+              : 'border border-gray-200 bg-white text-gray-600 hover:bg-gray-50'"
+            (click)="setPageSize(size)">
+            {{ size }}
+          </button>
+        }
+      </div>
+
+      <select class="hidden sm:block w-full sm:w-auto max-w-full text-xs border border-gray-200 rounded-md px-2 py-1 bg-white
+                     focus:outline-none focus:ring-2 focus:ring-[#1e3a5f]/30"
               [value]="paginator.pageSize"
               (change)="onPageSizeChange($event)">
         @for (size of (paginator.pageSizeOptions ?? [10, 20, 50]); track size) {
-        <option [value]="size">{{ size }} / {{ 'TABLE.PAGE' | translate }}</option>
+          <option [value]="size">{{ size }} / {{ 'TABLE.PAGE' | translate }}</option>
         }
       </select>
     </div>
 
-    <!-- Page buttons -->
-    <div class="flex items-center gap-1">
-      <button class="p-1.5 rounded-lg transition-colors hover:bg-gray-100 disabled:opacity-40 disabled:cursor-not-allowed"
+    <!-- Fila 2 (mobile) / Derecha (desktop): navegación -->
+    <div class="flex items-center justify-between sm:justify-end gap-1 w-full sm:w-auto">
+
+      <!-- Primera página -->
+      <button class="sm:hidden min-w-9 px-2.5 py-1 rounded-lg text-xs font-medium transition-colors hover:bg-gray-100 disabled:opacity-40 disabled:cursor-not-allowed"
+              [disabled]="paginator.page === 1"
+              (click)="onPageChange(1)">
+        1
+      </button>
+
+      <button class="hidden sm:inline-flex p-1.5 rounded-lg transition-colors hover:bg-gray-100
+                     disabled:opacity-40 disabled:cursor-not-allowed"
+              [disabled]="paginator.page === 1"
+              (click)="onPageChange(1)"
+              title="First page">
+        <ng-icon name="heroChevronDoubleLeft" class="text-base" />
+      </button>
+
+      <!-- Página anterior -->
+      <button class="inline-flex items-center justify-center p-1.5 rounded-lg transition-colors hover:bg-gray-100
+                     disabled:opacity-40 disabled:cursor-not-allowed"
               [disabled]="paginator.page === 1"
               (click)="onPageChange(paginator.page - 1)">
         <ng-icon name="heroChevronLeft" class="text-base" />
       </button>
 
+      <!-- Mobile: página actual / total -->
+      <span class="sm:hidden min-w-[64px] text-center text-xs font-medium text-gray-700 px-2">
+        {{ paginator.page }} / {{ totalPages }}
+      </span>
+
+      <!-- Desktop: números de página con elipsis -->
       @if (showFirstEllipsis) {
-      <button class="px-2.5 py-1 rounded-lg text-xs hover:bg-gray-100 transition-colors"
-              (click)="onPageChange(1)">1</button>
-      <span class="text-gray-300 text-xs px-0.5">…</span>
+        <button class="px-2.5 py-1 rounded-lg text-xs hover:bg-gray-100 transition-colors hidden sm:inline-flex"
+                (click)="onPageChange(1)">1</button>
+        <span class="text-gray-300 text-xs px-0.5 hidden sm:inline">…</span>
       }
-
       @for (p of pageNumbers; track p) {
-      <button class="px-2.5 py-1 rounded-lg text-xs font-medium transition-colors"
-              [class]="p === paginator.page
-                ? 'bg-[#1e3a5f] text-white'
-                : 'text-gray-600 hover:bg-gray-100'"
-              (click)="onPageChange(p)">
-        {{ p }}
-      </button>
+        <button class="px-2.5 py-1 rounded-lg text-xs font-medium transition-colors hidden sm:inline-flex"
+                [class]="p === paginator.page
+                  ? 'bg-[#1e3a5f] text-white'
+                  : 'text-gray-600 hover:bg-gray-100'"
+                (click)="onPageChange(p)">
+          {{ p }}
+        </button>
       }
-
       @if (showLastEllipsis) {
-      <span class="text-gray-300 text-xs px-0.5">…</span>
-      <button class="px-2.5 py-1 rounded-lg text-xs hover:bg-gray-100 transition-colors"
-              (click)="onPageChange(totalPages)">{{ totalPages }}</button>
+        <span class="text-gray-300 text-xs px-0.5 hidden sm:inline">…</span>
+        <button class="px-2.5 py-1 rounded-lg text-xs hover:bg-gray-100 transition-colors hidden sm:inline-flex"
+                (click)="onPageChange(totalPages)">{{ totalPages }}</button>
       }
 
-      <button class="p-1.5 rounded-lg transition-colors hover:bg-gray-100 disabled:opacity-40 disabled:cursor-not-allowed"
+      <!-- Página siguiente -->
+      <button class="inline-flex items-center justify-center p-1.5 rounded-lg transition-colors hover:bg-gray-100
+                     disabled:opacity-40 disabled:cursor-not-allowed"
               [disabled]="paginator.page === totalPages"
               (click)="onPageChange(paginator.page + 1)">
         <ng-icon name="heroChevronRight" class="text-base" />
       </button>
+
+      <!-- Última página -->
+      <button class="hidden sm:inline-flex p-1.5 rounded-lg transition-colors hover:bg-gray-100
+                     disabled:opacity-40 disabled:cursor-not-allowed"
+              [disabled]="paginator.page === totalPages"
+              (click)="onPageChange(totalPages)"
+              title="Last page">
+        <ng-icon name="heroChevronDoubleRight" class="text-base" />
+      </button>
+
+      <button class="sm:hidden min-w-9 px-2.5 py-1 rounded-lg text-xs font-medium transition-colors hover:bg-gray-100 disabled:opacity-40 disabled:cursor-not-allowed"
+              [disabled]="paginator.page === totalPages"
+              (click)="onPageChange(totalPages)">
+        {{ totalPages }}
+      </button>
+
     </div>
   </div>
   }

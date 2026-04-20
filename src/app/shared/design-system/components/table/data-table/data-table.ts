@@ -1,6 +1,7 @@
 import {
   Component, Input, Output, EventEmitter,
   ContentChildren, QueryList, AfterContentInit,
+  OnChanges, SimpleChanges,
   signal, TemplateRef,
 } from '@angular/core';
 import { NgTemplateOutlet } from '@angular/common';
@@ -18,7 +19,7 @@ import { TableCellDirective } from '../table-cell.directive';
   imports: [NgTemplateOutlet, NgIcon, TranslatePipe],
   templateUrl: './data-table.html',
 })
-export class DataTableComponent<T extends Record<string, any>> implements AfterContentInit {
+export class DataTableComponent<T extends Record<string, any>> implements AfterContentInit, OnChanges {
   @Input() columns: ColumnDef<T>[] = [];
   @Input() data: T[] = [];
   @Input() loading = false;
@@ -29,6 +30,7 @@ export class DataTableComponent<T extends Record<string, any>> implements AfterC
   @Input() stickyHeader = false;
   @Input() paginator?: PaginatorConfig;
   @Input() rowActions: RowAction<T>[] = [];
+  @Input() sort: SortEvent | null = null;
 
   @Output() selectionChange = new EventEmitter<T[]>();
   @Output() sortChange = new EventEmitter<SortEvent>();
@@ -39,11 +41,18 @@ export class DataTableComponent<T extends Record<string, any>> implements AfterC
 
   protected selectedRows = signal<Set<T>>(new Set());
   protected currentSort = signal<SortEvent | null>(null);
+  protected mobileCardColumns = signal<1 | 2>(1);
   private templateMap = new Map<string, TemplateRef<any>>();
 
   ngAfterContentInit(): void {
     this._rebuildTemplateMap();
     this._cellTemplates.changes.subscribe(() => this._rebuildTemplateMap());
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['sort']) {
+      this.currentSort.set(this.sort ?? null);
+    }
   }
 
   private _rebuildTemplateMap(): void {
@@ -108,6 +117,15 @@ export class DataTableComponent<T extends Record<string, any>> implements AfterC
     if (!this.paginator) return;
     const pageSize = parseInt((event.target as HTMLSelectElement).value, 10);
     this.pageChange.emit({ page: 1, pageSize });
+  }
+
+  protected setPageSize(pageSize: number): void {
+    if (!this.paginator) return;
+    this.pageChange.emit({ page: 1, pageSize });
+  }
+
+  protected setMobileCardColumns(columns: 1 | 2): void {
+    this.mobileCardColumns.set(columns);
   }
 
   protected get totalPages(): number {

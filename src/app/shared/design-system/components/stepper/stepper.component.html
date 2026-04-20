@@ -1,0 +1,42 @@
+<nav class="flex items-center gap-0">
+  @for (step of steps(); track step.index; let last = $last) {
+
+    <!-- Step bubble + label -->
+    <button
+      type="button"
+      [disabled]="!clickable()"
+      [class.cursor-pointer]="clickable()"
+      [class.cursor-default]="!clickable()"
+      class="flex items-center gap-2 shrink-0 bg-transparent border-none p-0 focus:outline-none group"
+      (click)="handleClick(step)">
+
+      <!-- Bubble -->
+      <span
+        class="w-7 h-7 rounded-full text-xs font-bold flex items-center justify-center transition-colors shrink-0"
+        [class]="isCompleted(step) ? 'bg-green-500 text-white' : isActive(step) ? 'bg-[#1e3a5f] text-white' : 'bg-gray-200 text-gray-400'">
+        @if (isCompleted(step)) {
+          <ng-icon name="heroCheck" class="text-sm" />
+        } @else {
+          {{ step.index }}
+        }
+      </span>
+
+      <!-- Label (hidden on xs, visible from sm) -->
+      <span
+        class="text-sm whitespace-nowrap hidden sm:block transition-colors"
+        [class]="isActive(step) ? 'text-[#1e3a5f] font-semibold' : isCompleted(step) ? 'text-green-600 font-medium' : 'text-gray-400'">
+        {{ step.label | translate }}
+      </span>
+
+    </button>
+
+    <!-- Connector line (not after last step) -->
+    @if (!last) {
+      <span
+        class="flex-1 h-px min-w-4 mx-2 transition-colors"
+        [class]="isCompleted(step) ? 'bg-green-400' : 'bg-gray-200'">
+      </span>
+    }
+
+  }
+</nav>

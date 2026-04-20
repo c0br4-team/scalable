@@ -1,4 +1,4 @@
-import { Component, input, output, inject, signal, OnChanges, SimpleChanges } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnChanges, SimpleChanges, inject, input, output, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { NgIcon } from '@ng-icons/core';
 import { TranslatePipe } from '@ngx-translate/core';
@@ -8,12 +8,13 @@ import { AppUser } from '../../models/user.model';
   selector: 'app-user-drawer',
   imports: [ReactiveFormsModule, NgIcon, TranslatePipe],
   templateUrl: './user-drawer.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class UserDrawerComponent implements OnChanges {
   open    = input<boolean>(false);
   user    = input<AppUser | null>(null);
 
-  submitted = output<{ name: string; email: string; role: string }>();
+  submitted = output<{ name: string; email: string; role: string; otpRequired: boolean }>();
   closed    = output<void>();
 
   private fb = inject(FormBuilder);
@@ -29,6 +30,7 @@ export class UserDrawerComponent implements OnChanges {
     name:  ['', [Validators.required, Validators.maxLength(128)]],
     email: ['', [Validators.required, Validators.email]],
     role:  ['user', Validators.required],
+    otpRequired: [true],
   });
 
   get isEdit(): boolean { return !!this.user(); }
@@ -37,21 +39,19 @@ export class UserDrawerComponent implements OnChanges {
     if (changes['user'] || changes['open']) {
       const u = this.user();
       if (u) {
-        this.form.patchValue({ name: u.name, email: u.email, role: u.role });
+        this.form.patchValue({ name: u.name, email: u.email, role: u.role, otpRequired: u.otpEnabled });
         this.form.get('email')?.disable();
-        this.form.get('password')?.disable();
       } else {
-        this.form.reset({ role: 'user' });
+        this.form.reset({ role: 'user', otpRequired: true });
         this.form.get('email')?.enable();
-        this.form.get('password')?.enable();
       }
     }
   }
 
   protected onSubmit(): void {
     if (this.form.invalid) { this.form.markAllAsTouched(); return; }
-    const { name, email, role } = this.form.getRawValue();
-    this.submitted.emit({ name: name!, email: email!, role: role! });
+    const { name, email, role, otpRequired } = this.form.getRawValue();
+    this.submitted.emit({ name: name!, email: email!, role: role!, otpRequired: !!otpRequired });
   }
 
   protected hasError(field: string, error: string): boolean {
@@ -62,7 +62,7 @@ export class UserDrawerComponent implements OnChanges {
   setLoading(value: boolean): void { this.isLoading.set(value); }
 
   reset(): void {
-    this.form.reset({ role: 'user' });
+    this.form.reset({ role: 'user', otpRequired: true });
     this.isLoading.set(false);
   }
 }

@@ -75,7 +75,7 @@
                 <select sceAutoFocus
                         class="w-full border border-[#1e3a5f] rounded-md px-2 py-1.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-[#1e3a5f]/30"
                         [value]="editValue()"
-                        (change)="editValue.set($any($event.target).value)"
+                        (change)="editValue.set($any($event.target).value); commitEdit(rowIdx, col)"
                         (blur)="commitEdit(rowIdx, col)"
                         (keydown)="onKeyDown($event, rowIdx, col)">
                   @for (opt of col.options; track opt.value) {
@@ -220,7 +220,7 @@
                 <select sceAutoFocus
                         class="w-full border border-[#1e3a5f] rounded-md px-2 py-1.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-[#1e3a5f]/30"
                         [value]="editValue()"
-                        (change)="editValue.set($any($event.target).value)"
+                        (change)="editValue.set($any($event.target).value); commitEdit(rowIdx, col)"
                         (blur)="commitEdit(rowIdx, col)"
                         (keydown)="onKeyDown($event, rowIdx, col)">
                   @for (opt of col.options; track opt.value) {

@@ -74,7 +74,9 @@
         @if (isExpanded && isCollapsibleOpen(asCollapsible(item).label)) {
         <div class="overflow-hidden transition-all duration-200">
           @for (child of asCollapsible(item).children; track child.path) {
-          <a [routerLink]="child.path" routerLinkActive="bg-white/20 text-white" (click)="closeMobileSidebar()" class="flex items-center gap-3 pl-9 pr-3 py-2 rounded-lg text-sm
+          <a [routerLink]="child.path" routerLinkActive="bg-white/20 text-white"
+            [routerLinkActiveOptions]="{ exact: !!child.exactPath || child.path === '/leads' }"
+            (click)="closeMobileSidebar()" class="flex items-center gap-3 pl-9 pr-3 py-2 rounded-lg text-sm
                       text-white/70 hover:bg-white/10 hover:text-white transition-colors">
             @if (child.icon) {
             <ng-icon [name]="child.icon" class="shrink-0 text-base" />
@@ -114,8 +116,9 @@
 
           <!-- Child Basic -->
           @if (child.type === 'basic') {
-          <a [routerLink]="asBasic(child).path" routerLinkActive="bg-white/20 text-white" (click)="closeMobileSidebar()"
-            class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium
+          <a [routerLink]="asBasic(child).path" routerLinkActive="bg-white/20 text-white"
+            [routerLinkActiveOptions]="{ exact: !!asBasic(child).exactPath || asBasic(child).path === '/leads' }"
+            (click)="closeMobileSidebar()" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium
                     text-white/80 hover:bg-white/10 hover:text-white transition-colors"
             [class.justify-center]="!isExpanded">
             @if (asBasic(child).icon) {
@@ -150,8 +153,9 @@
           @if (isExpanded && isCollapsibleOpen(asCollapsible(child).label)) {
           <div class="overflow-hidden transition-all duration-200">
             @for (grandchild of asCollapsible(child).children; track grandchild.path) {
-            <a [routerLink]="grandchild.path" routerLinkActive="bg-white/20 text-white" (click)="closeMobileSidebar()"
-              class="flex items-center gap-3 pl-9 pr-3 py-2 rounded-lg text-sm
+            <a [routerLink]="grandchild.path" routerLinkActive="bg-white/20 text-white"
+              [routerLinkActiveOptions]="{ exact: !!grandchild.exactPath || grandchild.path === '/leads' }"
+              (click)="closeMobileSidebar()" class="flex items-center gap-3 pl-9 pr-3 py-2 rounded-lg text-sm
                             text-white/70 hover:bg-white/10 hover:text-white transition-colors">
               @if (grandchild.icon) {
               <ng-icon [name]="grandchild.icon" class="shrink-0 text-base" />
@@ -201,6 +205,7 @@
           @for (child of flyout()!.children!; track child.path) {
           <a [routerLink]="child.path"
              routerLinkActive="bg-white/20 text-white"
+             [routerLinkActiveOptions]="{ exact: !!child.exactPath }"
              (click)="hideFlyout(); closeMobileSidebar()"
              class="flex items-center gap-2.5 px-3 py-2 text-sm text-white/80
                     hover:bg-white/10 hover:text-white transition-colors">

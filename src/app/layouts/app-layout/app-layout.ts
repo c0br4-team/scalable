@@ -16,6 +16,7 @@ interface FlyoutChild {
   icon?: string;
   badge?: number | string;
   badgeType?: BasicNavItem['badgeType'];
+  exactPath?: boolean;
 }
 
 interface FlyoutState {
@@ -99,7 +100,14 @@ export class AppLayout implements OnDestroy {
           .filter(ch => ch.type === 'basic')
           .map(ch => {
             const b = ch as BasicNavItem;
-            return { label: b.label, path: b.path, icon: b.icon, badge: b.badge, badgeType: b.badgeType };
+            return {
+              label: b.label,
+              path: b.path,
+              icon: b.icon,
+              badge: b.badge,
+              badgeType: b.badgeType,
+              exactPath: b.exactPath,
+            };
           }),
       });
     }

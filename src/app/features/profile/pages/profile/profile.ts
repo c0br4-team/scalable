@@ -1,4 +1,4 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
 import { NgIcon } from '@ng-icons/core';
 import { TranslatePipe } from '@ngx-translate/core';
@@ -14,6 +14,7 @@ function passwordsMatchValidator(control: AbstractControl): ValidationErrors | n
   selector: 'app-profile',
   imports: [ReactiveFormsModule, NgIcon, TranslatePipe],
   templateUrl: './profile.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'flex flex-col flex-1 overflow-y-auto' },
 })
 export class ProfilePage {
@@ -39,8 +40,9 @@ export class ProfilePage {
   protected pwdForm = this.fb.group(
     {
       currentPassword: ['', Validators.required],
-      newPassword: ['', [Validators.required, Validators.minLength(6)]],
+      newPassword: ['', [Validators.required, Validators.minLength(8)]],
       confirmPassword: ['', Validators.required],
+      otpCode: ['', this.auth.user()?.otpEnabled ? [Validators.required, Validators.pattern(/^\d{6}$/)] : []],
     },
     { validators: passwordsMatchValidator },
   );
@@ -53,12 +55,25 @@ export class ProfilePage {
   }
 
   protected savePwd(): void {
-    if (this.pwdForm.invalid) return;
+    if (this.pwdForm.invalid) {
+      this.pwdForm.markAllAsTouched();
+      return;
+    }
+
     this.pwdError.set('');
-    // TODO: conectar con HTTP real — validar contraseña actual en el servidor
-    this.pwdForm.reset();
-    this.pwdSaved.set(true);
-    setTimeout(() => this.pwdSaved.set(false), 3000);
+    this.pwdSaved.set(false);
+
+    const { currentPassword, newPassword, otpCode } = this.pwdForm.getRawValue();
+    this.auth.changePassword(currentPassword!, newPassword!, otpCode ?? '').subscribe({
+      next: () => {
+        this.pwdForm.reset();
+        this.pwdSaved.set(true);
+        setTimeout(() => this.pwdSaved.set(false), 3000);
+      },
+      error: (err: { error?: { error?: { message?: string } } }) => {
+        this.pwdError.set(err?.error?.error?.message ?? 'No fue posible actualizar la contraseña.');
+      },
+    });
   }
 
   protected readonly avatarLetter = computed(() =>

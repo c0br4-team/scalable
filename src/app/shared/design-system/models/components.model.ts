@@ -1,5 +1,14 @@
 import { Observable } from 'rxjs';
 
+export interface StepItem {
+  /** Unique index (1-based) */
+  index: number;
+  /** i18n key or plain label string */
+  label: string;
+  /** Whether the step has been completed */
+  completed: boolean;
+}
+
 export interface DropdownOption {
   label: string;
   value: string;

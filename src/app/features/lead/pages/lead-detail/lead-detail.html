@@ -1,0 +1,94 @@
+<!-- Header -->
+<div class="shrink-0 px-6 py-4 border-b border-gray-200 bg-white">
+  <div class="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
+    <div class="flex items-start gap-3 min-w-0 flex-1">
+      <button (click)="goBack()" class="p-1.5 hover:bg-gray-100 rounded-lg transition-colors shrink-0 mt-0.5">
+        <ng-icon name="heroArrowLeft" class="text-lg text-gray-500" />
+      </button>
+      <div class="flex-1 min-w-0">
+        @if (loading()) {
+        <div class="h-5 w-40 bg-gray-200 animate-pulse rounded"></div>
+        } @else {
+        <div class="flex flex-wrap items-center gap-2">
+          <h1 class="text-xl font-bold text-gray-900 truncate">{{ lead()?.fullName ?? ('LEADS.DETAIL_LEAD' | translate)
+            }}</h1>
+          <span class="px-2.5 py-1 rounded-full text-xs font-semibold" [class]="statusCls()">
+            {{ statusLabel() | translate }}
+          </span>
+          <span class="px-2.5 py-1 rounded-full text-xs font-semibold" [class]="sourceCls()">
+            {{ sourceLabel() | translate }}
+          </span>
+        </div>
+        <p class="mt-1 text-sm text-gray-500 flex flex-wrap items-center gap-x-2 gap-y-1">
+          @if (rowIndex !== null) {
+          <span>#{{ rowIndex }}</span>
+          }
+          @if(!canManageAssignee()){
+          <span>
+            <ng-icon name="heroUser" class="inline text-xs text-gray-400" />
+            {{ 'LEADS.ASSIGNED_TO' | translate }}: {{ lead()?.assignedUserName ?? ('LEADS.UNASSIGNED' | translate) }}
+          </span>
+          }
+        </p>
+        }
+      </div>
+    </div>
+
+    @if (!loading() && canManageAssignee()) {
+    <div class="w-full xl:w-[420px] xl:max-w-[420px]">
+      <div class="flex flex-col gap-2 sm:flex-row sm:items-center">
+        <div class="flex-1 min-w-0">
+          <sce-dropdown [ngModel]="selectedAssignedUserId()" (ngModelChange)="selectedAssignedUserId.set($event)"
+            name="assignedUserIdAw" [options]="assignedUserOptions()" [config]="userSearchConfig"
+            [disabled]="assigning() || !canManageAssignee()"
+            [placeholder]="'LEADS.ASSIGNED_USER_PLACEHOLDER' | translate">
+          </sce-dropdown>
+        </div>
+        <button type="button" (click)="updateAssignedUser()"
+          [disabled]="assigning() || !canManageAssignee() || !selectedAssignedUserId() || selectedAssignedUserId() === lead()?.assignedUserIdAw"
+          class="px-4 py-2 bg-[#1e3a5f] text-white text-sm font-medium rounded-lg hover:bg-[#162d4a] transition-colors disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap">
+          {{ (assigning() ? 'LEADS.SAVING' : (hasAssignedUser() ? 'LEADS.REASSIGN_USER' : 'LEADS.ASSIGN_USER')) |
+          translate }}
+        </button>
+      </div>
+    </div>
+    }
+  </div>
+</div>
+
+@if (loading()) {
+<div class="flex-1 overflow-auto p-6 space-y-4">
+  @for (i of [1,2,3]; track i) {
+  <div class="h-10 bg-gray-100 animate-pulse rounded-xl"></div>
+  }
+</div>
+} @else {
+
+@if (lead()?.sourceStatus === 'removed_from_source') {
+<div class="mx-6 mt-4 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+  {{ 'LEADS.SOURCE_REMOVED_HINT' | translate }}
+</div>
+}
+
+<!-- Stepper header -->
+<div class="shrink-0 px-6 py-3 bg-gray-50 border-b border-gray-200">
+  <div class="flex items-center justify-between gap-4">
+    <sce-stepper [steps]="steps()" [activeStep]="currentStep()" />
+    @if (savedAt()) {
+    <span class="text-xs text-gray-500 flex items-center gap-1 shrink-0">
+      <ng-icon name="heroCheckCircle" class="text-green-500" />
+      {{ 'LEADS.SAVED_AT' | translate }} {{ savedAt() | date:'dd/MM/yyyy HH:mm' }}
+    </span>
+    }
+  </div>
+</div>
+
+<!-- Steps -->
+<div class="flex-1 overflow-auto">
+  @if (currentStep() === 1) {
+  <app-lead-intake-step [lead]="lead()!" [saving]="saving()" [readOnly]="!!lockMessageKey()"
+    [lockMessageKey]="lockMessageKey()" (saved)="onIntakeSaved($event)" (cancelled)="goBack()"
+    (dirtyChange)="onDirtyChange($event)" />
+  }
+</div>
+}

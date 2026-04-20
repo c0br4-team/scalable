@@ -40,4 +40,8 @@ export class AppwriteService {
   async updateRecovery(userId: string, secret: string, password: string): Promise<void> {
     await this.account.updateRecovery({ userId, secret, password });
   }
+
+  async updatePassword(password: string, oldPassword: string): Promise<void> {
+    await this.account.updatePassword({ password, oldPassword });
+  }
 }

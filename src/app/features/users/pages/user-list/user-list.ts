@@ -1,7 +1,8 @@
-import { Component, inject, signal, viewChild, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, inject, signal, viewChild } from '@angular/core';
+import { Router } from '@angular/router';
 import { TranslatePipe } from '@ngx-translate/core';
 import { NgIcon } from '@ng-icons/core';
-import { EditableTableComponent, EditableColumnDef } from '../../../../shared/design-system/components/table';
+import { DataTableComponent, ColumnDef, PaginatorConfig, PageEvent } from '../../../../shared/design-system/components/table';
 import { SearchBarComponent } from '../../../../shared/design-system/components/search-bar/search-bar.component';
 import { ToastService } from '../../../../core/notifications/toast.service';
 import { UsersService } from '../../../../core/http/services/users.service';
@@ -12,30 +13,35 @@ import { environment } from '../../../../../environments/environment';
 
 @Component({
   selector: 'app-user-list',
-  imports: [TranslatePipe, NgIcon, EditableTableComponent, SearchBarComponent, UserDrawerComponent],
+  imports: [TranslatePipe, NgIcon, DataTableComponent, SearchBarComponent, UserDrawerComponent],
   templateUrl: './user-list.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class UserListPage implements OnInit {
   private usersService = inject(UsersService);
   private toast        = inject(ToastService);
   private appwrite     = inject(AppwriteService);
+  private router       = inject(Router);
 
   protected drawer = viewChild(UserDrawerComponent);
 
-  protected allUsers   = signal<AppUser[]>([]);
-  protected users      = signal<AppUser[]>([]);
-  protected isLoading  = signal(true);
-  protected drawerOpen = signal(false);
+  protected users       = signal<AppUser[]>([]);
+  protected isLoading   = signal(true);
+  protected drawerOpen  = signal(false);
   protected editingUser = signal<AppUser | null>(null);
   protected searchQuery = signal('');
 
-  protected readonly columns: EditableColumnDef<AppUser>[] = [
-    { key: 'name',      header: 'USERS.NAME',       editable: true,  type: 'text',   sortable: true },
-    { key: 'email',     header: 'USERS.EMAIL',       editable: false,                 sortable: true },
-    { key: 'role',      header: 'USERS.ROLE',        editable: true,  type: 'select',
-      options: [{ label: 'Admin', value: 'admin' }, { label: 'Usuario', value: 'user' }] },
-    { key: 'status',    header: 'USERS.STATUS',      editable: false },
-    { key: 'createdAt', header: 'USERS.CREATED_AT',  editable: false },
+  protected paginator = signal<PaginatorConfig>({
+    page: 1, pageSize: 20, total: 0, pageSizeOptions: [10, 20, 50]
+  });
+
+  protected readonly columns: ColumnDef<AppUser>[] = [
+    { key: 'name',      header: 'USERS.NAME',         sortable: true },
+    { key: 'email',     header: 'USERS.EMAIL',        sortable: true },
+    { key: 'role',      header: 'USERS.ROLE' },
+    { key: 'otpStatus', header: 'USERS.OTP_STATUS' },
+    { key: 'status',    header: 'USERS.STATUS' },
+    { key: 'createdAt', header: 'USERS.CREATED_AT' },
   ];
 
   ngOnInit(): void {
@@ -44,10 +50,11 @@ export class UserListPage implements OnInit {
 
   private loadUsers(): void {
     this.isLoading.set(true);
-    this.usersService.getAll().subscribe({
-      next: users => {
-        this.allUsers.set(users);
-        this.applyFilter(this.searchQuery());
+    const { page, pageSize } = this.paginator();
+    this.usersService.getAll(page, pageSize, this.searchQuery() || undefined).subscribe({
+      next: result => {
+        this.users.set(result.items);
+        this.paginator.update(p => ({ ...p, total: result.totalCount, page: result.page, pageSize: result.pageSize }));
         this.isLoading.set(false);
       },
       error: () => {
@@ -59,16 +66,8 @@ export class UserListPage implements OnInit {
 
   protected onSearch(query: string): void {
     this.searchQuery.set(query);
-    this.applyFilter(query);
-  }
-
-  private applyFilter(query: string): void {
-    const q = query.toLowerCase().trim();
-    this.users.set(
-      q ? this.allUsers().filter(u =>
-        u.name.toLowerCase().includes(q) || u.email.toLowerCase().includes(q)
-      ) : [...this.allUsers()]
-    );
+    this.paginator.update(p => ({ ...p, page: 1 }));
+    this.loadUsers();
   }
 
   protected openCreateDrawer(): void {
@@ -76,7 +75,7 @@ export class UserListPage implements OnInit {
     this.drawerOpen.set(true);
   }
 
-  protected onDrawerSubmit(data: { name: string; email: string; role: string }): void {
+  protected onDrawerSubmit(data: { name: string; email: string; role: string; otpRequired: boolean }): void {
     const drawerRef = this.drawer();
     if (!drawerRef) return;
 
@@ -84,11 +83,10 @@ export class UserListPage implements OnInit {
     drawerRef.setLoading(true);
 
     if (editingUser) {
-      this.usersService.update(editingUser.id, { name: data.name, labels: [data.role] }).subscribe({
-        next: updated => {
-          this.allUsers.update(list => list.map(u => u.id === updated.id ? updated : u));
-          this.applyFilter(this.searchQuery());
+      this.usersService.update(editingUser.id, { name: data.name, labels: [data.role], otpRequired: data.otpRequired }).subscribe({
+        next: () => {
           this.closeDrawer();
+          this.loadUsers();
           this.toast.success('USERS.UPDATED');
         },
         error: () => {
@@ -97,12 +95,12 @@ export class UserListPage implements OnInit {
         },
       });
     } else {
-      this.usersService.create({ name: data.name, email: data.email, labels: [data.role] }).subscribe({
+      this.usersService.create({ name: data.name, email: data.email, labels: [data.role], otpRequired: data.otpRequired }).subscribe({
         next: created => {
-          this.allUsers.update(list => [created, ...list]);
-          this.applyFilter(this.searchQuery());
           this.closeDrawer();
-          this.appwrite.sendPasswordRecovery(data.email, `${environment.appwrite.url}/reset-password`).catch(() => {});
+          this.paginator.update(p => ({ ...p, page: 1 }));
+          this.loadUsers();
+          this.appwrite.sendPasswordRecovery(data.email, `${environment.appwrite.url}reset-password`).catch(() => {});
           this.toast.success('USERS.CREATED');
         },
         error: () => {
@@ -113,29 +111,13 @@ export class UserListPage implements OnInit {
     }
   }
 
-  protected onTableSave(updatedRows: AppUser[]): void {
-    const original = this.allUsers();
-    const changed = updatedRows.filter(row => {
-      const orig = original.find(u => u.id === row.id);
-      return orig && (orig.name !== row.name || orig.role !== row.role);
-    });
+  protected onRowClick(user: AppUser): void {
+    this.router.navigate(['/users', user.id], { state: { user } });
+  }
 
-    if (!changed.length) return;
-
-    let pending = changed.length;
-    changed.forEach(row => {
-      this.usersService.update(row.id, { name: row.name, labels: [row.role] }).subscribe({
-        next: updated => {
-          this.allUsers.update(list => list.map(u => u.id === updated.id ? updated : u));
-          pending--;
-          if (pending === 0) this.toast.success('USERS.UPDATED');
-        },
-        error: () => {
-          pending--;
-          this.toast.error('USERS.UPDATE_ERROR');
-        },
-      });
-    });
+  protected onPageChange(event: PageEvent): void {
+    this.paginator.update(p => ({ ...p, page: event.page, pageSize: event.pageSize }));
+    this.loadUsers();
   }
 
   protected closeDrawer(): void {

@@ -1,31 +1,40 @@
-import { Component, inject, signal, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TranslatePipe } from '@ngx-translate/core';
+import { from, of, switchMap } from 'rxjs';
+import { AuthService } from '../../../../core/auth/services/auth.service';
 import { AppwriteService } from '../../../../core/auth/services/appwrite.service';
 
 @Component({
   selector: 'app-reset-password',
   imports: [ReactiveFormsModule, TranslatePipe],
   templateUrl: './reset-password.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'flex w-full min-h-screen' },
 })
 export class ResetPasswordPage implements OnInit {
-  private fb      = inject(FormBuilder);
-  private route   = inject(ActivatedRoute);
-  private router  = inject(Router);
+  private fb = inject(FormBuilder);
+  private route = inject(ActivatedRoute);
+  private router = inject(Router);
   private appwrite = inject(AppwriteService);
+  private auth = inject(AuthService);
 
   protected isLoading = signal(false);
-  protected success   = signal(false);
-  protected error     = signal('');
+  protected success = signal(false);
+  protected error = signal('');
+  protected otpRequired = signal(false);
+  protected otpConfigured = signal(false);
+  protected manualEntryKey = signal('');
+  protected qrCodeDataUrl = signal('');
 
   private userId = '';
   private secret = '';
 
   protected form = this.fb.group({
-    password:        ['', [Validators.required, Validators.minLength(8)]],
+    password: ['', [Validators.required, Validators.minLength(8)]],
     confirmPassword: ['', Validators.required],
+    otpCode: ['', [Validators.pattern(/^\d{6}$/)]],
   }, { validators: this.passwordsMatch });
 
   ngOnInit(): void {
@@ -34,23 +43,55 @@ export class ResetPasswordPage implements OnInit {
 
     if (!this.userId || !this.secret) {
       this.error.set('RESET_PASSWORD.INVALID_LINK');
+      return;
     }
+
+    this.auth.getOtpSetup(this.userId).subscribe({
+      next: setup => {
+        this.otpRequired.set(setup.otpRequired);
+        this.otpConfigured.set(setup.otpConfigured);
+        this.manualEntryKey.set(setup.manualEntryKey ?? '');
+        this.qrCodeDataUrl.set(setup.qrCodeDataUrl ?? '');
+      },
+      error: () => {
+        this.error.set('RESET_PASSWORD.ERROR');
+      },
+    });
   }
 
   protected onSubmit(): void {
-    if (this.form.invalid) { this.form.markAllAsTouched(); return; }
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      return;
+    }
+
+    const { password, otpCode } = this.form.getRawValue();
+    if (this.otpRequired() && !/^\d{8}$/.test(otpCode ?? '')) {
+      this.form.get('otpCode')?.markAsTouched();
+      this.form.get('otpCode')?.setErrors({ pattern: true });
+      return;
+    }
 
     this.isLoading.set(true);
     this.error.set('');
 
-    const { password } = this.form.getRawValue();
+    const otpFlow = !this.otpRequired()
+      ? of(void 0)
+      : this.otpConfigured()
+        ? this.auth.verifyOtpCode(otpCode!, this.userId)
+        : this.auth.completeOtpSetup(otpCode!, this.userId);
 
-    this.appwrite.updateRecovery(this.userId, this.secret, password!).then(() => {
-      this.success.set(true);
-      setTimeout(() => this.router.navigate(['/login']), 3000);
-    }).catch(() => {
-      this.error.set('RESET_PASSWORD.ERROR');
-      this.isLoading.set(false);
+    otpFlow.pipe(
+      switchMap(() => from(this.appwrite.updateRecovery(this.userId, this.secret, password!)))
+    ).subscribe({
+      next: () => {
+        this.success.set(true);
+        setTimeout(() => this.router.navigate(['/login']), 3000);
+      },
+      error: () => {
+        this.error.set(this.otpRequired() ? 'RESET_PASSWORD.OTP_ERROR' : 'RESET_PASSWORD.ERROR');
+        this.isLoading.set(false);
+      },
     });
   }
 
@@ -64,7 +105,7 @@ export class ResetPasswordPage implements OnInit {
   }
 
   private passwordsMatch(group: import('@angular/forms').AbstractControl) {
-    const pw  = group.get('password')?.value;
+    const pw = group.get('password')?.value;
     const cpw = group.get('confirmPassword')?.value;
     return pw && cpw && pw !== cpw ? { mismatch: true } : null;
   }
