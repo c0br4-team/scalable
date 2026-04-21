@@ -1,9 +1,9 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpContext, HttpParams } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, map } from 'rxjs';
 import { environment } from '../../../../environments/environment';
 import { SKIP_GLOBAL_LOADING } from '../../../core/interceptors/loading.interceptor';
-import { LeadDetail, LeadListItem, PagedLeads, SaveLeadIntakeRequest, CreateLeadRequest, CreateLeadResponse } from '../models/lead.model';
+import { LeadDetail, LeadListItem, PagedLeads, SaveLeadIntakeRequest, CreateLeadRequest, CreateLeadResponse, DependentItem, PaymentPlan, SavePaymentPlanRequest, ConvertLeadResponse } from '../models/lead.model';
 
 interface UpdateLeadAssigneeRequest {
   assignedUserIdAw: string | null;
@@ -65,5 +65,41 @@ export class LeadService {
 
   createLead(data: CreateLeadRequest): Observable<CreateLeadResponse> {
     return this.http.post<CreateLeadResponse>(this.apiUrl, data);
+  }
+
+  getDependents(leadRef: string | number): Observable<DependentItem[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/${encodeURIComponent(String(leadRef))}/dependents`).pipe(
+      map(items => items.map(d => ({
+        ...d,
+        contractSigned: String(d.contractSigned),
+      } as DependentItem)))
+    );
+  }
+
+  saveDependents(leadRef: string | number, dependents: DependentItem[]): Observable<void> {
+    const body = dependents.map(d => ({
+      ...d,
+      dateOfBirth: d.dateOfBirth || null,
+      contractSigned: d.contractSigned === 'true',
+    }));
+    return this.http.put<void>(`${this.apiUrl}/${encodeURIComponent(String(leadRef))}/dependents`, body);
+  }
+
+  getPaymentPlan(leadRef: string | number): Observable<PaymentPlan | null> {
+    return this.http.get<PaymentPlan | null>(`${this.apiUrl}/${encodeURIComponent(String(leadRef))}/payment-plan`);
+  }
+
+  savePaymentPlan(leadRef: string | number, plan: SavePaymentPlanRequest): Observable<void> {
+    return this.http.put<void>(`${this.apiUrl}/${encodeURIComponent(String(leadRef))}/payment-plan`, plan);
+  }
+
+  getPaymentPlanPreview(leadRef: string | number): Observable<string> {
+    return this.http.get(`${this.apiUrl}/${encodeURIComponent(String(leadRef))}/payment-plan/preview`, {
+      responseType: 'text',
+    });
+  }
+
+  convertLead(leadRef: string | number): Observable<ConvertLeadResponse> {
+    return this.http.post<ConvertLeadResponse>(`${this.apiUrl}/${encodeURIComponent(String(leadRef))}/convert`, null);
   }
 }

@@ -1,0 +1,35 @@
+<div class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4"
+     (click)="close.emit()">
+
+  <div class="relative bg-gray-100 rounded-2xl shadow-2xl flex flex-col"
+       style="width: 95vw; height: 95vh;"
+       (click)="$event.stopPropagation()">
+
+    <!-- Header -->
+    <div class="flex items-center justify-between px-6 py-3 bg-white rounded-t-2xl border-b border-gray-200 shrink-0">
+      <div class="flex items-center gap-2">
+        <ng-icon name="heroDocumentText" class="text-[#1e3a5f] text-lg" />
+        <h2 class="text-sm font-semibold text-gray-800">{{ title() | translate }}</h2>
+      </div>
+      <button type="button" (click)="close.emit()"
+        class="p-1.5 rounded-lg text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-colors">
+        <ng-icon name="heroXMark" class="text-lg" />
+      </button>
+    </div>
+
+    <!-- Preview area: scrollable gray tray with letter-size page -->
+    <div class="flex-1 overflow-auto bg-gray-200 flex justify-center py-8 px-4">
+      <!-- Letter-size page wrapper (8.5in × 11in at 96dpi = 816px × 1056px) -->
+      <div class="bg-white shadow-xl"
+           style="width: 816px; min-height: 1056px; flex-shrink: 0;">
+        <iframe
+          #previewFrame
+          class="w-full border-none block"
+          style="height: 1056px;"
+          sandbox="allow-same-origin"
+        ></iframe>
+      </div>
+    </div>
+
+  </div>
+</div>

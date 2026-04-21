@@ -138,6 +138,11 @@ export class EditableTableComponent<T extends Record<string, any>>
     return key.split('.').reduce((obj: any, k: string) => obj?.[k], row);
   }
 
+  protected getSelectLabel(col: EditableColumnDef<T>, row: T): string {
+    const value = this.getCellValue(row, col.key);
+    return col.options?.find(o => o.value === value)?.label ?? value ?? '';
+  }
+
   protected get colSpan(): number {
     return this.columns.length + (this.deleteRowEnabled ? 1 : 0);
   }

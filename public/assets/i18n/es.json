@@ -1,4 +1,11 @@
 {
+  "COMMON": {
+    "YES": "Sí",
+    "NO": "No"
+  },
+  "SHARED": {
+    "PREVIEW_TITLE": "Vista previa del documento"
+  },
   "NAV": {
     "DASHBOARD": "Panel",
     "MANAGEMENT": "Gestión",
@@ -14,7 +21,8 @@
     "LEADS_IMPORTED": "Externos",
     "LEADS_MANUAL": "Mercado Law",
     "LEADS_LIST": "Lista de clientes potenciales",
-    "LEADS_NEW": "Nuevo"
+    "LEADS_NEW": "Nuevo",
+    "LEADS_COMPLETED": "Completados"
   },
   "HEADER": {
     "ACTIVE_SESSION": "Sesión activa",
@@ -213,7 +221,7 @@
     "COL_ASSIGNED": "Responsable",
     "STATUS_NEW": "Nuevo",
     "STATUS_IN_PROGRESS": "En proceso",
-    "STATUS_CONVERTED": "Convertido",
+    "STATUS_COMPLETED": "Completado",
     "SOURCE_ACTIVE": "En fuente",
     "SOURCE_REMOVED": "Eliminado del Excel",
     "SOURCE_LEGACY": "Histórico local",
@@ -223,9 +231,25 @@
     "SHEET_DATE": "Fecha",
     "SHEET_ADDRESS": "Dirección/ZIP",
     "STEP_1": "Información del Intake",
+    "STEP_2": "Revisión",
+    "CONTINUE_NEXT_STEP": "Continuar",
+    "STEP1_INCOMPLETE": "Completa todos los campos del formulario para continuar",
+    "STEP1_INCOMPLETE_TITLE": "Campos requeridos incompletos",
+    "PREVIOUS_STEP": "Paso anterior",
+    "STEP_2_PLACEHOLDER": "Contenido del paso 2 próximamente.",
     "SECTION_CLIENT": "Datos del cliente",
     "SECTION_MIGRATION": "Información migratoria",
     "SECTION_CATEGORIES": "Categorías legales",
+    "SECTION_DEPENDENTS": "Dependientes",
+    "ADD_DEPENDENT": "Agregar dependiente",
+    "DEPENDENT_NAME": "Nombre completo",
+    "DEPENDENT_ID": "Identificación",
+    "DEPENDENT_ADDRESS": "Dirección",
+    "DEPENDENT_PHONE": "Teléfono",
+    "DEPENDENT_EMAIL": "Correo",
+    "DEPENDENT_DOB": "Fecha de nacimiento",
+    "DEPENDENT_COUNTRY": "País de nacimiento",
+    "DEPENDENT_CONTRACT": "Firma contrato",
     "FULL_NAME": "Nombre completo",
     "FULL_NAME_PLACEHOLDER": "Nombre completo del cliente",
     "IDENTIFICATION": "Identificación",
@@ -291,7 +315,43 @@
     "ASSIGNEE_UPDATED": "Responsable actualizado correctamente.",
     "ASSIGNEE_UPDATE_ERROR": "No se pudo actualizar el responsable. Intenta de nuevo.",
     "CREATE_SUCCESS": "Cliente creado correctamente.",
-    "CREATE_ERROR": "Error al crear el cliente. Intenta de nuevo."
+    "CREATE_ERROR": "Error al crear el cliente. Intenta de nuevo.",
+
+    "STEP_2_TITLE": "Plan de pagos",
+    "STEP_2_SUBTITLE": "Define los servicios y el plan de cuotas para este cliente.",
+    "SERVICES_LABEL": "Servicios a contratar",
+    "SERVICES_PLACEHOLDER": "Escribir nombre del servicio...",
+    "ADD_SERVICE": "Agregar",
+    "SERVICES_HINT": "Escribe el nombre del servicio y presiona Enter o haz clic en Agregar.",
+    "TOTAL_AMOUNT": "Valor total del contrato ($)",
+    "DOWNPAYMENT_AMOUNT": "Cuota inicial ($)",
+    "DOWNPAYMENT_METHOD": "Método de pago de cuota inicial",
+    "METHOD_PLACEHOLDER": "Seleccionar método...",
+    "INSTALLMENT_AMOUNT": "Valor de cuota mensual ($)",
+    "PAYMENT_DAY": "Día de pago mensual",
+    "PAYMENT_DAY_HINT": "Ingresa un número entre 1 y 28",
+    "GENERATE_PLAN": "Generar plan",
+    "INSTALLMENTS_TABLE": "Tabla de cuotas",
+    "COL_INSTALLMENT_NUM": "N° Cuota",
+    "COL_DUE_DATE": "Fecha de pago",
+    "COL_AMOUNT": "Valor cuota",
+    "COL_BALANCE": "Saldo",
+    "SAVE_PLAN": "Guardar plan",
+    "PLAN_SAVED": "Plan guardado",
+    "PAYMENT_PLAN_SAVED": "Plan de pagos guardado correctamente.",
+    "PAYMENT_PLAN_SAVE_ERROR": "No se pudo guardar el plan de pagos.",
+
+    "READY_TO_CONVERT": "El plan de pagos está guardado. Ya puedes previsualizar y confirmar la conversión.",
+    "PREVIEW_CONTRACT": "Previsualizar contrato",
+    "CONFIRM_CONVERT": "Confirmar y convertir",
+    "PREVIEW_TITLE": "Vista previa del contrato",
+    "PREVIEW_ERROR": "No se pudo cargar la vista previa.",
+    "CONVERT_CONFIRM": "¿Confirmas la conversión de este lead a caso legal? Esta acción no se puede deshacer.",
+    "CONVERT_OK": "Lead convertido a caso exitosamente.",
+    "CONVERT_ERROR": "No se pudo convertir el lead. Verifica que tenga intake y plan de pagos completos.",
+    "COMPLETED_BREADCRUMB": "Leads completados",
+    "COMPLETED_TITLE": "Leads convertidos a caso",
+    "COMPLETED_SUBTITLE": "Leads que han completado el proceso de intake y conversión."
   },
   "DS": {
     "DROPDOWN": {

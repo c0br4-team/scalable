@@ -29,6 +29,17 @@ export const leadRoutes: Routes = [
       import('./pages/lead-list/lead-list.component').then(m => m.LeadListComponent),
   },
   {
+    path: 'completed',
+    data: {
+      breadcrumb: 'LEADS.COMPLETED_BREADCRUMB',
+      statuses: ['completed'],
+      titleKey: 'LEADS.COMPLETED_TITLE',
+      subtitleKey: 'LEADS.COMPLETED_SUBTITLE',
+    },
+    loadComponent: () =>
+      import('./pages/lead-list/lead-list.component').then(m => m.LeadListComponent),
+  },
+  {
     path: 'new',
     data: { breadcrumb: 'LEADS.NEW_LEAD' },
     loadComponent: () =>

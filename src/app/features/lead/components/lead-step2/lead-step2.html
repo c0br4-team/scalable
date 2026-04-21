@@ -1,0 +1,180 @@
+<div class="max-w-full mx-4 my-4 px-6 py-6 bg-white rounded-xl shadow space-y-6">
+
+  @if (loading()) {
+    <div class="flex items-center justify-center py-16 text-gray-400">
+      <ng-icon name="heroArrowPath" class="text-3xl animate-spin" />
+    </div>
+  } @else {
+
+    <!-- Header -->
+    <div>
+      <h2 class="text-lg font-semibold text-gray-800">{{ 'LEADS.STEP_2_TITLE' | translate }}</h2>
+      <p class="text-sm text-gray-500 mt-1">{{ 'LEADS.STEP_2_SUBTITLE' | translate }}</p>
+    </div>
+
+    <!-- Services chip input -->
+    <div>
+      <label class="block text-sm font-medium text-gray-700 mb-1">
+        {{ 'LEADS.SERVICES_LABEL' | translate }}
+      </label>
+
+      <!-- Chips -->
+      @if (services().length > 0) {
+        <div class="flex flex-wrap gap-2 mb-2">
+          @for (svc of services(); track svc) {
+            <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800">
+              {{ svc }}
+              <button type="button" (click)="removeService(svc)"
+                class="ml-0.5 hover:text-indigo-900 focus:outline-none">
+                <ng-icon name="heroXMark" class="text-xs" />
+              </button>
+            </span>
+          }
+        </div>
+      }
+
+      <!-- Input row -->
+      <div class="flex gap-2">
+        <input
+          type="text"
+          [placeholder]="'LEADS.SERVICES_PLACEHOLDER' | translate"
+          class="flex-1 rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
+          [ngModel]="serviceInput()"
+          (ngModelChange)="serviceInput.set($event)"
+          (keydown)="onServiceKeydown($event)" />
+        <button type="button" (click)="addService()"
+          class="px-3 py-2 rounded-lg bg-indigo-50 text-indigo-700 text-sm font-medium border border-indigo-200 hover:bg-indigo-100 transition-colors">
+          {{ 'LEADS.ADD_SERVICE' | translate }}
+        </button>
+      </div>
+      <p class="text-xs text-gray-400 mt-1">{{ 'LEADS.SERVICES_HINT' | translate }}</p>
+    </div>
+
+    <!-- Economic values grid -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">
+          {{ 'LEADS.TOTAL_AMOUNT' | translate }}
+        </label>
+        <input type="number" min="0" step="0.01"
+          class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
+          [ngModel]="totalAmount()"
+          (ngModelChange)="totalAmount.set($event); onNumberChange()" />
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">
+          {{ 'LEADS.DOWNPAYMENT_AMOUNT' | translate }}
+        </label>
+        <input type="number" min="0" step="0.01"
+          class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
+          [ngModel]="downpaymentAmount()"
+          (ngModelChange)="downpaymentAmount.set($event); onNumberChange()" />
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">
+          {{ 'LEADS.DOWNPAYMENT_METHOD' | translate }}
+        </label>
+        <sce-dropdown
+          [options]="methodOptions()"
+          [config]="singleConfig"
+          [placeholder]="'LEADS.METHOD_PLACEHOLDER' | translate"
+          [ngModel]="selectedMethodValue()"
+          (ngModelChange)="onMethodChange($event)"
+        />
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">
+          {{ 'LEADS.INSTALLMENT_AMOUNT' | translate }}
+        </label>
+        <input type="number" min="1" step="0.01"
+          class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
+          [ngModel]="installmentAmount()"
+          (ngModelChange)="installmentAmount.set($event); onNumberChange()" />
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">
+          {{ 'LEADS.PAYMENT_DAY' | translate }}
+        </label>
+        <input type="number" min="1" max="28"
+          class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
+          [ngModel]="paymentDay()"
+          (ngModelChange)="paymentDay.set($event); onNumberChange()" />
+        <p class="text-xs text-gray-400 mt-1">{{ 'LEADS.PAYMENT_DAY_HINT' | translate }}</p>
+      </div>
+
+    </div>
+
+    <!-- Generate button -->
+    <div>
+      <button
+        type="button"
+        [disabled]="!canGenerate()"
+        (click)="generatePlan()"
+        class="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors
+               bg-indigo-600 text-white hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed">
+        <ng-icon name="heroCalculator" class="text-base" />
+        {{ 'LEADS.GENERATE_PLAN' | translate }}
+      </button>
+    </div>
+
+    <!-- Installments table -->
+    @if (planGenerated() && installments().length > 0) {
+      <div>
+        <h3 class="text-sm font-semibold text-gray-700 mb-2">{{ 'LEADS.INSTALLMENTS_TABLE' | translate }}</h3>
+        <div class="overflow-x-auto rounded-lg border border-gray-200">
+          <table class="w-full text-sm text-left">
+            <thead class="bg-gray-50 text-gray-600 text-xs uppercase">
+              <tr>
+                <th class="px-4 py-2 font-medium">{{ 'LEADS.COL_INSTALLMENT_NUM' | translate }}</th>
+                <th class="px-4 py-2 font-medium">{{ 'LEADS.COL_DUE_DATE' | translate }}</th>
+                <th class="px-4 py-2 font-medium text-right">{{ 'LEADS.COL_AMOUNT' | translate }}</th>
+                <th class="px-4 py-2 font-medium text-right">{{ 'LEADS.COL_BALANCE' | translate }}</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-100">
+              @for (inst of installments(); track inst.installmentNumber) {
+                <tr class="hover:bg-gray-50">
+                  <td class="px-4 py-2 text-gray-700">{{ inst.installmentNumber }}</td>
+                  <td class="px-4 py-2 text-gray-700">{{ formatDate(inst.dueDate) }}</td>
+                  <td class="px-4 py-2 text-gray-700 text-right">{{ formatCurrency(inst.amount) }}</td>
+                  <td class="px-4 py-2 text-gray-700 text-right">{{ formatCurrency(inst.balance) }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+    }
+
+    <!-- Actions -->
+    <div class="flex items-center justify-between pt-2 border-t border-gray-100">
+      <div class="flex items-center gap-3">
+        @if (planGenerated() && !planSavedSignal()) {
+          <button type="button" [disabled]="saving()" (click)="savePlan()"
+            class="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-green-600 text-white hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
+            @if (saving()) {
+              <ng-icon name="heroArrowPath" class="animate-spin text-base" />
+            } @else {
+              <ng-icon name="heroCloudArrowUp" class="text-base" />
+            }
+            {{ 'LEADS.SAVE_PLAN' | translate }}
+          </button>
+        }
+
+        @if (planSavedSignal()) {
+          <span class="inline-flex items-center gap-1 text-sm text-green-700 font-medium">
+            <ng-icon name="heroCheckCircle" class="text-base" />
+            {{ 'LEADS.PLAN_SAVED' | translate }}
+          </span>
+        }
+      </div>
+    </div>
+
+  }
+
+</div>

@@ -27,7 +27,7 @@ export class LeadListComponent implements OnInit {
   protected leads = signal<LeadListItem[]>([]);
   protected titleKey = signal('LEADS.IMPORTED_TITLE');
   protected subtitleKey = signal('LEADS.IMPORTED_SUBTITLE');
-  protected listSource = signal<'sheet' | 'manual'>('sheet');
+  protected listSource = signal<'sheet' | 'manual' | undefined>('sheet');
   protected loading = signal(true);
   protected syncing = signal(false);
   protected showFilters = signal(false);
@@ -35,6 +35,7 @@ export class LeadListComponent implements OnInit {
   protected filterSearch = signal('');
   protected filterStatus = signal<string[]>([]);
   protected filterAssignedUser = signal('');
+  protected lockedStatuses = signal<string[]>([]);
 
   protected paginator = signal<PaginatorConfig>({
     page: 1, pageSize: 5, total: 0, pageSizeOptions: [5, 10, 20, 50]
@@ -44,7 +45,6 @@ export class LeadListComponent implements OnInit {
   protected activeFiltersCount = computed(() => {
     let n = 0;
     if (this.filterSearch()) n++;
-    if (this.filterStatus().length) n++;
     if (this.filterAssignedUser()) n++;
     return n;
   });
@@ -58,13 +58,19 @@ export class LeadListComponent implements OnInit {
   protected readonly statusOptions = [
     { value: 'new',         label: 'LEADS.STATUS_NEW',         cls: 'bg-blue-100 text-blue-700 border-blue-300' },
     { value: 'in_progress', label: 'LEADS.STATUS_IN_PROGRESS', cls: 'bg-amber-100 text-amber-700 border-amber-300' },
-    { value: 'converted',   label: 'LEADS.STATUS_CONVERTED',   cls: 'bg-green-100 text-green-700 border-green-300' },
+    { value: 'completed',   label: 'LEADS.STATUS_COMPLETED',   cls: 'bg-green-100 text-green-700 border-green-300' },
   ];
 
   ngOnInit(): void {
     this.titleKey.set(this.route.snapshot.data['titleKey'] ?? 'LEADS.IMPORTED_TITLE');
     this.subtitleKey.set(this.route.snapshot.data['subtitleKey'] ?? 'LEADS.IMPORTED_SUBTITLE');
-    this.listSource.set(this.route.snapshot.data['source'] ?? 'sheet');
+    this.listSource.set(this.route.snapshot.data['source'] ?? undefined);
+
+    const preStatuses: string[] | undefined = this.route.snapshot.data['statuses'];
+    if (preStatuses?.length) {
+      this.lockedStatuses.set(preStatuses);
+      this.filterStatus.set(preStatuses);
+    }
 
     this.columns = [
       { key: 'date',             header: 'LEADS.COL_DATE',     sortable: true, width: '110px' },
@@ -142,7 +148,7 @@ export class LeadListComponent implements OnInit {
 
   protected clearFilters(): void {
     this.filterSearch.set('');
-    this.filterStatus.set([]);
+    this.filterStatus.set(this.lockedStatuses());
     this.filterAssignedUser.set('');
     this.paginator.update(p => ({ ...p, page: 1 }));
     this.loadLeads();
@@ -156,7 +162,7 @@ export class LeadListComponent implements OnInit {
     return {
       new:         'bg-blue-100 text-blue-700',
       in_progress: 'bg-amber-100 text-amber-700',
-      converted:   'bg-green-100 text-green-700',
+      completed:   'bg-green-100 text-green-700',
     }[status] ?? 'bg-gray-100 text-gray-500';
   }
 
@@ -164,7 +170,7 @@ export class LeadListComponent implements OnInit {
     return {
       new:         'LEADS.STATUS_NEW',
       in_progress: 'LEADS.STATUS_IN_PROGRESS',
-      converted:   'LEADS.STATUS_CONVERTED',
+      completed:   'LEADS.STATUS_COMPLETED',
     }[status] ?? status;
   }
 

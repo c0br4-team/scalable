@@ -5,7 +5,7 @@ export interface LeadListItem {
   fullName: string | null;
   phone: string | null;
   email: string | null;
-  status: 'new' | 'in_progress' | 'converted';
+  status: 'new' | 'in_progress' | 'completed';
   sourceStatus: 'active' | 'removed_from_source' | 'legacy' | 'manual';
   hasIntake: boolean;
   assignedUserName: string | null;
@@ -55,7 +55,7 @@ export interface LeadDetail {
   phone: string | null;
   email: string | null;
   addressZip: string | null;
-  status: 'new' | 'in_progress' | 'converted';
+  status: 'new' | 'in_progress' | 'completed';
   sourceStatus: 'active' | 'removed_from_source' | 'legacy' | 'manual';
   assignedUserIdAw: string | null;
   assignedUserName: string | null;
@@ -96,6 +96,63 @@ export interface CreateLeadRequest {
   email: string | null;
   assignedUserIdAw: string | null;
   history: string | null;
+}
+
+export interface ContractedService {
+  id: string;
+  name: string;
+  description?: string;
+}
+
+export interface DownpaymentMethod {
+  id: string;
+  name: string;
+}
+
+export interface PaymentPlanInstallment {
+  installmentNumber: number;
+  dueDate: string;
+  amount: number;
+  balance: number;
+}
+
+export interface PaymentPlan {
+  id?: string;
+  services: string[];
+  totalAmount: number;
+  downpaymentAmount: number;
+  downpaymentMethodId: string | null;
+  installmentAmount: number;
+  paymentDay: number;
+  installments: PaymentPlanInstallment[];
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface SavePaymentPlanRequest {
+  services: string[];
+  totalAmount: number;
+  downpaymentAmount: number;
+  downpaymentMethodId: string | null;
+  installmentAmount: number;
+  paymentDay: number;
+}
+
+export interface ConvertLeadResponse {
+  caseId: string;
+  documentHtml: string;
+}
+
+export interface DependentItem {
+  id?: string;
+  fullName: string;
+  identificationNumber: string;
+  address: string;
+  phone: string;
+  email: string;
+  dateOfBirth: string;
+  countryOfBirth: string;
+  contractSigned: string; // 'true' | 'false' for select compatibility
 }
 
 export interface CreateLeadResponse {

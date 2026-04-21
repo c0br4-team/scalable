@@ -1,4 +1,11 @@
 {
+  "COMMON": {
+    "YES": "Yes",
+    "NO": "No"
+  },
+  "SHARED": {
+    "PREVIEW_TITLE": "Document preview"
+  },
   "NAV": {
     "DASHBOARD": "Dashboard",
     "MANAGEMENT": "Management",
@@ -14,7 +21,8 @@
     "LEADS_IMPORTED": "External",
     "LEADS_MANUAL": "Mercado Law",
     "LEADS_LIST": "Lead list",
-    "LEADS_NEW": "New"
+    "LEADS_NEW": "New",
+    "LEADS_COMPLETED": "Completed"
   },
   "HEADER": {
     "ACTIVE_SESSION": "Active session",
@@ -213,7 +221,7 @@
     "COL_ASSIGNED": "Assigned To",
     "STATUS_NEW": "New",
     "STATUS_IN_PROGRESS": "In progress",
-    "STATUS_CONVERTED": "Converted",
+    "STATUS_COMPLETED": "Completed",
     "SOURCE_ACTIVE": "In source",
     "SOURCE_REMOVED": "Removed from source",
     "SOURCE_LEGACY": "Local legacy",
@@ -223,9 +231,25 @@
     "SHEET_DATE": "Date",
     "SHEET_ADDRESS": "Address/ZIP",
     "STEP_1": "Intake Information",
+    "STEP_2": "Review",
+    "CONTINUE_NEXT_STEP": "Continue",
+    "STEP1_INCOMPLETE": "Complete all form fields to continue",
+    "STEP1_INCOMPLETE_TITLE": "Required fields incomplete",
+    "PREVIOUS_STEP": "Previous step",
+    "STEP_2_PLACEHOLDER": "Step 2 content coming soon.",
     "SECTION_CLIENT": "Client data",
     "SECTION_MIGRATION": "Migration information",
     "SECTION_CATEGORIES": "Legal categories",
+    "SECTION_DEPENDENTS": "Dependents",
+    "ADD_DEPENDENT": "Add dependent",
+    "DEPENDENT_NAME": "Full name",
+    "DEPENDENT_ID": "Identification",
+    "DEPENDENT_ADDRESS": "Address",
+    "DEPENDENT_PHONE": "Phone",
+    "DEPENDENT_EMAIL": "Email",
+    "DEPENDENT_DOB": "Date of birth",
+    "DEPENDENT_COUNTRY": "Country of birth",
+    "DEPENDENT_CONTRACT": "Contract signed",
     "FULL_NAME": "Full name",
     "FULL_NAME_PLACEHOLDER": "Client's full name",
     "IDENTIFICATION": "Identification",
@@ -291,7 +315,44 @@
     "ASSIGNEE_UPDATED": "Assignee updated successfully.",
     "ASSIGNEE_UPDATE_ERROR": "Could not update the assignee. Please try again.",
     "CREATE_SUCCESS": "Lead created successfully.",
-    "CREATE_ERROR": "Failed to create lead. Please try again."
+    "CREATE_ERROR": "Failed to create lead. Please try again.",
+
+    "STEP_2_TITLE": "Payment Plan",
+    "STEP_2_SUBTITLE": "Define the services and installment plan for this client.",
+    "SERVICES_LABEL": "Services to contract",
+    "SERVICES_PLACEHOLDER": "Type a service name...",
+    "ADD_SERVICE": "Add",
+    "SERVICES_HINT": "Type a service name and press Enter or click Add.",
+    "TOTAL_AMOUNT": "Total contract value ($)",
+    "DOWNPAYMENT_AMOUNT": "Down payment ($)",
+    "DOWNPAYMENT_METHOD": "Down payment method",
+    "METHOD_PLACEHOLDER": "Select method...",
+    "INSTALLMENT_AMOUNT": "Monthly installment amount ($)",
+    "PAYMENT_DAY": "Monthly payment day",
+    "PAYMENT_DAY_HINT": "Enter a number between 1 and 28",
+    "GENERATE_PLAN": "Generate plan",
+    "INSTALLMENTS_TABLE": "Installments table",
+    "COL_INSTALLMENT_NUM": "# Installment",
+    "COL_DUE_DATE": "Due date",
+    "COL_AMOUNT": "Amount",
+    "COL_BALANCE": "Balance",
+    "SAVE_PLAN": "Save plan",
+    "PLAN_SAVED": "Plan saved",
+    "PAYMENT_PLAN_SAVED": "Payment plan saved successfully.",
+    "PAYMENT_PLAN_SAVE_ERROR": "Could not save the payment plan.",
+
+    "READY_TO_CONVERT": "Payment plan is saved. You can now preview and confirm the conversion.",
+    "PREVIEW_CONTRACT": "Preview contract",
+    "CONFIRM_CONVERT": "Confirm & convert",
+    "PREVIEW_TITLE": "Contract preview",
+    "PREVIEW_ERROR": "Could not load the preview.",
+    "CONVERT_CONFIRM": "Confirm conversion of this lead to a legal case? This action cannot be undone.",
+    "CONVERT_OK": "Lead successfully converted to a case.",
+    "CONVERT_ERROR": "Could not convert the lead. Ensure it has a complete intake and payment plan.",
+
+    "COMPLETED_BREADCRUMB": "Completed leads",
+    "COMPLETED_TITLE": "Converted leads",
+    "COMPLETED_SUBTITLE": "Leads that have completed the intake and conversion process."
   },
   "DS": {
     "DROPDOWN": {

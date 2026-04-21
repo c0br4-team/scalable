@@ -74,12 +74,12 @@
                 @if (col.type === 'select' && col.options) {
                 <select sceAutoFocus
                         class="w-full border border-[#1e3a5f] rounded-md px-2 py-1.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-[#1e3a5f]/30"
-                        [value]="editValue()"
                         (change)="editValue.set($any($event.target).value); commitEdit(rowIdx, col)"
                         (blur)="commitEdit(rowIdx, col)"
                         (keydown)="onKeyDown($event, rowIdx, col)">
+                  <option value="" disabled hidden [selected]="editValue() === '' || editValue() == null"></option>
                   @for (opt of col.options; track opt.value) {
-                  <option [value]="opt.value">{{ opt.label }}</option>
+                  <option [value]="opt.value" [selected]="opt.value === editValue()">{{ opt.label | translate }}</option>
                   }
                 </select>
 
@@ -125,6 +125,8 @@
                    (click)="startEdit(rowIdx, col, row)">
                 @if (getTemplate(col.key); as tpl) {
                   <ng-container *ngTemplateOutlet="tpl; context: { $implicit: row, value: getCellValue(row, col.key), index: rowIdx }" />
+                } @else if (col.type === 'select') {
+                  <span class="flex-1">{{ getSelectLabel(col, row) | translate }}</span>
                 } @else {
                   <span class="flex-1">{{ getCellValue(row, col.key) }}</span>
                 }
@@ -219,12 +221,12 @@
                 @if (col.type === 'select' && col.options) {
                 <select sceAutoFocus
                         class="w-full border border-[#1e3a5f] rounded-md px-2 py-1.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-[#1e3a5f]/30"
-                        [value]="editValue()"
                         (change)="editValue.set($any($event.target).value); commitEdit(rowIdx, col)"
                         (blur)="commitEdit(rowIdx, col)"
                         (keydown)="onKeyDown($event, rowIdx, col)">
+                  <option value="" disabled hidden [selected]="editValue() === '' || editValue() == null"></option>
                   @for (opt of col.options; track opt.value) {
-                  <option [value]="opt.value">{{ opt.label }}</option>
+                  <option [value]="opt.value" [selected]="opt.value === editValue()">{{ opt.label | translate }}</option>
                   }
                 </select>
 
@@ -268,6 +270,8 @@
                      (click)="startEdit(rowIdx, col, row)">
                   @if (getTemplate(col.key); as tpl) {
                     <ng-container *ngTemplateOutlet="tpl; context: { $implicit: row, value: getCellValue(row, col.key), index: rowIdx }" />
+                  } @else if (col.type === 'select') {
+                    <span class="flex-1">{{ getSelectLabel(col, row) | translate }}</span>
                   } @else {
                     <span class="flex-1">{{ getCellValue(row, col.key) }}</span>
                   }

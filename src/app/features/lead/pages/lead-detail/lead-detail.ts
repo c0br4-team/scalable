@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, signal, computed, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, signal, computed, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -7,6 +7,8 @@ import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { LeadService } from '../../services/lead.service';
 import { LeadDetail, SaveLeadIntakeRequest } from '../../models/lead.model';
 import { LeadIntakeStepComponent } from '../../components/lead-intake-step/lead-intake-step';
+import { LeadStep2Component } from '../../components/lead-step2/lead-step2';
+import { TemplatePreviewModalComponent } from '../../../../shared/design-system/components/template-preview-modal/template-preview-modal';
 import { StepperComponent } from '../../../../shared/design-system/components/stepper/stepper.component';
 import { DropdownConfig, DropdownOption, StepItem } from '../../../../shared/design-system/models/components.model';
 import { ToastService } from '../../../../core/notifications/toast.service';
@@ -20,9 +22,11 @@ import { UsersService } from '../../../../core/http/services/users.service';
   templateUrl: './lead-detail.html',
   host: { class: 'flex flex-col flex-1 overflow-hidden' },
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [NgIcon, DatePipe, FormsModule, TranslatePipe, LeadIntakeStepComponent, StepperComponent, DropdownComponent],
+  imports: [NgIcon, DatePipe, FormsModule, TranslatePipe, LeadIntakeStepComponent, LeadStep2Component, StepperComponent, DropdownComponent, TemplatePreviewModalComponent],
 })
 export class LeadDetailPage implements OnInit, OnDestroy {
+  @ViewChild(LeadIntakeStepComponent) private intakeStep?: LeadIntakeStepComponent;
+
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private leadService = inject(LeadService);
@@ -37,11 +41,16 @@ export class LeadDetailPage implements OnInit, OnDestroy {
   protected saving = signal(false);
   protected assigning = signal(false);
   protected currentStep = signal(1);
-  protected totalSteps = 1;
+  protected readonly totalSteps = 2;
   protected stepDirty = signal(false);
   protected selectedAssignedUserId = signal<string | null>(null);
 
-  protected isConverted = computed(() => this.lead()?.status === 'converted');
+  protected isConverted = computed(() => this.lead()?.status === 'completed');
+  protected planSaved = signal(false);
+  protected showPreviewModal = signal(false);
+  protected previewHtml = signal('');
+  protected converting = signal(false);
+  protected previewing = signal(false);
   protected savedAt = computed(() => this.lead()?.intake?.updatedAt ?? null);
   protected hasAssignedUser = computed(() => !!this.lead()?.assignedUserIdAw);
   protected canEditIntake = computed(() => {
@@ -91,6 +100,7 @@ export class LeadDetailPage implements OnInit, OnDestroy {
 
   protected steps = computed<StepItem[]>(() => [
     { index: 1, label: 'LEADS.STEP_1', completed: this.lead()?.intake != null },
+    { index: 2, label: 'LEADS.STEP_2', completed: this.planSaved() || this.isConverted() },
   ]);
 
   protected get leadRef(): string {
@@ -126,14 +136,14 @@ export class LeadDetailPage implements OnInit, OnDestroy {
     return {
       new:         'bg-blue-100 text-blue-700',
       in_progress: 'bg-amber-100 text-amber-700',
-      converted:   'bg-green-100 text-green-700',
+      completed:   'bg-green-100 text-green-700',
     }[s] ?? 'bg-gray-100 text-gray-500';
   });
 
   protected statusLabel = computed(() => ({
     new:         'LEADS.STATUS_NEW',
     in_progress: 'LEADS.STATUS_IN_PROGRESS',
-    converted:   'LEADS.STATUS_CONVERTED',
+    completed:   'LEADS.STATUS_COMPLETED',
   }[this.lead()?.status ?? 'new'] ?? 'LEADS.STATUS_NEW'));
 
   protected sourceCls = computed(() => ({
@@ -208,6 +218,48 @@ export class LeadDetailPage implements OnInit, OnDestroy {
     this.stepDirty.set(dirty);
   }
 
+  protected goToNextStep(): void {
+    this.currentStep.set(2);
+    this.stepDirty.set(false);
+  }
+
+  protected triggerContinue(): void {
+    this.intakeStep?.continueNext();
+  }
+
+  protected triggerSave(): void {
+    this.intakeStep?.submit();
+  }
+
+  protected onSaveAndContinue(request: SaveLeadIntakeRequest): void {
+    const withUser: SaveLeadIntakeRequest = { ...request, assignedUserIdAw: this.auth.user()?.id ?? null };
+    this.saving.set(true);
+    this.leadService.saveIntake(this.leadRequestRef, withUser).subscribe({
+      next: () => {
+        this.saving.set(false);
+        this.leadService.getLeadDetail(this.leadRequestRef).subscribe(lead => {
+          this.lead.set(lead);
+          this.selectedAssignedUserId.set(lead.assignedUserIdAw ?? null);
+          this.breadcrumbs.setLabel(
+            this.breadcrumbPath,
+            lead.fullName?.trim() || this.translate.instant('LEADS.DETAIL_LEAD'));
+          this.currentStep.set(2);
+          this.stepDirty.set(false);
+        });
+      },
+      error: (err) => {
+        this.saving.set(false);
+        const msg: string = err?.error?.error?.message
+          ?? this.translate.instant('LEADS.INTAKE_SAVE_ERROR');
+        this.toast.error(msg);
+      },
+    });
+  }
+
+  protected goToPrevStep(): void {
+    this.currentStep.set(1);
+  }
+
   protected updateAssignedUser(): void {
     if (this.assigning() || !this.canManageAssignee()) {
       return;
@@ -240,5 +292,41 @@ export class LeadDetailPage implements OnInit, OnDestroy {
       return;
     }
     this.router.navigate(this.backRoute);
+  }
+
+  protected onPlanSaved(): void {
+    this.planSaved.set(true);
+  }
+
+  protected openPreview(): void {
+    this.previewing.set(true);
+    this.leadService.getPaymentPlanPreview(this.leadRequestRef).subscribe({
+      next: html => {
+        this.previewHtml.set(html);
+        this.showPreviewModal.set(true);
+        this.previewing.set(false);
+      },
+      error: () => {
+        this.previewing.set(false);
+        this.toast.error(this.translate.instant('LEADS.PREVIEW_ERROR'));
+      },
+    });
+  }
+
+  protected convertLead(): void {
+    if (!confirm(this.translate.instant('LEADS.CONVERT_CONFIRM'))) return;
+    this.converting.set(true);
+    this.leadService.convertLead(this.leadRequestRef).subscribe({
+      next: result => {
+        this.converting.set(false);
+        this.toast.success(this.translate.instant('LEADS.CONVERT_OK'));
+        this.router.navigate(['/cases', result.caseId]);
+      },
+      error: (err) => {
+        this.converting.set(false);
+        const msg: string = err?.error?.error?.message ?? this.translate.instant('LEADS.CONVERT_ERROR');
+        this.toast.error(msg);
+      },
+    });
   }
 }

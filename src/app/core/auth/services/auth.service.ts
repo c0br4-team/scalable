@@ -14,36 +14,6 @@ import { NavItem } from '../../navigation/nav-item.model';
 import { environment } from '../../../../environments/environment';
 import { AppwriteService } from './appwrite.service';
 
-const DEFAULT_NAV_ITEMS: NavItem[] = [
-  {
-    type: 'group',
-    label: 'NAV.MANAGEMENT',
-    children: [
-      { type: 'basic', label: 'NAV.DASHBOARD', path: '/dashboard', icon: 'heroHome' },
-      { type: 'basic', label: 'NAV.CASES', path: '/cases', icon: 'heroDocumentText' },
-      { type: 'basic', label: 'NAV.CALENDAR', path: '/calendar', icon: 'heroCalendar' },
-      {
-        type: 'collapsible',
-        label: 'NAV.LEADS',
-        icon: 'heroIdentification',
-        children: [
-          { type: 'basic', label: 'NAV.LEADS_IMPORTED', path: '/leads/imported', icon: 'heroListBullet', exactPath: true },
-          { type: 'basic', label: 'NAV.LEADS_MANUAL', path: '/leads/manual', icon: 'heroFolder', exactPath: true },
-          { type: 'basic', label: 'NAV.LEADS_NEW', path: '/leads/new', icon: 'heroPlusCircle' },
-        ],
-      },
-    ],
-  },
-  { type: 'divider' },
-  {
-    type: 'group',
-    label: 'NAV.ADMIN',
-    children: [
-      { type: 'basic', label: 'NAV.USERS', path: '/users', icon: 'heroUsers' },
-      { type: 'basic', label: 'NAV.SETTINGS', path: '/profile', icon: 'heroCog6Tooth' },
-    ],
-  },
-];
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -92,8 +62,7 @@ export class AuthService {
 
     this.persistToken(freshJwt);
 
-    const restoredNavItems = this.normalizeNavItems(this.restoreNavItems());
-    const cachedNavItems = restoredNavItems.length ? restoredNavItems : DEFAULT_NAV_ITEMS;
+    const cachedNavItems = this.normalizeNavItems(this.restoreNavItems());
     this._state.set({ user, token: freshJwt, isAuthenticated: true, navItems: cachedNavItems });
 
     const freshNavItems = await firstValueFrom(
@@ -286,24 +255,19 @@ export class AuthService {
       return {
         ...item,
         children: item.children.map(child => {
-          if (child.type !== 'collapsible' || child.label !== 'NAV.LEADS') {
+          if (child.type !== 'collapsible') {
             return child;
           }
 
-          const createChild = child.children.find(c => c.path === '/leads/new') ?? {
-            type: 'basic' as const,
-            label: 'NAV.LEADS_NEW',
-            path: '/leads/new',
-            icon: 'heroPlusCircle',
-          };
-
           return {
             ...child,
-            children: [
-              { type: 'basic' as const, label: 'NAV.LEADS_IMPORTED', path: '/leads/imported', icon: 'heroListBullet', exactPath: true },
-              { type: 'basic' as const, label: 'NAV.LEADS_MANUAL', path: '/leads/manual', icon: 'heroFolder', exactPath: true },
-              { ...createChild, label: 'NAV.LEADS_NEW', path: '/leads/new', icon: createChild.icon ?? 'heroPlusCircle' },
-            ],
+            children: child.children.map(c => ({
+              type: 'basic' as const,
+              label: c.label,
+              path: c.path,
+              icon: c.icon,
+              exactPath: c.exactPath,
+            })),
           };
         }),
       };

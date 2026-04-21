@@ -1,7 +1,10 @@
 {
   "permissions": {
     "allow": [
-      "mcp__code-review-graph__build_or_update_graph_tool"
+      "mcp__code-review-graph__build_or_update_graph_tool",
+      "Bash(xargs grep *)",
+      "Bash(dotnet build *)",
+      "Bash(npx ng *)"
     ]
   }
 }

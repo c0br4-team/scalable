@@ -61,7 +61,9 @@ import {
   heroArrowsPointingIn,
   heroIdentification,
   heroListBullet,
-  heroPlusCircle
+  heroPlusCircle,
+  heroCloudArrowUp,
+  heroCalculator
 } from '@ng-icons/heroicons/outline';
 import { registerLocaleData } from '@angular/common';
 import localeEs from '@angular/common/locales/es';
@@ -150,7 +152,9 @@ export const appConfig: ApplicationConfig = {
       heroArrowsPointingIn,
       heroIdentification,
       heroListBullet,
-      heroPlusCircle
+      heroPlusCircle,
+      heroCloudArrowUp,
+      heroCalculator
     })
   ]
 };

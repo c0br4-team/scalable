@@ -74,21 +74,90 @@
 <div class="shrink-0 px-6 py-3 bg-gray-50 border-b border-gray-200">
   <div class="flex items-center justify-between gap-4">
     <sce-stepper [steps]="steps()" [activeStep]="currentStep()" />
-    @if (savedAt()) {
-    <span class="text-xs text-gray-500 flex items-center gap-1 shrink-0">
-      <ng-icon name="heroCheckCircle" class="text-green-500" />
-      {{ 'LEADS.SAVED_AT' | translate }} {{ savedAt() | date:'dd/MM/yyyy HH:mm' }}
-    </span>
-    }
+    <div class="flex items-center gap-3 shrink-0">
+      @if (savedAt()) {
+      <span class="text-xs text-gray-500 flex items-center gap-1">
+        <ng-icon name="heroCheckCircle" class="text-green-500" />
+        {{ 'LEADS.SAVED_AT' | translate }} {{ savedAt() | date:'dd/MM/yyyy HH:mm' }}
+      </span>
+      }
+      @if (currentStep() === 1 && !lockMessageKey()) {
+      <button type="button" (click)="triggerSave()" [disabled]="saving()"
+        style="background-color:#1e3a5f;color:#fff;"
+        class="flex items-center gap-1.5 px-4 py-2 text-sm font-medium rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed hover:opacity-90">
+        @if (saving()) {
+          <ng-icon name="heroArrowPath" class="text-base animate-spin" />
+          {{ 'LEADS.SAVING' | translate }}
+        } @else {
+          <ng-icon name="heroCheck" class="text-base" />
+          {{ (lead()?.intake ? 'LEADS.UPDATE_INTAKE' : 'LEADS.SAVE_INTAKE') | translate }}
+        }
+      </button>
+      <button type="button" (click)="triggerContinue()" [disabled]="saving()"
+        class="flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-[#1e3a5f] border border-[#1e3a5f] rounded-lg hover:bg-[#1e3a5f]/5 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+        @if (saving()) {
+          <ng-icon name="heroArrowPath" class="text-base animate-spin" />
+        } @else {
+          {{ 'LEADS.CONTINUE_NEXT_STEP' | translate }}
+          <ng-icon name="heroArrowRight" class="text-base" />
+        }
+      </button>
+      }
+      @if (currentStep() === 2) {
+      <button type="button" (click)="goToPrevStep()"
+        class="flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+        <ng-icon name="heroArrowLeft" class="text-base" />
+        {{ 'LEADS.PREVIOUS_STEP' | translate }}
+      </button>
+      }
+    </div>
   </div>
 </div>
 
 <!-- Steps -->
 <div class="flex-1 overflow-auto">
   @if (currentStep() === 1) {
-  <app-lead-intake-step [lead]="lead()!" [saving]="saving()" [readOnly]="!!lockMessageKey()"
-    [lockMessageKey]="lockMessageKey()" (saved)="onIntakeSaved($event)" (cancelled)="goBack()"
-    (dirtyChange)="onDirtyChange($event)" />
+    <app-lead-intake-step [lead]="lead()!" [saving]="saving()" [readOnly]="!!lockMessageKey()"
+      [lockMessageKey]="lockMessageKey()" (saved)="onIntakeSaved($event)" (cancelled)="goBack()"
+      (dirtyChange)="onDirtyChange($event)" (nextStep)="goToNextStep()" (saveAndContinue)="onSaveAndContinue($event)" />
+  }
+  @if (currentStep() === 2) {
+    <app-lead-step2 [lead]="lead()!" (prevStep)="goToPrevStep()" (planSaved)="onPlanSaved()" />
+
+    <!-- Preview & Convert actions (only when plan is saved and not yet converted) -->
+    @if (planSaved() && !isConverted()) {
+      <div class="mx-4 mb-4 px-6 py-4 bg-indigo-50 border border-indigo-200 rounded-xl flex flex-wrap items-center justify-between gap-3">
+        <p class="text-sm text-indigo-800 font-medium flex items-center gap-1">
+          <ng-icon name="heroInformationCircle" class="text-base" />
+          {{ 'LEADS.READY_TO_CONVERT' | translate }}
+        </p>
+        <div class="flex items-center gap-3">
+          <button type="button" [disabled]="previewing()" (click)="openPreview()"
+            class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg border border-indigo-600 text-indigo-700 hover:bg-indigo-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
+            @if (previewing()) {
+              <ng-icon name="heroArrowPath" class="animate-spin text-base" />
+            } @else {
+              <ng-icon name="heroEye" class="text-base" />
+            }
+            {{ 'LEADS.PREVIEW_CONTRACT' | translate }}
+          </button>
+          <button type="button" [disabled]="converting()" (click)="convertLead()"
+            class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
+            @if (converting()) {
+              <ng-icon name="heroArrowPath" class="animate-spin text-base" />
+            } @else {
+              <ng-icon name="heroArrowTopRightOnSquare" class="text-base" />
+            }
+            {{ 'LEADS.CONFIRM_CONVERT' | translate }}
+          </button>
+        </div>
+      </div>
+    }
   }
 </div>
+}
+
+<!-- Preview modal -->
+@if (showPreviewModal()) {
+  <sce-template-preview-modal [html]="previewHtml()" title="LEADS.PREVIEW_TITLE" (close)="showPreviewModal.set(false)" />
 }
