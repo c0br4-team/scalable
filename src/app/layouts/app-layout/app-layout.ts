@@ -1,6 +1,6 @@
 import { Component, inject, signal, effect, HostListener, OnDestroy } from '@angular/core';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
-import { AuthService } from '../../core/auth/services/auth.service';
+import { AuthService } from '../../core/http/services/auth.service';
 import { ClickOutsideDirective } from '../../core/directives/click-outside.directive';
 import { BreadcrumbComponent } from '../../shared/ui/breadcrumb/breadcrumb';
 import { NgIcon } from '@ng-icons/core';

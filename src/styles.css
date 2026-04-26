@@ -1,4 +1,5 @@
 @import 'tailwindcss';
+@import 'leaflet/dist/leaflet.css';
 
 @keyframes toast-enter {
   from { opacity: 0; transform: translateX(110%) scale(0.95); }

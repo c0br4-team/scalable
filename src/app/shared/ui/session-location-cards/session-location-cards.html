@@ -1,0 +1,17 @@
+<div class="grid gap-3 sm:grid-cols-2">
+  <div class="rounded-xl bg-slate-50 p-3">
+    <div class="text-[11px] font-semibold uppercase tracking-wide text-gray-500">{{ initialPointLabel() }}</div>
+    <div class="mt-1 text-sm font-medium text-gray-900">{{ formatLocation(initialLocation()) }}</div>
+    <div class="mt-1 text-xs text-gray-500">{{ coordinatesLabel() }}: {{ formatCoordinates(initialLocation()) ||
+      notAvailableLabel() }}</div>
+    <div class="mt-1 text-xs text-gray-500">{{ accuracyLabel() }}: {{ formatAccuracy(initialLocation()) }}</div>
+  </div>
+
+  <div class="rounded-xl bg-slate-50 p-3">
+    <div class="text-[11px] font-semibold uppercase tracking-wide text-gray-500">{{ lastPointLabel() }}</div>
+    <div class="mt-1 text-sm font-medium text-gray-900">{{ formatLocation(lastLocation()) }}</div>
+    <div class="mt-1 text-xs text-gray-500">{{ coordinatesLabel() }}: {{ formatCoordinates(lastLocation()) ||
+      notAvailableLabel() }}</div>
+    <div class="mt-1 text-xs text-gray-500">{{ accuracyLabel() }}: {{ formatAccuracy(lastLocation()) }}</div>
+  </div>
+</div>

@@ -1,0 +1,99 @@
+@if (open()) {
+  <div class="fixed inset-0 z-40 bg-black/30 backdrop-blur-sm" (click)="closed.emit()"></div>
+}
+
+<div class="fixed inset-y-0 right-0 z-50 w-full max-w-md bg-white shadow-2xl flex flex-col transition-transform duration-300"
+     [class.translate-x-0]="open()"
+     [class.translate-x-full]="!open()">
+
+  <div class="flex items-center justify-between px-6 py-4 border-b border-gray-200">
+    <h2 class="text-lg font-semibold text-gray-900">
+      {{ (isEdit ? 'CATALOGS.DRAWER_EDIT_TITLE' : 'CATALOGS.DRAWER_CREATE_TITLE') | translate }}
+    </h2>
+    <button type="button" (click)="closed.emit()"
+      class="p-1.5 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors">
+      <ng-icon name="heroXMark" class="text-xl" />
+    </button>
+  </div>
+
+  <form [formGroup]="form" (ngSubmit)="onSubmit()" class="flex flex-col flex-1 overflow-y-auto px-6 py-5 space-y-5">
+
+    <div class="space-y-1.5">
+      <label class="block text-sm font-medium text-gray-700">{{ 'CATALOGS.TABLE_NAME' | translate }}</label>
+      <input type="text" formControlName="tableName"
+        [placeholder]="'CATALOGS.TABLE_NAME_PLACEHOLDER' | translate"
+        class="w-full px-4 py-2.5 rounded-xl border bg-white text-sm outline-none transition-all focus:ring-2 focus:ring-[#1e3a5f]/20 focus:border-[#1e3a5f]"
+        [class.border-red-400]="hasError('tableName','required')"
+        [class.border-gray-200]="!hasError('tableName','required')" />
+      @if (hasError('tableName', 'required')) {
+        <p class="text-xs text-red-500">{{ 'CATALOGS.FIELD_REQUIRED' | translate }}</p>
+      }
+    </div>
+
+    <div class="grid grid-cols-2 gap-4">
+      <div class="space-y-1.5">
+        <label class="block text-sm font-medium text-gray-700">{{ 'CATALOGS.KEY_FIELD' | translate }}</label>
+        <input type="text" formControlName="keyField"
+          [placeholder]="'CATALOGS.KEY_FIELD_PLACEHOLDER' | translate"
+          class="w-full px-4 py-2.5 rounded-xl border bg-white text-sm outline-none transition-all focus:ring-2 focus:ring-[#1e3a5f]/20 focus:border-[#1e3a5f]"
+          [class.border-red-400]="hasError('keyField','required')"
+          [class.border-gray-200]="!hasError('keyField','required')" />
+        @if (hasError('keyField', 'required')) {
+          <p class="text-xs text-red-500">{{ 'CATALOGS.FIELD_REQUIRED' | translate }}</p>
+        }
+      </div>
+      <div class="space-y-1.5">
+        <label class="block text-sm font-medium text-gray-700">{{ 'CATALOGS.VALUE_FIELD' | translate }}</label>
+        <input type="text" formControlName="valueField"
+          [placeholder]="'CATALOGS.VALUE_FIELD_PLACEHOLDER' | translate"
+          class="w-full px-4 py-2.5 rounded-xl border bg-white text-sm outline-none transition-all focus:ring-2 focus:ring-[#1e3a5f]/20 focus:border-[#1e3a5f]"
+          [class.border-red-400]="hasError('valueField','required')"
+          [class.border-gray-200]="!hasError('valueField','required')" />
+        @if (hasError('valueField', 'required')) {
+          <p class="text-xs text-red-500">{{ 'CATALOGS.FIELD_REQUIRED' | translate }}</p>
+        }
+      </div>
+    </div>
+
+    <div class="space-y-1.5">
+      <label class="block text-sm font-medium text-gray-700">
+        {{ 'CATALOGS.CONDITIONS' | translate }}
+        <span class="text-gray-400 font-normal ml-1">({{ 'CATALOGS.OPTIONAL' | translate }})</span>
+      </label>
+      <input type="text" formControlName="conditions"
+        [placeholder]="'CATALOGS.CONDITIONS_PLACEHOLDER' | translate"
+        class="w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-white text-sm outline-none transition-all focus:ring-2 focus:ring-[#1e3a5f]/20 focus:border-[#1e3a5f]" />
+      <p class="text-xs text-gray-400">{{ 'CATALOGS.CONDITIONS_HINT' | translate }}</p>
+    </div>
+
+    <div class="space-y-1.5">
+      <label class="block text-sm font-medium text-gray-700">
+        {{ 'CATALOGS.DESCRIPTION' | translate }}
+        <span class="text-gray-400 font-normal ml-1">({{ 'CATALOGS.OPTIONAL' | translate }})</span>
+      </label>
+      <textarea formControlName="description" rows="3"
+        [placeholder]="'CATALOGS.DESCRIPTION_PLACEHOLDER' | translate"
+        class="w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-white text-sm outline-none transition-all focus:ring-2 focus:ring-[#1e3a5f]/20 focus:border-[#1e3a5f] resize-none"></textarea>
+    </div>
+
+    <div class="flex-1"></div>
+
+    <div class="flex gap-3 pt-4 border-t border-gray-100">
+      <button type="button" (click)="closed.emit()"
+        class="flex-1 py-2.5 rounded-xl border border-gray-200 text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors">
+        {{ 'CATALOGS.CANCEL' | translate }}
+      </button>
+      <button type="submit" [disabled]="isLoading()"
+        class="flex-1 py-2.5 rounded-xl bg-[#1e3a5f] text-white text-sm font-semibold hover:bg-[#16304f] transition-colors disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2">
+        @if (isLoading()) {
+          <svg class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"/>
+          </svg>
+        }
+        {{ (isEdit ? 'CATALOGS.SAVE' : 'CATALOGS.CREATE') | translate }}
+      </button>
+    </div>
+
+  </form>
+</div>

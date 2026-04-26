@@ -1,12 +1,12 @@
 import { Component, inject, signal, computed, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { NgIcon } from '@ng-icons/core';
-import { CaseService } from '../../services/case.service';
-import { AuthService } from '../../../../core/auth/services/auth.service';
+import { AuthService } from '../../../../core/http/services/auth.service';
 import { Case, CaseFilters, CasePriority, CaseStatus, CaseType } from '../../models/case.model';
 import { DataTableComponent } from '../../../../shared/design-system/components/table/data-table/data-table';
 import { TableCellDirective } from '../../../../shared/design-system/components/table/table-cell.directive';
 import { ColumnDef, RowAction, PaginatorConfig, SortEvent, PageEvent } from '../../../../shared/design-system/components/table/table.models';
+import { CaseService } from '../../../../core/http/services/case.service';
 
 @Component({
   selector: 'app-case-list',

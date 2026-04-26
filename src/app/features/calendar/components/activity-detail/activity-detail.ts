@@ -1,8 +1,8 @@
 import { Component, computed, inject, input, output, signal } from '@angular/core';
 import { NgIcon } from '@ng-icons/core';
 import { Activity, ActivityPriority, ActivityStatus, ActivityType, HistoryAction } from '../../models/activity.model';
-import { ActivityService } from '../../services/activity.service';
-import { AuthService } from '../../../../core/auth/services/auth.service';
+import { ActivityService } from '../../../../core/http/services/activity.service';
+import { AuthService } from '../../../../core/http/services/auth.service';
 import { FileDropzoneComponent } from '../file-dropzone/file-dropzone';
 import { ActivityHistoryComponent } from '../activity-history/activity-history';
 

@@ -6,7 +6,7 @@ import {
   heroPencilSquare, heroStar, heroTrash, heroCheckCircle,
   heroArrowDownTray, heroArrowPath,
 } from '@ng-icons/heroicons/outline';
-import { ToastService } from '../../../../core/notifications/toast.service';
+import { ToastService } from '../../../../core/services/toast.service';
 import { DropdownComponent } from '../../../../shared/design-system/components/dropdown/dropdown.component';
 import { DropdownConfig, DropdownOption } from '../../../../shared/design-system/models/components.model';
 import { ClientService } from '../../../../core/http/services/client.service';
@@ -259,6 +259,7 @@ export class DashboardPage {
       message: 'This will permanently remove the record.<br>Cannot be undone.',
       confirmLabel: 'Delete',
       cancelLabel: 'Cancel',
+      variant: 'danger',
     });
 
     if (ok) {

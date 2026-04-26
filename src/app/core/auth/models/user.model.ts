@@ -10,8 +10,10 @@ export interface User {
   name: string;
   email: string;
   role: string;
+  permissions: string[];
   phone?: string;
-  avatarUrl?: string;
+  hasAvatar: boolean;
+  avatarVersion?: string | null;
   preferences: UserPreferences;
   otpEnabled?: boolean;
   otpConfigured?: boolean;
@@ -22,9 +24,42 @@ export interface LoginCredentials {
   password: string;
 }
 
+export interface DeviceContext {
+  installationId: string | null;
+  userAgent: string | null;
+  platform: string | null;
+  language: string | null;
+  languages: string[];
+  timezone: string | null;
+  screenWidth: number | null;
+  screenHeight: number | null;
+  screenColorDepth: number | null;
+  devicePixelRatio: number | null;
+  hardwareConcurrency: number | null;
+  deviceMemoryGb: number | null;
+  touchSupport: boolean | null;
+  cookieEnabled: boolean | null;
+  vendor: string | null;
+  appVersion: string | null;
+  frontendBuild: string | null;
+  geolocationSource: 'BrowserCoordinates' | null;
+  latitude: number | null;
+  longitude: number | null;
+  accuracyMeters: number | null;
+  geolocationCapturedAtUtc: string | null;
+}
+
+export interface SessionHeartbeatRequest {
+  sessionPublicId: string | null;
+  deviceContext: DeviceContext;
+  clientUtc: string;
+  visibilityState: string;
+  route: string;
+  activityState: string;
+}
+
 export interface AuthState {
   user: User | null;
-  token: string | null;
   isAuthenticated: boolean;
   navItems: NavItem[];
 }
@@ -35,6 +70,7 @@ export interface LoginResponse {
   otpRequired: boolean;
   pendingToken?: string | null;
   otpSetupRequired?: boolean;
+  userId?: string | null;
 }
 
 export interface OtpSetupResponse {

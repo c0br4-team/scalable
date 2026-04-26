@@ -98,6 +98,22 @@ export interface CreateLeadRequest {
   history: string | null;
 }
 
+export interface BulkCreateLeadItemRequest {
+  name: string;
+  email: string | null;
+  phone: string | null;
+}
+
+export interface BulkCreateLeadsRequest {
+  items: BulkCreateLeadItemRequest[];
+}
+
+export interface BulkCreateLeadsAcceptedResponse {
+  operationId: string;
+  receivedCount: number;
+  status: string;
+}
+
 export interface ContractedService {
   id: string;
   name: string;

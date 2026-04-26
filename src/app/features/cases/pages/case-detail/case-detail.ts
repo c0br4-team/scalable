@@ -1,13 +1,13 @@
 import { Component, inject, signal, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NgIcon } from '@ng-icons/core';
-import { CaseService } from '../../services/case.service';
 import { Case, CasePriority, CaseStatus, CaseTab, CaseType } from '../../models/case.model';
 import { CaseDescriptionTabComponent } from '../../components/tabs/description-tab/description-tab';
 import { CaseDocumentsTabComponent } from '../../components/tabs/documents-tab/documents-tab';
 import { CaseCommentsTabComponent } from '../../components/tabs/comments-tab/comments-tab';
 import { CaseNotesTabComponent } from '../../components/tabs/notes-tab/notes-tab';
 import { CaseHistoryTabComponent } from '../../components/tabs/history-tab/history-tab';
+import { CaseService } from '../../../../core/http/services/case.service';
 
 @Component({
   selector: 'app-case-detail',

@@ -1,7 +1,7 @@
 import { Component, computed, effect, inject, signal } from '@angular/core';
 import { NgIcon } from '@ng-icons/core';
 import { Activity, ActivityFilters, ActivityStatus, ActivityType } from '../../models/activity.model';
-import { ActivityService } from '../../services/activity.service';
+import { ActivityService } from '../../../../core/http/services/activity.service';
 import { CalendarGridComponent } from '../../components/calendar-grid/calendar-grid';
 import { ActivityModalComponent } from '../../components/activity-modal/activity-modal';
 import { ActivityDetailComponent } from '../../components/activity-detail/activity-detail';

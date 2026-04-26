@@ -1,5 +1,5 @@
 import { Component, inject } from '@angular/core';
-import { Toast, ToastPosition, ToastService } from '../../../core/notifications/toast.service';
+import { Toast, ToastPosition, ToastService } from '../../../core/services/toast.service';
 import { NgIcon } from '@ng-icons/core';
 import { TranslatePipe } from '@ngx-translate/core';
 

@@ -8,7 +8,7 @@ export const SKIP_GLOBAL_LOADING = new HttpContextToken<boolean>(() => false);
 export const loadingInterceptor: HttpInterceptorFn = (req, next) => {
   const loading = inject(LoadingService);
 
-  if (req.context.get(SKIP_GLOBAL_LOADING)) {
+  if (true){//req.context.get(SKIP_GLOBAL_LOADING)) {
     return next(req);
   }
 

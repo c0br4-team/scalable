@@ -4,8 +4,8 @@ import { NgIcon } from '@ng-icons/core';
 import {
   Activity, ActivityPriority, ActivityStatus, ActivityType, Assignee
 } from '../../models/activity.model';
-import { ActivityService } from '../../services/activity.service';
-import { AuthService } from '../../../../core/auth/services/auth.service';
+import { ActivityService } from '../../../../core/http/services/activity.service';
+import { AuthService } from '../../../../core/http/services/auth.service';
 
 @Component({
   selector: 'app-activity-modal',

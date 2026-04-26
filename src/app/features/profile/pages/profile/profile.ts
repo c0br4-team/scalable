@@ -1,8 +1,12 @@
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, effect, inject, signal } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
 import { NgIcon } from '@ng-icons/core';
-import { TranslatePipe } from '@ngx-translate/core';
-import { AuthService } from '../../../../core/auth/services/auth.service';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
+import { AuthService } from '../../../../core/http/services/auth.service';
+import { AuthSessionsService } from '../../../../core/http/services/auth-sessions.service';
+import { AuthSessionDetail, AuthSessionLocation } from '../../../settings/models/auth-session.model';
+import { SessionLocationCardsComponent } from '../../../../shared/ui/session-location-cards/session-location-cards';
+import { SessionLocationMapComponent } from '../../../../shared/ui/session-location-map';
 
 function passwordsMatchValidator(control: AbstractControl): ValidationErrors | null {
   const newPwd = control.get('newPassword')?.value;
@@ -12,14 +16,16 @@ function passwordsMatchValidator(control: AbstractControl): ValidationErrors | n
 
 @Component({
   selector: 'app-profile',
-  imports: [ReactiveFormsModule, NgIcon, TranslatePipe],
+  imports: [ReactiveFormsModule, NgIcon, TranslatePipe, SessionLocationMapComponent, SessionLocationCardsComponent],
   templateUrl: './profile.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'flex flex-col flex-1 overflow-y-auto' },
 })
 export class ProfilePage {
   protected auth = inject(AuthService);
-  private fb = inject(FormBuilder);
+  private readonly fb = inject(FormBuilder);
+  private readonly authSessionsService = inject(AuthSessionsService);
+  private readonly translate = inject(TranslateService);
 
   protected infoSaved = signal(false);
   protected pwdSaved = signal(false);
@@ -30,6 +36,9 @@ export class ProfilePage {
 
   protected avatarUploading = signal(false);
   protected avatarError = signal<string | null>(null);
+  protected avatarLoadFailed = signal(false);
+  protected currentSession = signal<AuthSessionDetail | null>(null);
+  protected currentSessionLoading = signal(true);
 
   protected infoForm = this.fb.group({
     name: [this.auth.user()?.name ?? '', [Validators.required, Validators.minLength(2)]],
@@ -80,6 +89,15 @@ export class ProfilePage {
     this.auth.user()?.name?.charAt(0)?.toUpperCase() ?? 'U'
   );
 
+  private readonly avatarWatcher = effect(() => {
+    this.auth.currentAvatarUrl();
+    this.avatarLoadFailed.set(false);
+  });
+
+  constructor() {
+    this.loadCurrentSession();
+  }
+
   protected onAvatarFileSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
     const file = input.files?.[0];
@@ -116,5 +134,95 @@ export class ProfilePage {
         input.value = '';
       },
     });
+  }
+
+  protected onAvatarLoadError(): void {
+    this.avatarLoadFailed.set(true);
+  }
+
+  protected hasCurrentSessionMap(): boolean {
+    const session = this.currentSession();
+    if (!session) {
+      return false;
+    }
+
+    return this.hasCoordinates(session.initialLocation) || this.hasCoordinates(session.lastLocation);
+  }
+
+  protected formatSessionDate(value: string | null): string {
+    if (!value) {
+      return this.translate.instant('PROFILE.SESSION.NOT_AVAILABLE');
+    }
+
+    return new Date(value).toLocaleString('es-ES', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+  }
+
+  protected formatSessionLocation(location: AuthSessionLocation | null): string {
+    if (!location) {
+      return this.translate.instant('PROFILE.SESSION.NOT_AVAILABLE');
+    }
+
+    const label = location.label?.trim();
+    const coordinates = this.formatCoordinates(location);
+    const source = this.translate.instant(`AUTH_SESSIONS.LOCATION_SOURCE.${location.source.toUpperCase()}`);
+
+    if (label && coordinates) {
+      return `${label} · ${source} · ${coordinates}`;
+    }
+
+    if (label) {
+      return `${label} · ${source}`;
+    }
+
+    if (coordinates) {
+      return `${source} · ${coordinates}`;
+    }
+
+    return source;
+  }
+
+  protected formatCoordinates(location: AuthSessionLocation | null): string {
+    if (!this.hasCoordinates(location)) {
+      return '';
+    }
+
+    return `${location.latitude!.toFixed(5)}, ${location.longitude!.toFixed(5)}`;
+  }
+
+  protected formatAccuracy(location: AuthSessionLocation | null): string {
+    if (!location?.accuracyMeters) {
+      return this.translate.instant('PROFILE.SESSION.NOT_AVAILABLE');
+    }
+
+    return `${location.accuracyMeters.toFixed(0)} m`;
+  }
+
+  protected formatBrowserLabel(session: AuthSessionDetail): string {
+    return [session.browserName, session.browserVersion].filter(part => !!part).join(' ')
+      || this.translate.instant('PROFILE.SESSION.NOT_AVAILABLE');
+  }
+
+  private loadCurrentSession(): void {
+    this.currentSessionLoading.set(true);
+    this.authSessionsService.getCurrentSession().subscribe({
+      next: session => {
+        this.currentSession.set(session);
+        this.currentSessionLoading.set(false);
+      },
+      error: () => {
+        this.currentSession.set(null);
+        this.currentSessionLoading.set(false);
+      },
+    });
+  }
+
+  private hasCoordinates(location: AuthSessionLocation | null): location is AuthSessionLocation {
+    return !!location && typeof location.latitude === 'number' && typeof location.longitude === 'number';
   }
 }

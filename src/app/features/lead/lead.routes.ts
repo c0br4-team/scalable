@@ -4,37 +4,10 @@ export const leadRoutes: Routes = [
   {
     path: '',
     pathMatch: 'full',
-    redirectTo: 'imported',
-  },
-  {
-    path: 'imported',
     data: {
-      breadcrumb: 'LEADS.IMPORTED_BREADCRUMB',
-      source: 'sheet',
-      titleKey: 'LEADS.IMPORTED_TITLE',
-      subtitleKey: 'LEADS.IMPORTED_SUBTITLE',
-    },
-    loadComponent: () =>
-      import('./pages/lead-list/lead-list.component').then(m => m.LeadListComponent),
-  },
-  {
-    path: 'manual',
-    data: {
-      breadcrumb: 'LEADS.MANUAL_BREADCRUMB',
-      source: 'manual',
-      titleKey: 'LEADS.MANUAL_TITLE',
-      subtitleKey: 'LEADS.MANUAL_SUBTITLE',
-    },
-    loadComponent: () =>
-      import('./pages/lead-list/lead-list.component').then(m => m.LeadListComponent),
-  },
-  {
-    path: 'completed',
-    data: {
-      breadcrumb: 'LEADS.COMPLETED_BREADCRUMB',
-      statuses: ['completed'],
-      titleKey: 'LEADS.COMPLETED_TITLE',
-      subtitleKey: 'LEADS.COMPLETED_SUBTITLE',
+      breadcrumb: 'LEADS.LIST_BREADCRUMB',
+      titleKey: 'LEADS.LIST_TITLE',
+      subtitleKey: 'LEADS.LIST_SUBTITLE',
     },
     loadComponent: () =>
       import('./pages/lead-list/lead-list.component').then(m => m.LeadListComponent),

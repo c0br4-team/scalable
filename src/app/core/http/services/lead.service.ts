@@ -2,8 +2,8 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpContext, HttpParams } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
 import { environment } from '../../../../environments/environment';
-import { SKIP_GLOBAL_LOADING } from '../../../core/interceptors/loading.interceptor';
-import { LeadDetail, LeadListItem, PagedLeads, SaveLeadIntakeRequest, CreateLeadRequest, CreateLeadResponse, DependentItem, PaymentPlan, SavePaymentPlanRequest, ConvertLeadResponse } from '../models/lead.model';
+import { SKIP_GLOBAL_LOADING } from '../../interceptors/loading.interceptor';
+import { LeadDetail, LeadListItem, PagedLeads, SaveLeadIntakeRequest, CreateLeadRequest, CreateLeadResponse, DependentItem, PaymentPlan, SavePaymentPlanRequest, ConvertLeadResponse, BulkCreateLeadsRequest, BulkCreateLeadsAcceptedResponse } from '../../../features/lead/models/lead.model';
 
 interface UpdateLeadAssigneeRequest {
   assignedUserIdAw: string | null;
@@ -20,7 +20,6 @@ export class LeadService {
     search?: string,
     statuses?: string[],
     assignedUser?: string,
-    source?: 'sheet' | 'manual',
     sortBy = 'date',
     sortDirection: 'asc' | 'desc' = 'desc'
   ): Observable<PagedLeads> {
@@ -36,7 +35,6 @@ export class LeadService {
       }
     }
     if (assignedUser?.trim()) params = params.set('assignedUser', assignedUser.trim());
-    if (source) params = params.set('source', source);
 
     return this.http.get<PagedLeads>(this.apiUrl, {
       params,
@@ -57,14 +55,12 @@ export class LeadService {
     return this.http.patch<void>(`${this.apiUrl}/${encodeURIComponent(String(leadRef))}/assignee`, payload);
   }
 
-  syncLeads(): Observable<void> {
-    return this.http.post<void>(`${this.apiUrl}/sync`, null, {
-      context: new HttpContext().set(SKIP_GLOBAL_LOADING, true),
-    });
-  }
-
   createLead(data: CreateLeadRequest): Observable<CreateLeadResponse> {
     return this.http.post<CreateLeadResponse>(this.apiUrl, data);
+  }
+
+  bulkCreateLeads(data: BulkCreateLeadsRequest): Observable<BulkCreateLeadsAcceptedResponse> {
+    return this.http.post<BulkCreateLeadsAcceptedResponse>(`${this.apiUrl}/bulk-import`, data);
   }
 
   getDependents(leadRef: string | number): Observable<DependentItem[]> {

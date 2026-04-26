@@ -18,6 +18,7 @@ import { TableCellDirective } from '../table-cell.directive';
   standalone: true,
   imports: [NgTemplateOutlet, NgIcon, TranslatePipe],
   templateUrl: './data-table.html',
+  host: { class: 'block h-full min-h-0 min-w-0' },
 })
 export class DataTableComponent<T extends Record<string, any>> implements AfterContentInit, OnChanges {
   @Input() columns: ColumnDef<T>[] = [];
@@ -27,7 +28,7 @@ export class DataTableComponent<T extends Record<string, any>> implements AfterC
   @Input() selectable = false;
   @Input() striped = false;
   @Input() compact = false;
-  @Input() stickyHeader = false;
+  @Input() stickyHeader = true;
   @Input() paginator?: PaginatorConfig;
   @Input() rowActions: RowAction<T>[] = [];
   @Input() sort: SortEvent | null = null;

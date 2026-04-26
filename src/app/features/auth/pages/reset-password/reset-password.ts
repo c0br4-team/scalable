@@ -1,10 +1,10 @@
 import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
+import { HttpErrorResponse } from '@angular/common/http';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TranslatePipe } from '@ngx-translate/core';
-import { from, of, switchMap } from 'rxjs';
-import { AuthService } from '../../../../core/auth/services/auth.service';
-import { AppwriteService } from '../../../../core/auth/services/appwrite.service';
+import { of, switchMap } from 'rxjs';
+import { AuthService } from '../../../../core/http/services/auth.service';
 
 @Component({
   selector: 'app-reset-password',
@@ -17,7 +17,6 @@ export class ResetPasswordPage implements OnInit {
   private fb = inject(FormBuilder);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
-  private appwrite = inject(AppwriteService);
   private auth = inject(AuthService);
 
   protected isLoading = signal(false);
@@ -53,8 +52,8 @@ export class ResetPasswordPage implements OnInit {
         this.manualEntryKey.set(setup.manualEntryKey ?? '');
         this.qrCodeDataUrl.set(setup.qrCodeDataUrl ?? '');
       },
-      error: () => {
-        this.error.set('RESET_PASSWORD.ERROR');
+      error: (error: unknown) => {
+        this.error.set(this.resolveApiErrorLabel(error, 'RESET_PASSWORD.ERROR'));
       },
     });
   }
@@ -82,14 +81,14 @@ export class ResetPasswordPage implements OnInit {
         : this.auth.completeOtpSetup(otpCode!, this.userId);
 
     otpFlow.pipe(
-      switchMap(() => from(this.appwrite.updateRecovery(this.userId, this.secret, password!)))
+      switchMap(() => this.auth.completePasswordRecovery(this.userId, this.secret, password!))
     ).subscribe({
       next: () => {
         this.success.set(true);
         setTimeout(() => this.router.navigate(['/login']), 3000);
       },
-      error: () => {
-        this.error.set(this.otpRequired() ? 'RESET_PASSWORD.OTP_ERROR' : 'RESET_PASSWORD.ERROR');
+      error: (error: unknown) => {
+        this.error.set(this.resolveApiErrorLabel(error, this.otpRequired() ? 'RESET_PASSWORD.OTP_ERROR' : 'RESET_PASSWORD.ERROR'));
         this.isLoading.set(false);
       },
     });
@@ -108,5 +107,19 @@ export class ResetPasswordPage implements OnInit {
     const pw = group.get('password')?.value;
     const cpw = group.get('confirmPassword')?.value;
     return pw && cpw && pw !== cpw ? { mismatch: true } : null;
+  }
+
+  private resolveApiErrorLabel(error: unknown, fallbackKey: string): string {
+    if (!(error instanceof HttpErrorResponse)) {
+      return fallbackKey;
+    }
+
+    const apiLabel = error.error?.error?.label;
+    if (typeof apiLabel === 'string' && apiLabel.trim()) {
+      return apiLabel;
+    }
+
+    const apiMessage = error.error?.error?.message;
+    return typeof apiMessage === 'string' && apiMessage.trim() ? apiMessage : fallbackKey;
   }
 }

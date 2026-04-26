@@ -66,14 +66,12 @@
     <!-- Role -->
     <div class="space-y-1.5">
       <label class="block text-sm font-medium text-gray-700">{{ 'USERS.ROLE' | translate }}</label>
-      <select
+      <sce-dropdown
         formControlName="role"
-        class="w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-white text-sm outline-none transition-all
-          focus:ring-2 focus:ring-[#1e3a5f]/20 focus:border-[#1e3a5f]">
-        @for (opt of roleOptions; track opt.value) {
-          <option [value]="opt.value">{{ opt.label | translate }}</option>
-        }
-      </select>
+        [options]="roleOptions()"
+        [config]="roleConfig"
+        [placeholder]="'USERS.ROLE' | translate">
+      </sce-dropdown>
     </div>
 
     <label class="flex items-start gap-3 rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 cursor-pointer">

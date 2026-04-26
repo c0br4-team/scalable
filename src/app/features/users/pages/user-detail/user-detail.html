@@ -57,12 +57,12 @@
           <label class="block text-sm font-medium text-gray-700">
             {{ 'USERS.ROLE' | translate }}
           </label>
-          <select formControlName="role" class="w-full h-10 px-3 rounded-lg border border-gray-300 text-sm bg-white
-                focus:outline-none focus:ring-2 focus:ring-[#1e3a5f]/40 focus:border-[#1e3a5f] transition-colors">
-            @for (opt of roleOptions; track opt.value) {
-            <option [value]="opt.value">{{ opt.label | translate }}</option>
-            }
-          </select>
+          <sce-dropdown
+            formControlName="role"
+            [options]="roleOptions()"
+            [config]="roleConfig"
+            [placeholder]="'USERS.ROLE' | translate">
+          </sce-dropdown>
         </div>
 
         <!-- Email (read-only) -->
@@ -160,5 +160,5 @@
 @if (showConfirm()) {
 <sce-confirm-dialog [title]="'USERS.CONFIRM_SAVE_TITLE' | translate"
   [message]="'USERS.CONFIRM_SAVE_MESSAGE' | translate" [confirmLabel]="'USERS.SAVE' | translate"
-  [cancelLabel]="'USERS.CANCEL' | translate" (confirmed)="onConfirmed()" (cancelled)="onCancelled()" />
+  [cancelLabel]="'USERS.CANCEL' | translate" variant="primary" (confirmed)="onConfirmed()" (cancelled)="onCancelled()" />
 }

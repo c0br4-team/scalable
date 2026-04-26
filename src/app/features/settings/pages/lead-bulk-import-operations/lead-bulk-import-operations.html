@@ -1,0 +1,120 @@
+<div class="flex h-full min-h-0 flex-1 flex-col gap-5 overflow-hidden p-4 lg:p-6">
+  <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+    <div>
+      <h1 class="text-xl font-bold text-gray-900">{{ 'LEAD_IMPORT_OPERATIONS.TITLE' | translate }}</h1>
+      <p class="text-sm text-gray-500">{{ 'LEAD_IMPORT_OPERATIONS.SUBTITLE' | translate }}</p>
+    </div>
+
+    <button type="button"
+      (click)="refresh()"
+      class="inline-flex items-center justify-center gap-2 rounded-xl bg-[#1e3a5f] px-4 py-2.5 text-sm font-semibold text-white transition-all hover:bg-[#16304f]">
+      {{ 'LEAD_IMPORT_OPERATIONS.REFRESH' | translate }}
+    </button>
+  </div>
+
+  <div class="grid min-h-0 flex-1 gap-5 xl:grid-cols-[minmax(0,1.45fr)_minmax(320px,0.95fr)]">
+    <section class="flex min-h-0 flex-col rounded-2xl border border-gray-200 bg-white p-4 shadow-sm">
+      <div class="mb-4 flex flex-col gap-3">
+        <div>
+          <h2 class="text-sm font-semibold text-gray-900">{{ 'LEAD_IMPORT_OPERATIONS.TABLE_TITLE' | translate }}</h2>
+          <p class="mt-1 text-xs text-gray-500">{{ 'LEAD_IMPORT_OPERATIONS.TABLE_HINT' | translate }}</p>
+        </div>
+
+        <div class="grid gap-3 lg:grid-cols-[minmax(0,1fr)_220px]">
+          <sce-search-bar
+            [placeholder]="'LEAD_IMPORT_OPERATIONS.SEARCH' | translate"
+            [value]="searchQuery()"
+            (search)="onSearch($event)"
+            (cleared)="onSearch('')" />
+
+          <select class="rounded-xl border border-gray-200 bg-white px-3 py-2.5 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#1e3a5f]/20"
+            [value]="statusFilter()"
+            (change)="onStatusChange($event)">
+            @for (option of statusOptions; track option.value) {
+            <option [value]="option.value">{{ option.label | translate }}</option>
+            }
+          </select>
+        </div>
+      </div>
+
+      <div class="min-h-0 flex-1 overflow-hidden">
+        <sce-data-table
+          [data]="rows()"
+          [columns]="columns"
+          [loading]="loading()"
+          [emptyMessage]="'LEAD_IMPORT_OPERATIONS.EMPTY'"
+          [paginator]="paginator()"
+          [striped]="true"
+          (pageChange)="onPageChange($event)"
+          (rowClick)="onRowClick($event)" />
+      </div>
+    </section>
+
+    <section class="flex min-h-0 flex-col rounded-2xl border border-gray-200 bg-white p-4 shadow-sm">
+      <div class="mb-4">
+        <h2 class="text-sm font-semibold text-gray-900">{{ 'LEAD_IMPORT_OPERATIONS.DETAIL.TITLE' | translate }}</h2>
+        <p class="mt-1 text-xs text-gray-500">{{ 'LEAD_IMPORT_OPERATIONS.DETAIL.HINT' | translate }}</p>
+      </div>
+
+      @if (detailLoading()) {
+      <div class="text-sm text-gray-500">{{ 'LEAD_IMPORT_OPERATIONS.DETAIL.LOADING' | translate }}</div>
+      } @else if (selectedOperation(); as operation) {
+      <div class="min-h-0 flex-1 overflow-y-auto pr-1">
+        <div class="grid gap-4 rounded-2xl bg-slate-50 p-4 sm:grid-cols-2">
+          <div class="sm:col-span-2 flex flex-wrap items-center justify-between gap-2">
+            <div>
+              <div class="text-lg font-semibold text-gray-900">{{ operation.requestedByName }}</div>
+              <div class="mt-1 break-all text-xs text-gray-500">{{ operation.operationId }}</div>
+            </div>
+
+            <span class="rounded-full px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wide"
+              [class]="statusTone(operation.status)">
+              {{ ('LEAD_IMPORT_OPERATIONS.STATUS.' + operation.status.toUpperCase()) | translate }}
+            </span>
+          </div>
+
+          @for (item of selectedSummary(); track item.label) {
+          <div>
+            <div class="text-[11px] font-semibold uppercase tracking-wide text-gray-500">{{ item.label | translate }}</div>
+            <div class="mt-1 text-sm text-gray-800">{{ item.value }}</div>
+          </div>
+          }
+        </div>
+
+        <div class="mt-5 rounded-2xl border border-gray-200 bg-white p-4">
+          <h3 class="text-sm font-semibold text-gray-900">{{ 'LEAD_IMPORT_OPERATIONS.RESULT.TITLE' | translate }}</h3>
+          <p class="mt-1 text-xs text-gray-500">{{ 'LEAD_IMPORT_OPERATIONS.RESULT.SUBTITLE' | translate }}</p>
+
+          <div class="mt-4 grid gap-3 sm:grid-cols-3">
+            <div class="rounded-2xl bg-emerald-50 p-3">
+              <div class="text-[11px] font-semibold uppercase tracking-wide text-emerald-700">{{ 'LEAD_IMPORT_OPERATIONS.DETAIL.CREATED' | translate }}</div>
+              <div class="mt-1 text-2xl font-bold text-emerald-900">{{ operation.createdCount }}</div>
+            </div>
+
+            <div class="rounded-2xl bg-amber-50 p-3">
+              <div class="text-[11px] font-semibold uppercase tracking-wide text-amber-700">{{ 'LEAD_IMPORT_OPERATIONS.DETAIL.SKIPPED' | translate }}</div>
+              <div class="mt-1 text-2xl font-bold text-amber-900">{{ operation.skippedCount }}</div>
+            </div>
+
+            <div class="rounded-2xl bg-red-50 p-3">
+              <div class="text-[11px] font-semibold uppercase tracking-wide text-red-700">{{ 'LEAD_IMPORT_OPERATIONS.DETAIL.FAILED' | translate }}</div>
+              <div class="mt-1 text-2xl font-bold text-red-900">{{ operation.failedCount }}</div>
+            </div>
+          </div>
+
+          @if (operation.errorMessage) {
+          <div class="mt-4 rounded-xl border border-red-200 bg-red-50 px-3 py-3 text-sm text-red-700">
+            <div class="font-semibold">{{ 'LEAD_IMPORT_OPERATIONS.DETAIL.ERROR_MESSAGE' | translate }}</div>
+            <div class="mt-1">{{ operation.errorMessage }}</div>
+          </div>
+          }
+        </div>
+      </div>
+      } @else {
+      <div class="rounded-2xl border border-dashed border-gray-200 bg-gray-50 px-4 py-6 text-sm text-gray-500">
+        {{ 'LEAD_IMPORT_OPERATIONS.DETAIL.EMPTY' | translate }}
+      </div>
+      }
+    </section>
+  </div>
+</div>

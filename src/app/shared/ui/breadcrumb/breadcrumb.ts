@@ -1,6 +1,6 @@
 import { Component, inject, computed } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { BreadcrumbService } from '../../../core/navigation/breadcrumb.service';
+import { BreadcrumbService } from '../../../core/services/breadcrumb.service';
 import { NgIcon } from '@ng-icons/core';
 import { TranslatePipe } from '@ngx-translate/core';
 

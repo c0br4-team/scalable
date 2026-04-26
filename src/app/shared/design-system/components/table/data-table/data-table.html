@@ -1,4 +1,4 @@
-<div class="flex flex-col w-full gap-0">
+<div class="flex h-full min-h-0 w-full min-w-0 flex-col gap-0">
 
   <!-- ══════════════════════════════════════════════════════
        MOBILE: Vista de cards (< sm)
@@ -188,15 +188,17 @@
   <!-- ══════════════════════════════════════════════════════
        DESKTOP: Vista de tabla (≥ sm)
   ═══════════════════════════════════════════════════════ -->
-  <div class="hidden sm:block w-full overflow-x-auto rounded-lg border border-gray-200">
+  <div class="hidden min-h-0 flex-1 min-w-0 overflow-auto rounded-lg border border-gray-200 sm:block">
     <table class="w-full text-sm text-left text-gray-700">
 
       <!-- Header -->
-      <thead class="text-xs text-gray-500 uppercase bg-gray-50 border-b border-gray-200"
-             [class.sticky]="stickyHeader" [class.top-0]="stickyHeader" [class.z-10]="stickyHeader">
+      <thead class="border-b border-gray-200 bg-gray-50 text-xs uppercase text-gray-500">
         <tr>
           @if (selectable) {
-          <th class="w-10 px-4 py-3">
+          <th class="w-10 bg-gray-50 px-4 py-3"
+              [class.sticky]="stickyHeader"
+              [class.top-0]="stickyHeader"
+              [class.z-10]="stickyHeader">
             <input type="checkbox"
                    class="rounded border-gray-300 text-[#1e3a5f] focus:ring-[#1e3a5f]"
                    [checked]="allSelected"
@@ -207,7 +209,10 @@
 
           @for (col of columns; track col.key) {
           <th [style.width]="col.width"
-              class="px-4 py-3 whitespace-nowrap font-semibold tracking-wide select-none"
+              class="bg-gray-50 px-4 py-3 whitespace-nowrap font-semibold tracking-wide select-none"
+              [class.sticky]="stickyHeader"
+              [class.top-0]="stickyHeader"
+              [class.z-10]="stickyHeader"
               [class.cursor-pointer]="col.sortable"
               (click)="onSort(col)">
             <span class="inline-flex items-center gap-1.5"
@@ -228,7 +233,10 @@
           }
 
           @if (rowActions.length) {
-          <th class="px-4 py-3 text-right text-xs font-semibold tracking-wide text-gray-500 uppercase">
+          <th class="sticky top-0 z-10 bg-gray-50 px-4 py-3 text-right text-xs font-semibold uppercase tracking-wide text-gray-500"
+              [class.sticky]="stickyHeader"
+              [class.top-0]="stickyHeader"
+              [class.z-10]="stickyHeader">
             {{ 'TABLE.ACTIONS' | translate }}
           </th>
           }
@@ -324,7 +332,7 @@
        PAGINADOR (ambas vistas)
   ═══════════════════════════════════════════════════════ -->
   @if (paginator) {
-  <div class="flex flex-col gap-3 px-1 pt-3 pb-1 text-sm text-gray-500
+  <div class="shrink-0 flex flex-col gap-3 px-1 pt-3 pb-1 text-sm text-gray-500
               sm:flex-row sm:items-center sm:justify-between">
 
     <!-- Fila 1 (mobile) / Izquierda (desktop): info + selector -->

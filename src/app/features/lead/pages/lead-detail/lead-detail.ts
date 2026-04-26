@@ -4,16 +4,16 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NgIcon } from '@ng-icons/core';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
-import { LeadService } from '../../services/lead.service';
+import { LeadService } from '../../../../core/http/services/lead.service';
 import { LeadDetail, SaveLeadIntakeRequest } from '../../models/lead.model';
 import { LeadIntakeStepComponent } from '../../components/lead-intake-step/lead-intake-step';
 import { LeadStep2Component } from '../../components/lead-step2/lead-step2';
 import { TemplatePreviewModalComponent } from '../../../../shared/design-system/components/template-preview-modal/template-preview-modal';
 import { StepperComponent } from '../../../../shared/design-system/components/stepper/stepper.component';
 import { DropdownConfig, DropdownOption, StepItem } from '../../../../shared/design-system/models/components.model';
-import { ToastService } from '../../../../core/notifications/toast.service';
-import { AuthService } from '../../../../core/auth/services/auth.service';
-import { BreadcrumbService } from '../../../../core/navigation/breadcrumb.service';
+import { ToastService } from '../../../../core/services/toast.service';
+import { AuthService } from '../../../../core/http/services/auth.service';
+import { BreadcrumbService } from '../../../../core/services/breadcrumb.service';
 import { DropdownComponent } from '../../../../shared/design-system/components/dropdown/dropdown.component';
 import { UsersService } from '../../../../core/http/services/users.service';
 
@@ -126,9 +126,7 @@ export class LeadDetailPage implements OnInit, OnDestroy {
   }
 
   private get backRoute(): string[] {
-    const navigationSource = history.state?.['fromListSource'];
-    const isManual = navigationSource === 'manual' || this.lead()?.sourceStatus === 'manual';
-    return isManual ? ['/leads/manual'] : ['/leads/imported'];
+    return ['/leads'];
   }
 
   protected statusCls = computed(() => {

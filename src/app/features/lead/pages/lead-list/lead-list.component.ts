@@ -2,13 +2,12 @@ import { DatePipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, inject, OnInit, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NgIcon } from '@ng-icons/core';
-import { TranslatePipe, TranslateService } from '@ngx-translate/core';
-import { LeadService } from '../../services/lead.service';
+import { TranslatePipe } from '@ngx-translate/core';
+import { LeadService } from '../../../../core/http/services/lead.service';
 import { LeadListItem } from '../../models/lead.model';
 import { DataTableComponent } from '../../../../shared/design-system/components/table/data-table/data-table';
 import { TableCellDirective } from '../../../../shared/design-system/components/table/table-cell.directive';
 import { ColumnDef, RowAction, PaginatorConfig, SortEvent, PageEvent } from '../../../../shared/design-system/components/table/table.models';
-import { ToastService } from '../../../../core/notifications/toast.service';
 
 @Component({
   selector: 'app-lead-list',
@@ -19,26 +18,21 @@ import { ToastService } from '../../../../core/notifications/toast.service';
 })
 export class LeadListComponent implements OnInit {
   private leadService = inject(LeadService);
-  private toast = inject(ToastService);
-  private translate = inject(TranslateService);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
 
   protected leads = signal<LeadListItem[]>([]);
-  protected titleKey = signal('LEADS.IMPORTED_TITLE');
-  protected subtitleKey = signal('LEADS.IMPORTED_SUBTITLE');
-  protected listSource = signal<'sheet' | 'manual' | undefined>('sheet');
+  protected titleKey = signal('LEADS.LIST_TITLE');
+  protected subtitleKey = signal('LEADS.LIST_SUBTITLE');
   protected loading = signal(true);
-  protected syncing = signal(false);
   protected showFilters = signal(false);
 
   protected filterSearch = signal('');
   protected filterStatus = signal<string[]>([]);
   protected filterAssignedUser = signal('');
-  protected lockedStatuses = signal<string[]>([]);
 
   protected paginator = signal<PaginatorConfig>({
-    page: 1, pageSize: 5, total: 0, pageSizeOptions: [5, 10, 20, 50]
+    page: 1, pageSize: 10, total: 0, pageSizeOptions: [5, 10, 20, 50]
   });
   protected sortState = signal<SortEvent>({ column: 'date', direction: 'desc' });
 
@@ -48,8 +42,6 @@ export class LeadListComponent implements OnInit {
     if (this.filterAssignedUser()) n++;
     return n;
   });
-
-  protected isImportedList = computed(() => this.listSource() === 'sheet');
 
   protected columns: ColumnDef<LeadListItem>[] = [];
 
@@ -62,15 +54,8 @@ export class LeadListComponent implements OnInit {
   ];
 
   ngOnInit(): void {
-    this.titleKey.set(this.route.snapshot.data['titleKey'] ?? 'LEADS.IMPORTED_TITLE');
-    this.subtitleKey.set(this.route.snapshot.data['subtitleKey'] ?? 'LEADS.IMPORTED_SUBTITLE');
-    this.listSource.set(this.route.snapshot.data['source'] ?? undefined);
-
-    const preStatuses: string[] | undefined = this.route.snapshot.data['statuses'];
-    if (preStatuses?.length) {
-      this.lockedStatuses.set(preStatuses);
-      this.filterStatus.set(preStatuses);
-    }
+    this.titleKey.set(this.route.snapshot.data['titleKey'] ?? 'LEADS.LIST_TITLE');
+    this.subtitleKey.set(this.route.snapshot.data['subtitleKey'] ?? 'LEADS.LIST_SUBTITLE');
 
     this.columns = [
       { key: 'date',             header: 'LEADS.COL_DATE',     sortable: true, width: '110px' },
@@ -94,7 +79,6 @@ export class LeadListComponent implements OnInit {
       this.filterSearch() || undefined,
       this.filterStatus(),
       this.filterAssignedUser() || undefined,
-      this.listSource(),
       column,
       direction,
     ).subscribe({
@@ -133,10 +117,7 @@ export class LeadListComponent implements OnInit {
     }
 
     this.router.navigate(['/leads', leadRef], {
-      state: {
-        leadName: row.fullName ?? '',
-        fromListSource: this.listSource(),
-      },
+      state: { leadName: row.fullName ?? '' },
     });
   }
 
@@ -148,7 +129,7 @@ export class LeadListComponent implements OnInit {
 
   protected clearFilters(): void {
     this.filterSearch.set('');
-    this.filterStatus.set(this.lockedStatuses());
+    this.filterStatus.set([]);
     this.filterAssignedUser.set('');
     this.paginator.update(p => ({ ...p, page: 1 }));
     this.loadLeads();
@@ -192,19 +173,4 @@ export class LeadListComponent implements OnInit {
     }[sourceStatus] ?? 'LEADS.SOURCE_LEGACY';
   }
 
-  protected onSync(): void {
-    if (this.syncing()) return;
-    this.syncing.set(true);
-    this.leadService.syncLeads().subscribe({
-      next: () => {
-        this.syncing.set(false);
-        this.paginator.update(p => ({ ...p, page: 1 }));
-        this.loadLeads(() => this.toast.success(this.translate.instant('LEADS.SYNC_OK')));
-      },
-      error: () => {
-        this.syncing.set(false);
-        this.toast.error(this.translate.instant('LEADS.SYNC_ERROR'));
-      },
-    });
-  }
 }

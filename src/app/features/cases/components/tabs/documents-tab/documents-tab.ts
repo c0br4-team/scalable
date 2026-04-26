@@ -2,7 +2,7 @@ import { Component, Input, OnChanges, SimpleChanges, inject, signal } from '@ang
 import { NgIcon } from '@ng-icons/core';
 import { FormsModule } from '@angular/forms';
 import { CaseDocument, CaseFolder, DocumentType } from '../../../models/case.model';
-import { AuthService } from '../../../../../core/auth/services/auth.service';
+import { AuthService } from '../../../../../core/http/services/auth.service';
 import { DocumentCardComponent } from './components/document-card/document-card';
 import { DocumentFolderSidebarComponent, FolderSidebarItem } from './components/document-folder-sidebar/document-folder-sidebar';
 import { DocumentUploadModalComponent, UploadSubmitEvent } from './components/document-upload-modal/document-upload-modal';
@@ -59,16 +59,14 @@ export class CaseDocumentsTabComponent implements OnChanges {
 
   // ── Permissions ───────────────────────────────────────────────
   protected get canUpload(): boolean {
-    const r = this.auth.user()?.role;
-    return r === 'admin' || r === 'abogada';
+    return this.auth.hasAnyPermission(['documents.upload', 'documents.manage']);
   }
   protected get canDownload(): boolean { return true; }
   protected get canUploadVersion(): boolean {
-    const r = this.auth.user()?.role;
-    return r === 'admin' || r === 'abogada';
+    return this.auth.hasAnyPermission(['documents.upload_version', 'documents.manage']);
   }
   protected get canDelete(): boolean {
-    return this.auth.user()?.role === 'admin';
+    return this.auth.hasAnyPermission(['documents.delete', 'documents.manage']);
   }
 
   // ── Computed views ────────────────────────────────────────────

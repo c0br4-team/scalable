@@ -3,8 +3,8 @@ import {
 } from '@angular/core';
 import { NgIcon } from '@ng-icons/core';
 import { Attachment } from '../../models/activity.model';
-import { ActivityService } from '../../services/activity.service';
-import { AuthService } from '../../../../core/auth/services/auth.service';
+import { ActivityService } from '../../../../core/http/services/activity.service';
+import { AuthService } from '../../../../core/http/services/auth.service';
 
 const ALLOWED_TYPES = [
   'image/jpeg', 'image/png', 'image/gif', 'image/webp',

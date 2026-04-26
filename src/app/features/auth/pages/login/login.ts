@@ -1,9 +1,9 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { HttpErrorResponse } from '@angular/common/http';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { AppwriteException } from 'appwrite';
 import { NgIcon } from '@ng-icons/core';
 import { TranslatePipe } from '@ngx-translate/core';
-import { AuthService } from '../../../../core/auth/services/auth.service';
+import { AuthService } from '../../../../core/http/services/auth.service';
 import { LanguageService } from '../../../../core/services/language.service';
 
 @Component({
@@ -84,8 +84,8 @@ export class LoginPage {
         this.isLoading.set(false);
       },
       error: (err: unknown) => {
-        const isInvalidCredentials = err instanceof AppwriteException && err.code === 401;
-        this.errorMessage.set(isInvalidCredentials ? 'LOGIN.ERROR_INVALID' : 'LOGIN.ERROR_NETWORK');
+        const isInvalidCredentials = err instanceof HttpErrorResponse && err.status === 401;
+        this.errorMessage.set(isInvalidCredentials ? this.resolveAuthErrorMessage(err, 'LOGIN.ERROR_INVALID') : 'LOGIN.ERROR_NETWORK');
         this.isLoading.set(false);
       },
     });
@@ -111,8 +111,8 @@ export class LoginPage {
         if (prefs) this.lang.set(prefs.language);
         this.isLoading.set(false);
       },
-      error: () => {
-        this.errorMessage.set('LOGIN.ERROR_INVALID_OTP');
+      error: (err: unknown) => {
+        this.errorMessage.set(this.resolveAuthErrorMessage(err, 'LOGIN.ERROR_INVALID_OTP'));
         this.isLoading.set(false);
       },
     });
@@ -133,8 +133,8 @@ export class LoginPage {
         if (prefs) this.lang.set(prefs.language);
         this.isLoading.set(false);
       },
-      error: () => {
-        this.errorMessage.set('LOGIN.ERROR_INVALID_OTP');
+      error: (err: unknown) => {
+        this.errorMessage.set(this.resolveAuthErrorMessage(err, 'LOGIN.ERROR_INVALID_OTP'));
         this.isLoading.set(false);
       },
     });
@@ -151,10 +151,13 @@ export class LoginPage {
 
     this.errorMessage.set(null);
     this.recoveryMessage.set(null);
-    this.auth.requestPasswordRecovery(emailControl.value).then(() => {
-      this.recoveryMessage.set('LOGIN.RECOVERY_SENT');
-    }).catch(() => {
-      this.errorMessage.set('LOGIN.ERROR_NETWORK');
+    this.auth.requestPasswordRecovery(emailControl.value).subscribe({
+      next: () => {
+        this.recoveryMessage.set('LOGIN.RECOVERY_SENT');
+      },
+      error: () => {
+        this.errorMessage.set('LOGIN.ERROR_NETWORK');
+      },
     });
   }
 
@@ -166,6 +169,20 @@ export class LoginPage {
   protected hasOtpError(error: string): boolean {
     const control = this.otpForm.get('code');
     return !!(control?.hasError(error) && control?.touched);
+  }
+
+  private resolveAuthErrorMessage(error: unknown, fallbackKey: string): string {
+    if (!(error instanceof HttpErrorResponse)) {
+      return fallbackKey;
+    }
+
+    const apiLabel = error.error?.error?.label;
+    if (typeof apiLabel === 'string' && apiLabel.trim()) {
+      return apiLabel;
+    }
+
+    const apiMessage = error.error?.error?.message;
+    return typeof apiMessage === 'string' && apiMessage.trim() ? apiMessage : fallbackKey;
   }
 
   protected features = [

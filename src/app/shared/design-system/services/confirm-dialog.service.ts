@@ -22,6 +22,7 @@ export class ConfirmDialogService {
       ref.setInput('message', options.message ?? 'This action cannot be undone.');
       ref.setInput('confirmLabel', options.confirmLabel ?? 'Confirm');
       ref.setInput('cancelLabel', options.cancelLabel ?? 'Cancel');
+      ref.setInput('variant', options.variant ?? 'primary');
 
       this.appRef.attachView(ref.hostView);
       document.body.appendChild(ref.location.nativeElement);

@@ -7,16 +7,20 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TranslatePipe } from '@ngx-translate/core';
 import { NgIcon } from '@ng-icons/core';
 import { UsersService } from '../../../../core/http/services/users.service';
-import { ToastService } from '../../../../core/notifications/toast.service';
+import { ToastService } from '../../../../core/services/toast.service';
 import { AppUser } from '../../models/user.model';
 import { LanguageService } from '../../../../core/services/language.service';
 import { ConfirmDialogComponent } from '../../../../shared/design-system/components/confirm-dialog/confirm-dialog.component';
 import { DatePipe } from '@angular/common';
+import { CatalogService } from '../../../../core/http/services/catalog.service';
+import { AuthService } from '../../../../core/http/services/auth.service';
+import { DropdownComponent } from '../../../../shared/design-system/components/dropdown/dropdown.component';
+import { DropdownConfig, DropdownOption } from '../../../../shared/design-system/models/components.model';
 
 @Component({
   selector: 'app-user-detail',
   standalone: true,
-  imports: [ReactiveFormsModule, TranslatePipe, NgIcon, ConfirmDialogComponent, DatePipe],
+  imports: [ReactiveFormsModule, TranslatePipe, NgIcon, ConfirmDialogComponent, DatePipe, DropdownComponent],
   templateUrl: './user-detail.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -27,6 +31,9 @@ export class UserDetailPage implements OnInit {
   private fb           = inject(FormBuilder);
   private usersService = inject(UsersService);
   private toast        = inject(ToastService);
+  private catalogs     = inject(CatalogService);
+  private auth         = inject(AuthService);
+  private readonly roleCatalogId = 1;
 
   protected user        = signal<AppUser | null>(null);
   protected isLoading   = signal(true);
@@ -34,10 +41,12 @@ export class UserDetailPage implements OnInit {
   protected isDirty     = signal(false);
   protected showConfirm = signal(false);
 
-  protected readonly roleOptions = [
-    { value: 'admin', label: 'USERS.ROLE_ADMIN' },
-    { value: 'user',  label: 'USERS.ROLE_USER' },
-  ];
+  protected readonly roleOptions = signal<DropdownOption[]>([]);
+  protected readonly roleConfig: DropdownConfig = {
+    searchFn: this.catalogs.createSearchFn(this.roleCatalogId, 20),
+    debounceMs: 250,
+    minChars: 0,
+  };
 
   protected form = this.fb.group({
     name:        ['', [Validators.required, Validators.maxLength(128)]],
@@ -47,6 +56,8 @@ export class UserDetailPage implements OnInit {
   });
 
   ngOnInit(): void {
+    this.loadRoleOptions();
+
     const id = this.route.snapshot.paramMap.get('id');
 
     // Angular sets navigation state in history.state
@@ -76,6 +87,13 @@ export class UserDetailPage implements OnInit {
 
     this.form.valueChanges.subscribe(() => {
       this.isDirty.set(this.form.dirty);
+    });
+  }
+
+  private loadRoleOptions(): void {
+    this.catalogs.query(this.roleCatalogId, '', 20).subscribe({
+      next: items => this.roleOptions.set(items.map(item => ({ label: item.value, value: item.key }))),
+      error: () => this.roleOptions.set([]),
     });
   }
 
@@ -119,6 +137,7 @@ export class UserDetailPage implements OnInit {
       otpRequired: !!otpRequired,
     }).subscribe({
       next: updated => {
+        this.syncCurrentSessionUser(updated);
         this.initUser(updated);
         this.isSaving.set(false);
         this.toast.success('USERS.UPDATED');
@@ -136,5 +155,14 @@ export class UserDetailPage implements OnInit {
 
   protected goBack(): void {
     this.router.navigate(['/users']);
+  }
+
+  private syncCurrentSessionUser(updated: AppUser): void {
+    const currentUser = this.auth.user();
+    if (!currentUser || currentUser.id !== updated.id) return;
+
+    this.auth.refreshCurrentUser().subscribe({
+      error: () => undefined,
+    });
   }
 }

@@ -3,7 +3,7 @@ import {
 } from '@angular/core';
 import { NgIcon } from '@ng-icons/core';
 import { Activity, ActivityType } from '../../models/activity.model';
-import { ActivityService } from '../../services/activity.service';
+import { ActivityService } from '../../../../core/http/services/activity.service';
 
 export type ViewMode = 'day' | 'week' | 'month' | 'year';
 

@@ -1,35 +1,28 @@
-import { HttpInterceptorFn, HttpErrorResponse, HttpRequest, HttpHandlerFn } from '@angular/common/http';
+import { HttpInterceptorFn, HttpErrorResponse } from '@angular/common/http';
 import { inject } from '@angular/core';
-import { catchError, from, switchMap, throwError } from 'rxjs';
-import { AuthService } from '../auth/services/auth.service';
-import { AppwriteService } from '../auth/services/appwrite.service';
+import { catchError, throwError } from 'rxjs';
+import { AuthService } from '../http/services/auth.service';
+import { environment } from '../../../environments/environment';
 
-const attachToken = (req: HttpRequest<unknown>, token: string) =>
-  req.clone({ setHeaders: { Authorization: `Bearer ${token}` } });
-
-const handleRequest = (req: HttpRequest<unknown>, next: HttpHandlerFn, token: string | null, auth: AuthService, appwrite: AppwriteService) => {
-  const authReq = token ? attachToken(req, token) : req;
-
-  return next(authReq).pipe(
-    catchError((error: HttpErrorResponse) => {
-      if (error.status !== 401) return throwError(() => error);
-
-      return from(appwrite.createJWT()).pipe(
-        switchMap(freshJwt => {
-          auth.updateToken(freshJwt);
-          return next(attachToken(req, freshJwt));
-        }),
-        catchError(() => {
-          auth.logout();
-          return throwError(() => error);
-        }),
-      );
-    }),
-  );
-};
+const isApiRequest = (url: string): boolean => url.startsWith(environment.apiUrl);
+const isLoginRequest = (url: string): boolean => url.startsWith(`${environment.apiUrl}/auth/login`);
+const isHeartbeatRequest = (url: string): boolean => url.startsWith(`${environment.apiUrl}/auth/session/heartbeat`);
 
 export const jwtInterceptor: HttpInterceptorFn = (req, next) => {
   const auth = inject(AuthService);
-  const appwrite = inject(AppwriteService);
-  return handleRequest(req, next, auth.token(), auth, appwrite);
+  const authReq = isApiRequest(req.url) ? req.clone({ withCredentials: true }) : req;
+
+  return next(authReq).pipe(
+    catchError((error: HttpErrorResponse) => {
+      if (error.status === 401 && auth.isAuthenticated() && !isLoginRequest(req.url)) {
+        auth.logout();
+      }
+
+      if (error.status === 401 && isHeartbeatRequest(req.url) && auth.isAuthenticated()) {
+        auth.logout();
+      }
+
+      return throwError(() => error);
+    }),
+  );
 };

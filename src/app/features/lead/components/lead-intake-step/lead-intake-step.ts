@@ -13,8 +13,8 @@ import { EditableColumnDef } from '../../../../shared/design-system/components/t
 import { DropdownConfig } from '../../../../shared/design-system/models/components.model';
 import { LanguageService } from '../../../../core/http/services/language.service';
 import { LegalCategoryService, LegalCategoryOption } from '../../../../core/http/services/legal-category.service';
-import { LeadService } from '../../services/lead.service';
-import { ToastService } from '../../../../core/notifications/toast.service';
+import { LeadService } from '../../../../core/http/services/lead.service';
+import { ToastService } from '../../../../core/services/toast.service';
 
 @Component({
   selector: 'app-lead-intake-step',

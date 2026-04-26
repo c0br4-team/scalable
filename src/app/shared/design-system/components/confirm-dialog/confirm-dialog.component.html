@@ -6,11 +6,18 @@
        (click)="$event.stopPropagation()">
 
     <!-- Icon -->
-    <div class="flex items-center justify-center p-4 bg-red-100 rounded-full">
+    <div [class]="iconContainerClass()">
+      @if (variant() === 'danger') {
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M2.875 5.75h1.917m0 0h15.333m-15.333 0v13.417a1.917 1.917 0 0 0 1.916 1.916h9.584a1.917 1.917 0 0 0 1.916-1.916V5.75m-10.541 0V3.833a1.917 1.917 0 0 1 1.916-1.916h3.834a1.917 1.917 0 0 1 1.916 1.916V5.75m-5.75 4.792v5.75m3.834-5.75v5.75"
               stroke="#DC2626" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
       </svg>
+      } @else {
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 8.167h.008M11.042 11.042H12v4.791h.958m8.625-3.833a9.583 9.583 0 1 1-19.166 0 9.583 9.583 0 0 1 19.166 0Z"
+              stroke="#2563EB" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      }
     </div>
 
     <!-- Text -->
@@ -26,7 +33,7 @@
       </button>
       <button type="button"
               (click)="confirmed.emit()"
-              class="w-full md:w-36 h-10 rounded-md text-white bg-red-600 font-medium text-sm hover:bg-red-700 active:scale-95 transition">
+              [class]="confirmButtonClass()">
         {{ confirmLabel() }}
       </button>
     </div>

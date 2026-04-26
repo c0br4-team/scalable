@@ -2,11 +2,14 @@ import { ChangeDetectionStrategy, Component, OnChanges, SimpleChanges, inject, i
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { NgIcon } from '@ng-icons/core';
 import { TranslatePipe } from '@ngx-translate/core';
+import { CatalogService } from '../../../../core/http/services/catalog.service';
+import { DropdownComponent } from '../../../../shared/design-system/components/dropdown/dropdown.component';
+import { DropdownConfig, DropdownOption } from '../../../../shared/design-system/models/components.model';
 import { AppUser } from '../../models/user.model';
 
 @Component({
   selector: 'app-user-drawer',
-  imports: [ReactiveFormsModule, NgIcon, TranslatePipe],
+  imports: [ReactiveFormsModule, NgIcon, TranslatePipe, DropdownComponent],
   templateUrl: './user-drawer.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -18,13 +21,16 @@ export class UserDrawerComponent implements OnChanges {
   closed    = output<void>();
 
   private fb = inject(FormBuilder);
+  private catalogs = inject(CatalogService);
+  private readonly roleCatalogId = 1;
 
   protected isLoading = signal(false);
-
-  protected readonly roleOptions = [
-    { value: 'admin', label: 'USERS.ROLE_ADMIN' },
-    { value: 'user',  label: 'USERS.ROLE_USER' },
-  ];
+  protected readonly roleOptions = signal<DropdownOption[]>([]);
+  protected readonly roleConfig: DropdownConfig = {
+    searchFn: this.catalogs.createSearchFn(this.roleCatalogId, 20),
+    debounceMs: 250,
+    minChars: 0,
+  };
 
   protected form = this.fb.group({
     name:  ['', [Validators.required, Validators.maxLength(128)]],
@@ -36,6 +42,8 @@ export class UserDrawerComponent implements OnChanges {
   get isEdit(): boolean { return !!this.user(); }
 
   ngOnChanges(changes: SimpleChanges): void {
+    this.ensureRoleOptionsLoaded();
+
     if (changes['user'] || changes['open']) {
       const u = this.user();
       if (u) {
@@ -46,6 +54,15 @@ export class UserDrawerComponent implements OnChanges {
         this.form.get('email')?.enable();
       }
     }
+  }
+
+  private ensureRoleOptionsLoaded(): void {
+    if (this.roleOptions().length) return;
+
+    this.catalogs.query(this.roleCatalogId, '', 20).subscribe({
+      next: items => this.roleOptions.set(items.map(item => ({ label: item.value, value: item.key }))),
+      error: () => this.roleOptions.set([]),
+    });
   }
 
   protected onSubmit(): void {

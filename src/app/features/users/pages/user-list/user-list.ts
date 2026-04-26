@@ -4,9 +4,9 @@ import { TranslatePipe } from '@ngx-translate/core';
 import { NgIcon } from '@ng-icons/core';
 import { DataTableComponent, ColumnDef, PaginatorConfig, PageEvent } from '../../../../shared/design-system/components/table';
 import { SearchBarComponent } from '../../../../shared/design-system/components/search-bar/search-bar.component';
-import { ToastService } from '../../../../core/notifications/toast.service';
+import { ToastService } from '../../../../core/services/toast.service';
 import { UsersService } from '../../../../core/http/services/users.service';
-import { AppwriteService } from '../../../../core/auth/services/appwrite.service';
+import { AuthService } from '../../../../core/http/services/auth.service';
 import { UserDrawerComponent } from '../../components/user-drawer/user-drawer';
 import { AppUser } from '../../models/user.model';
 import { environment } from '../../../../../environments/environment';
@@ -15,13 +15,14 @@ import { environment } from '../../../../../environments/environment';
   selector: 'app-user-list',
   imports: [TranslatePipe, NgIcon, DataTableComponent, SearchBarComponent, UserDrawerComponent],
   templateUrl: './user-list.html',
+  host: { class: 'flex min-h-0 flex-1 flex-col overflow-hidden' },
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class UserListPage implements OnInit {
   private usersService = inject(UsersService);
   private toast        = inject(ToastService);
-  private appwrite     = inject(AppwriteService);
   private router       = inject(Router);
+  private auth         = inject(AuthService);
 
   protected drawer = viewChild(UserDrawerComponent);
 
@@ -84,7 +85,8 @@ export class UserListPage implements OnInit {
 
     if (editingUser) {
       this.usersService.update(editingUser.id, { name: data.name, labels: [data.role], otpRequired: data.otpRequired }).subscribe({
-        next: () => {
+        next: updated => {
+          this.syncCurrentSessionUser(updated);
           this.closeDrawer();
           this.loadUsers();
           this.toast.success('USERS.UPDATED');
@@ -96,12 +98,15 @@ export class UserListPage implements OnInit {
       });
     } else {
       this.usersService.create({ name: data.name, email: data.email, labels: [data.role], otpRequired: data.otpRequired }).subscribe({
-        next: created => {
+        next: () => {
           this.closeDrawer();
           this.paginator.update(p => ({ ...p, page: 1 }));
           this.loadUsers();
-          this.appwrite.sendPasswordRecovery(data.email, `${environment.appwrite.url}reset-password`).catch(() => {});
           this.toast.success('USERS.CREATED');
+
+          this.auth.requestPasswordRecovery(data.email, `${environment.appwrite.url}reset-password`).subscribe({
+            error: () => this.toast.warning('LOGIN.ERROR_NETWORK'),
+          });
         },
         error: () => {
           drawerRef.setLoading(false);
@@ -124,5 +129,14 @@ export class UserListPage implements OnInit {
     this.drawerOpen.set(false);
     this.editingUser.set(null);
     this.drawer()?.reset();
+  }
+
+  private syncCurrentSessionUser(updated: AppUser): void {
+    const currentUser = this.auth.user();
+    if (!currentUser || currentUser.id !== updated.id) return;
+
+    this.auth.refreshCurrentUser().subscribe({
+      error: () => undefined,
+    });
   }
 }

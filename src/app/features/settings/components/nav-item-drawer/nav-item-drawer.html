@@ -1,0 +1,114 @@
+@if (open()) {
+  <div class="fixed inset-0 z-40 bg-black/30 backdrop-blur-sm" (click)="closed.emit()"></div>
+}
+
+<div class="fixed inset-y-0 right-0 z-50 flex w-full max-w-md flex-col bg-white shadow-2xl transition-transform duration-300"
+     [class.translate-x-0]="open()"
+     [class.translate-x-full]="!open()">
+
+  <div class="flex items-center justify-between border-b border-gray-200 px-6 py-4">
+    <h2 class="text-lg font-semibold text-gray-900">
+      {{ (isEdit ? 'NAV_ITEM_CONFIG.DRAWER_EDIT_TITLE' : 'NAV_ITEM_CONFIG.DRAWER_CREATE_TITLE') | translate }}
+    </h2>
+    <button type="button" (click)="closed.emit()"
+      class="rounded-lg p-1.5 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600"
+      [attr.aria-label]="'NAV_ITEM_CONFIG.CLOSE' | translate">
+      <ng-icon name="heroXMark" class="text-xl" />
+    </button>
+  </div>
+
+  <form [formGroup]="form" (ngSubmit)="onSubmit()" class="flex flex-1 flex-col overflow-y-auto px-6 py-5 space-y-5">
+    <div class="space-y-1.5">
+      <label class="block text-sm font-medium text-gray-700">{{ 'NAV_ITEM_CONFIG.TYPE' | translate }}</label>
+      <select formControlName="type"
+        class="w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm outline-none transition-all focus:border-[#1e3a5f] focus:ring-2 focus:ring-[#1e3a5f]/20">
+        @for (option of typeOptions; track option.value) {
+          <option [value]="option.value">{{ option.label | translate }}</option>
+        }
+      </select>
+    </div>
+
+    <div class="space-y-1.5">
+      <label class="block text-sm font-medium text-gray-700">{{ 'NAV_ITEM_CONFIG.LABEL' | translate }}</label>
+      <input type="text" formControlName="label"
+        class="w-full rounded-xl border bg-white px-4 py-2.5 text-sm outline-none transition-all focus:border-[#1e3a5f] focus:ring-2 focus:ring-[#1e3a5f]/20"
+        [class.border-red-400]="hasError('label', 'maxlength')"
+        [class.border-gray-200]="!hasError('label', 'maxlength')" />
+      @if (hasError('label', 'maxlength')) {
+        <p class="text-xs text-red-500">{{ 'NAV_ITEM_CONFIG.MAX_LENGTH_ERROR' | translate }}</p>
+      }
+    </div>
+
+    <div class="space-y-1.5">
+      <label class="block text-sm font-medium text-gray-700">{{ 'NAV_ITEM_CONFIG.PATH' | translate }}</label>
+      <input type="text" formControlName="path"
+        class="w-full rounded-xl border bg-white px-4 py-2.5 text-sm outline-none transition-all focus:border-[#1e3a5f] focus:ring-2 focus:ring-[#1e3a5f]/20"
+        [class.border-red-400]="hasError('path', 'maxlength')"
+        [class.border-gray-200]="!hasError('path', 'maxlength')" />
+      @if (hasError('path', 'maxlength')) {
+        <p class="text-xs text-red-500">{{ 'NAV_ITEM_CONFIG.MAX_LENGTH_ERROR' | translate }}</p>
+      }
+    </div>
+
+    <div class="space-y-1.5">
+      <label class="block text-sm font-medium text-gray-700">{{ 'NAV_ITEM_CONFIG.ICON' | translate }}</label>
+      <input type="text" formControlName="icon"
+        class="w-full rounded-xl border bg-white px-4 py-2.5 text-sm outline-none transition-all focus:border-[#1e3a5f] focus:ring-2 focus:ring-[#1e3a5f]/20"
+        [class.border-red-400]="hasError('icon', 'maxlength')"
+        [class.border-gray-200]="!hasError('icon', 'maxlength')" />
+      @if (hasError('icon', 'maxlength')) {
+        <p class="text-xs text-red-500">{{ 'NAV_ITEM_CONFIG.MAX_LENGTH_ERROR' | translate }}</p>
+      }
+    </div>
+
+    <div class="space-y-1.5">
+      <label class="block text-sm font-medium text-gray-700">{{ 'NAV_ITEM_CONFIG.PARENT' | translate }}</label>
+      <sce-dropdown
+        formControlName="parentId"
+        [options]="parentOptions()"
+        [config]="parentDropdownConfig()"
+        [placeholder]="'NAV_ITEM_CONFIG.NO_PARENT' | translate" />
+    </div>
+
+    <div class="grid grid-cols-2 gap-4">
+      <div class="space-y-1.5">
+        <label class="block text-sm font-medium text-gray-700">{{ 'NAV_ITEM_CONFIG.SORT_ORDER' | translate }}</label>
+        <input type="number" formControlName="sortOrder"
+          class="w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm outline-none transition-all focus:border-[#1e3a5f] focus:ring-2 focus:ring-[#1e3a5f]/20" />
+      </div>
+
+      <label class="flex items-center gap-3 pt-7 text-sm font-medium text-gray-700">
+        <input type="checkbox" formControlName="isActive"
+          class="h-4 w-4 rounded border-gray-300 text-[#1e3a5f] focus:ring-[#1e3a5f]" />
+        {{ 'NAV_ITEM_CONFIG.ACTIVE' | translate }}
+      </label>
+    </div>
+
+    <div class="flex-1"></div>
+
+    <div class="flex gap-3 border-t border-gray-100 pt-4">
+      @if (isEdit) {
+        <button type="button" (click)="deleted.emit()"
+          class="rounded-xl border border-red-200 px-4 py-2.5 text-sm font-medium text-red-600 transition-colors hover:bg-red-50">
+          {{ 'NAV_ITEM_CONFIG.DELETE' | translate }}
+        </button>
+      }
+
+      <button type="button" (click)="closed.emit()"
+        class="flex-1 rounded-xl border border-gray-200 py-2.5 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-50">
+        {{ 'NAV_ITEM_CONFIG.CANCEL' | translate }}
+      </button>
+
+      <button type="submit" [disabled]="isLoading()"
+        class="flex flex-1 items-center justify-center gap-2 rounded-xl bg-[#1e3a5f] py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[#16304f] disabled:cursor-not-allowed disabled:opacity-60">
+        @if (isLoading()) {
+          <svg class="h-4 w-4 animate-spin" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"/>
+          </svg>
+        }
+        {{ (isEdit ? 'NAV_ITEM_CONFIG.SAVE' : 'NAV_ITEM_CONFIG.CREATE') | translate }}
+      </button>
+    </div>
+  </form>
+</div>

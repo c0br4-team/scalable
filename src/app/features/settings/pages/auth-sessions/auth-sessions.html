@@ -1,0 +1,182 @@
+<div class="flex h-full min-h-0 flex-1 flex-col gap-5 overflow-hidden p-4 lg:p-6">
+  <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+    <div>
+      <h1 class="text-xl font-bold text-gray-900">{{ 'AUTH_SESSIONS.TITLE' | translate }}</h1>
+      <p class="text-sm text-gray-500">{{ 'AUTH_SESSIONS.SUBTITLE' | translate }}</p>
+    </div>
+
+    <button type="button"
+      (click)="refresh()"
+      class="inline-flex items-center justify-center gap-2 rounded-xl bg-[#1e3a5f] px-4 py-2.5 text-sm font-semibold text-white transition-all hover:bg-[#16304f]">
+      {{ 'AUTH_SESSIONS.REFRESH' | translate }}
+    </button>
+  </div>
+
+  <div class="grid min-h-0 flex-1 gap-5 xl:grid-cols-[minmax(0,1.45fr)_minmax(320px,0.95fr)]">
+    <section class="flex min-h-0 min-w-0 flex-col rounded-2xl border border-gray-200 bg-white p-4 shadow-sm">
+      <div class="mb-4 flex flex-col gap-3">
+        <div>
+          <h2 class="text-sm font-semibold text-gray-900">{{ 'AUTH_SESSIONS.TABLE_TITLE' | translate }}</h2>
+          <p class="mt-1 text-xs text-gray-500">{{ 'AUTH_SESSIONS.TABLE_HINT' | translate }}</p>
+        </div>
+
+        <div class="grid gap-3 lg:grid-cols-[minmax(0,1fr)_180px_auto]">
+          <sce-search-bar
+            [placeholder]="'AUTH_SESSIONS.SEARCH' | translate"
+            [value]="searchQuery()"
+            (search)="onSearch($event)"
+            (cleared)="onSearch('')" />
+
+          <select class="rounded-xl border border-gray-200 bg-white px-3 py-2.5 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#1e3a5f]/20"
+            [value]="statusFilter()"
+            (change)="onStatusChange($event)">
+            @for (option of statusOptions(); track option.value) {
+            <option [value]="option.value">{{ option.translate ? (option.label | translate) : option.label }}</option>
+            }
+          </select>
+
+          <label class="inline-flex items-center gap-2 rounded-xl border border-gray-200 px-3 py-2.5 text-sm text-gray-700">
+            <input type="checkbox"
+              class="h-4 w-4 rounded border-gray-300 text-[#1e3a5f] focus:ring-[#1e3a5f]"
+              [checked]="onlyOpen()"
+              (change)="onOnlyOpenChange($event)" />
+            <span>{{ 'AUTH_SESSIONS.FILTERS.ONLY_OPEN' | translate }}</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="min-h-0 min-w-0 flex-1 overflow-hidden">
+        <sce-data-table
+          [data]="rows()"
+          [columns]="columns"
+          [loading]="loading()"
+          [emptyMessage]="'AUTH_SESSIONS.EMPTY'"
+          [paginator]="paginator()"
+          [striped]="true"
+          (pageChange)="onPageChange($event)"
+          (rowClick)="onRowClick($event)" />
+      </div>
+    </section>
+
+    <section class="flex min-h-0 min-w-0 flex-col rounded-2xl border border-gray-200 bg-white p-4 shadow-sm">
+      <div class="mb-4">
+        <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+          <div>
+            <h2 class="text-sm font-semibold text-gray-900">{{ 'AUTH_SESSIONS.DETAIL.TITLE' | translate }}</h2>
+            <p class="mt-1 text-xs text-gray-500">{{ 'AUTH_SESSIONS.DETAIL.HINT' | translate }}</p>
+          </div>
+
+          @if (selectedSession() && auth.hasPermission('settings.sessions.revoke')) {
+          <button type="button"
+            (click)="revokeSelectedSession()"
+            [disabled]="!canRevokeSelectedSession()"
+            class="inline-flex items-center justify-center rounded-xl px-3 py-2 text-sm font-semibold text-white transition-all disabled:cursor-not-allowed disabled:opacity-60"
+            [class.bg-red-600]="canRevokeSelectedSession()"
+            [class.hover:bg-red-700]="canRevokeSelectedSession()"
+            [class.bg-red-300]="!canRevokeSelectedSession()">
+            {{ (revoking() ? 'AUTH_SESSIONS.ACTIONS.REVOKING' : 'AUTH_SESSIONS.ACTIONS.REVOKE') | translate }}
+          </button>
+          }
+        </div>
+      </div>
+
+      @if (detailLoading()) {
+      <div class="text-sm text-gray-500">{{ 'AUTH_SESSIONS.DETAIL.LOADING' | translate }}</div>
+      } @else if (selectedSession(); as session) {
+      <div class="min-h-0 flex-1 overflow-y-auto pr-1">
+        <div class="grid gap-4 rounded-2xl bg-slate-50 p-4 sm:grid-cols-2">
+          <div class="sm:col-span-2">
+            <div class="flex flex-wrap items-center gap-2">
+              <div class="text-lg font-semibold text-gray-900">{{ session.userDisplayName }}</div>
+              @if (session.isCurrentSession) {
+              <span class="rounded-full bg-emerald-100 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wide text-emerald-700">
+                {{ 'AUTH_SESSIONS.DETAIL.CURRENT_SESSION' | translate }}
+              </span>
+              }
+            </div>
+            <div class="text-sm text-gray-500">{{ session.userEmail }}</div>
+          </div>
+
+          @for (item of selectedSummary(); track item.label) {
+          <div>
+            <div class="text-[11px] font-semibold uppercase tracking-wide text-gray-500">{{ item.label | translate }}</div>
+            <div class="mt-1 text-sm text-gray-800">{{ item.value | translate }}</div>
+          </div>
+          }
+        </div>
+
+        <div class="mt-5">
+          @if (hasMap(session)) {
+          <div class="mb-5 space-y-3 rounded-2xl border border-gray-200 bg-white p-3">
+            <div>
+              <h3 class="text-sm font-semibold text-gray-900">{{ 'AUTH_SESSIONS.MAP.TITLE' | translate }}</h3>
+              <p class="mt-1 text-xs text-gray-500">{{ 'AUTH_SESSIONS.MAP.SUBTITLE' | translate }}</p>
+            </div>
+
+            <app-session-location-map
+              [initialLocation]="session.initialLocation"
+              [lastLocation]="session.lastLocation"
+              [initialPointLabel]="'AUTH_SESSIONS.MAP.INITIAL_POINT' | translate"
+              [lastPointLabel]="'AUTH_SESSIONS.MAP.LAST_POINT' | translate" />
+
+            <app-session-location-cards
+              [initialLocation]="session.initialLocation"
+              [lastLocation]="session.lastLocation"
+              [initialPointLabel]="'AUTH_SESSIONS.MAP.INITIAL_POINT' | translate"
+              [lastPointLabel]="'AUTH_SESSIONS.MAP.LAST_POINT' | translate"
+              [coordinatesLabel]="'AUTH_SESSIONS.MAP.COORDINATES' | translate"
+              [accuracyLabel]="'AUTH_SESSIONS.MAP.ACCURACY' | translate"
+              [notAvailableLabel]="'AUTH_SESSIONS.NOT_AVAILABLE' | translate" />
+          </div>
+          }
+
+          <div class="mb-3 flex items-center justify-between">
+            <h3 class="text-sm font-semibold text-gray-900">{{ 'AUTH_SESSIONS.EVENTS.TITLE' | translate }}</h3>
+            <span class="text-xs text-gray-500">{{ session.events.length }} {{ 'AUTH_SESSIONS.EVENTS.COUNT' | translate }}</span>
+          </div>
+
+          @if (!session.events.length) {
+          <div class="rounded-xl border border-dashed border-gray-200 bg-gray-50 px-3 py-4 text-sm text-gray-500">
+            {{ 'AUTH_SESSIONS.EVENTS.EMPTY' | translate }}
+          </div>
+          } @else {
+          <div class="space-y-3 pb-1">
+            @for (event of session.events; track event.id) {
+            <article class="rounded-2xl border border-gray-200 p-3">
+              <div class="flex flex-wrap items-start justify-between gap-2">
+                <div>
+                  <div class="text-sm font-semibold text-gray-900">{{ event.message | translate }}</div>
+                  <div class="mt-1 text-xs text-gray-500">{{ formatDate(event.occurredAtUtc) }}</div>
+                </div>
+                <span class="rounded-full px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wide"
+                  [class]="eventTone(event.severity)">
+                  {{ ('AUTH_SESSIONS.SEVERITY.' + event.severity.toUpperCase()) | translate }}
+                </span>
+              </div>
+
+              <div class="mt-3 flex flex-wrap gap-2 text-[11px] text-gray-600">
+                <span class="rounded-full bg-slate-100 px-2 py-1">{{ ('AUTH_SESSIONS.EVENTS.TYPE.' + event.eventType.toUpperCase()) | translate }}</span>
+                @if (event.ipAddress) {
+                <span class="rounded-full bg-blue-50 px-2 py-1 text-blue-700">IP {{ event.ipAddress }}</span>
+                }
+                @if (event.httpMethod) {
+                <span class="rounded-full bg-emerald-50 px-2 py-1 text-emerald-700">{{ event.httpMethod }}</span>
+                }
+                @if (event.requestPath) {
+                <span class="rounded-full bg-violet-50 px-2 py-1 text-violet-700">{{ event.requestPath }}</span>
+                }
+              </div>
+            </article>
+            }
+          </div>
+          }
+        </div>
+      </div>
+      } @else {
+      <div class="rounded-2xl border border-dashed border-gray-200 bg-gray-50 px-4 py-6 text-sm text-gray-500">
+        {{ 'AUTH_SESSIONS.DETAIL.EMPTY' | translate }}
+      </div>
+      }
+    </section>
+  </div>
+</div>

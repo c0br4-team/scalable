@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import {
   Activity, ActivityFilters,
   Assignee, Attachment, ChecklistItem, HistoryEntry
-} from '../models/activity.model';
+} from '../../../features/calendar/models/activity.model';
 import { environment } from '../../../../environments/environment';
 
 @Injectable({ providedIn: 'root' })

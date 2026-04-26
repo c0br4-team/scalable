@@ -3,11 +3,11 @@ import { FormsModule } from '@angular/forms';
 import { NgIcon } from '@ng-icons/core';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { LeadDetail, DownpaymentMethod, PaymentPlan, PaymentPlanInstallment, SavePaymentPlanRequest } from '../../models/lead.model';
-import { LeadService } from '../../services/lead.service';
+import { LeadService } from '../../../../core/http/services/lead.service';
 import { CatalogService } from '../../../../core/http/services/catalog.service';
 import { DropdownComponent } from '../../../../shared/design-system/components/dropdown/dropdown.component';
 import { DropdownConfig, DropdownOption } from '../../../../shared/design-system/models/components.model';
-import { ToastService } from '../../../../core/notifications/toast.service';
+import { ToastService } from '../../../../core/services/toast.service';
 
 @Component({
   selector: 'app-lead-step2',

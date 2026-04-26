@@ -5,17 +5,6 @@
     <p class="text-sm text-gray-500">{{ subtitleKey() | translate }}</p>
   </div>
   <div class="flex items-center gap-2">
-    @if (isImportedList()) {
-    <button (click)="onSync()"
-            [disabled]="syncing()"
-            class="flex items-center gap-1.5 px-3 py-2 text-sm font-medium rounded-xl border border-gray-200 bg-white text-gray-700 transition-all hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-            [title]="'LEADS.SYNC' | translate">
-      <ng-icon name="heroArrowPath" class="text-base" [class.animate-spin]="syncing()" />
-      <span class="hidden sm:inline">
-        {{ (syncing() ? 'LEADS.SYNCING' : 'LEADS.SYNC') | translate }}
-      </span>
-    </button>
-    }
     <!-- Filters button -->
     <button (click)="showFilters.set(true)"
             class="relative flex items-center gap-1.5 px-3 py-2 text-sm font-medium rounded-xl border transition-all"
@@ -45,7 +34,7 @@
     [paginator]="paginator()"
     [rowActions]="rowActions"
     [sort]="sortState()"
-    [emptyMessage]="(isImportedList() ? 'LEADS.EMPTY_IMPORTED' : 'LEADS.EMPTY_MANUAL') | translate"
+    [emptyMessage]="'LEADS.EMPTY_LIST' | translate"
     (sortChange)="onSort($event)"
     (pageChange)="onPage($event)"
     (rowClick)="onRowClick($event)">
@@ -71,7 +60,7 @@
         </div>
         <div class="min-w-0 flex flex-col gap-0.5">
           <span class="font-medium text-gray-800 truncate">{{ row.fullName ?? '—' }}</span>
-          @if (isImportedList() && row.sourceStatus !== 'active') {
+          @if (row.sourceStatus && row.sourceStatus !== 'active') {
             <span class="w-fit px-2 py-0.5 rounded-full text-[10px] font-semibold" [class]="sourceCls(row.sourceStatus)">
               {{ sourceKey(row.sourceStatus) | translate }}
             </span>
@@ -124,8 +113,7 @@
         </div>
       </div>
 
-      <!-- Estado (oculto cuando la ruta lo bloquea) -->
-      @if (!lockedStatuses().length) {
+      <!-- Estado -->
       <div>
         <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">
           {{ 'LEADS.STATUS_LABEL' | translate }}
@@ -141,7 +129,6 @@
           }
         </div>
       </div>
-      }
 
       <!-- Responsable -->
       <div>
